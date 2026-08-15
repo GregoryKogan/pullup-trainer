@@ -17,7 +17,7 @@ import {
   computeTotals,
   evaluateWorkout,
 } from '@/domain/progression'
-import { advanceScheduleAfterWorkout, findScheduleSlotIndex } from '@/domain/schedule'
+import { advanceCustomScheduleAfterWorkout, advanceScheduleAfterWorkout, findScheduleSlotIndex } from '@/domain/schedule'
 import { useRestTimer } from '@/composables/use-rest-timer'
 import { requestNotificationPermission, signalRestEnd } from '@/composables/use-rest-signals'
 import { getCustomProgram } from '@/db/repositories/custom-programs'
@@ -142,7 +142,9 @@ async function loadSession() {
   const date = workoutDate()
   if (p.source === 'custom') {
     const program = await getCustomProgram(p.customProgramId)
-    const step = program?.steps[p.currentStepIndex]
+    const slot = p.schedule[resolveSlotIndex()]
+    const stepRef = slot?.stepRef ?? p.currentStepIndex
+    const step = program?.steps[stepRef]
     if (!step) {
       loadFailed.value = true
       return
@@ -170,15 +172,30 @@ async function loadSession() {
   })
 }
 
+async function ensureSession() {
+  const date = workoutDate()
+  if (workoutStore.active && workoutStore.active.date !== date) {
+    workoutStore.clear()
+  }
+  if (!workoutStore.active) await loadSession()
+}
+
 onMounted(async () => {
   await requestNotificationPermission()
-  if (!workoutStore.active) await loadSession()
+  await ensureSession()
   startedAt.value = new Date()
   elapsedTimer = setInterval(() => {
     elapsed.value = Math.floor((Date.now() - startedAt.value.getTime()) / 1000)
   }, 1000)
   window.addEventListener('beforeunload', onBeforeUnload)
 })
+
+watch(
+  () => route.params.date,
+  async () => {
+    await ensureSession()
+  },
+)
 
 onBeforeUnmount(() => {
   if (elapsedTimer) clearInterval(elapsedTimer)
@@ -312,20 +329,22 @@ async function finishWorkout() {
   } else if (p.source === 'custom') {
     const program = await getCustomProgram(p.customProgramId)
     const totalSteps = program?.steps.length ?? 1
+    const completedStepRef = p.schedule[slotIndex]?.stepRef ?? p.currentStepIndex
     const customState = applyCustomResult(p, active.completed, active.planned, totalSteps)
     updated = {
       ...p,
       ...customState,
       lastWorkoutDate: active.date,
-      schedule: advanceScheduleAfterWorkout(
+      schedule: advanceCustomScheduleAfterWorkout(
         p.schedule,
         slotIndex,
         result === 'success',
-        p.currentStepIndex,
-        3,
-        ['mon', 'wed', 'fri'],
+        customState.currentStepIndex,
+        program?.steps ?? [],
+        completedStepRef,
       ),
     }
+    nextStep = customState.currentStepIndex + 1
   }
 
   await progressStore.updateProgress(updated)

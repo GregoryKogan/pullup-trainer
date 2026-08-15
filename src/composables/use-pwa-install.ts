@@ -10,6 +10,7 @@ export function usePwaInstall() {
   const visible = shallowRef(false)
   const platform = shallowRef<InstallPlatform>('other')
   const deferredPrompt = shallowRef<BeforeInstallPromptEvent | null>(null)
+  const dismissedThisSession = shallowRef(false)
 
   function check() {
     platform.value = detectPlatform()
@@ -17,10 +18,15 @@ export function usePwaInstall() {
       visible.value = false
       return
     }
+    if (dismissedThisSession.value) {
+      visible.value = false
+      return
+    }
     visible.value = true
   }
 
   function dismiss() {
+    dismissedThisSession.value = true
     visible.value = false
   }
 

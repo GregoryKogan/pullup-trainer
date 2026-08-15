@@ -1,26 +1,5 @@
-import { test, expect, type Page } from '@playwright/test'
-import { prepareSeededApp, todayLocal } from './helpers/app'
-
-async function enterWorkout(page: Page) {
-  const start = page.getByRole('button', { name: 'Start' })
-  if (await start.isVisible().catch(() => false)) {
-    await start.click()
-  } else {
-    await page.goto(`/workout/${todayLocal()}`)
-  }
-  await clearRestGate(page)
-}
-
-async function clearRestGate(page: Page) {
-  const skip = page.getByRole('button', { name: /skip|пропуск/i })
-  if (await skip.isVisible().catch(() => false)) {
-    await skip.click()
-  }
-}
-
-async function skipRestIfNeeded(page: Page) {
-  await clearRestGate(page)
-}
+import { test, expect } from '@playwright/test'
+import { prepareSeededApp, todayLocal, clearRestGate } from './helpers/app'
 
 test.describe('Workout', () => {
   test.beforeEach(async ({ page }) => {
@@ -28,15 +7,24 @@ test.describe('Workout', () => {
   })
 
   test('completes all sets and shows result', async ({ page }) => {
-    await enterWorkout(page)
+    await page.getByRole('button', { name: 'Start' }).click()
+    await clearRestGate(page)
 
     for (let i = 0; i < 4; i++) {
       await page.getByRole('button', { name: /done — \d+ reps/i }).click()
-      await skipRestIfNeeded(page)
+      await clearRestGate(page)
     }
 
     await page.locator('#max-done-input').fill('8')
     await page.getByRole('button', { name: 'Done' }).click()
     await expect(page.locator('.status-kicker')).toContainText(/workout complete|workout incomplete/i)
+  })
+
+  test('exit mid-workout counts as fail', async ({ page }) => {
+    await page.getByRole('button', { name: 'Start' }).click()
+    await clearRestGate(page)
+    await page.getByRole('button', { name: /leave workout|выйти из тренировки/i }).click()
+    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
+    await expect(page.locator('.status-kicker')).toContainText(/incomplete|не завершена/i)
   })
 })

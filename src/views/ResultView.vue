@@ -39,6 +39,12 @@ function retryWorkout() {
 const statusRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
+  const hasStore = !!summary.value
+  const hasQuery = route.query.result !== undefined
+  if (!hasStore && !hasQuery) {
+    router.replace({ name: 'home' })
+    return
+  }
   statusRef.value?.focus()
 })
 </script>

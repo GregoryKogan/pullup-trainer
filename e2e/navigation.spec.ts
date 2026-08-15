@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { prepareSeededApp, prepareFreshApp, todayLocal } from './helpers/app'
+import { prepareFreshApp, prepareSeededApp, dismissPwaModal, todayLocal } from './helpers/app'
 
 test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => {
@@ -47,5 +47,17 @@ test.describe('PWA modal', () => {
 
   test('can dismiss and use app', async ({ page }) => {
     await expect(page.getByRole('button', { name: 'Next' })).toBeVisible()
+  })
+
+  test('stays dismissed during in-app navigation', async ({ page }) => {
+    await dismissPwaModal(page)
+    await page.getByRole('button', { name: 'Next' }).click()
+    await page.locator('#onboarding-reps').fill('7')
+    await page.getByRole('button', { name: 'Next' }).click()
+    await page.getByRole('button', { name: 'Start program' }).click()
+
+    await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Calendar' }).click()
+    await expect(page.getByRole('button', { name: /continue in browser|продолжить/i })).toHaveCount(0)
   })
 })

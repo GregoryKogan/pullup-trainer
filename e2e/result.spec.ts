@@ -1,30 +1,5 @@
-import { test, expect, type Page } from '@playwright/test'
-import { prepareSeededApp, todayLocal } from './helpers/app'
-
-async function clearRestGate(page: Page) {
-  const skip = page.getByRole('button', { name: /skip|пропуск/i })
-  if (await skip.isVisible().catch(() => false)) {
-    await skip.click()
-  }
-}
-
-async function completeWorkout(page: Page) {
-  const start = page.getByRole('button', { name: 'Start' })
-  if (await start.isVisible().catch(() => false)) {
-    await start.click()
-  } else {
-    await page.goto(`/workout/${todayLocal()}`)
-  }
-  await clearRestGate(page)
-
-  for (let i = 0; i < 4; i++) {
-    await page.getByRole('button', { name: /done — \d+ reps/i }).click()
-    await clearRestGate(page)
-  }
-
-  await page.locator('#max-done-input').fill('8')
-  await page.getByRole('button', { name: 'Done' }).click()
-}
+import { test, expect } from '@playwright/test'
+import { prepareSeededApp, completeWorkout, clearRestGate, dismissPwaModal, todayLocal } from './helpers/app'
 
 test.describe('Result', () => {
   test.beforeEach(async ({ page }) => {
@@ -56,7 +31,14 @@ test.describe('Result', () => {
     await page.locator('#max-done-input').fill('4')
     await page.getByRole('button', { name: 'Done' }).click()
 
-    await expect(page.locator('.status-kicker')).toContainText(/incomplete|не выполнена/i)
-    await expect(page.getByRole('button', { name: /try again|ещё раз/i })).toBeVisible()
+    await expect(page.locator('.status-kicker')).toContainText(/incomplete|не завершена/i)
+    await expect(page.getByRole('button', { name: /try again|попробовать снова/i })).toBeVisible()
+  })
+
+  test('redirects home without result context', async ({ page }) => {
+    await page.reload({ waitUntil: 'networkidle' })
+    await dismissPwaModal(page)
+    await page.goto('result')
+    await expect(page).toHaveURL(/\/pullup-trainer\/?$/)
   })
 })

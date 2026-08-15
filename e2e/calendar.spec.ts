@@ -45,4 +45,17 @@ test.describe('Calendar', () => {
 
     await expect(page.getByRole('button', { name: 'Move' })).toBeDisabled()
   })
+
+  test('move reschedules when date changes', async ({ page }) => {
+    await page.getByRole('link', { name: 'Calendar' }).click()
+
+    const dayNum = String(new Date().getDate())
+    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+
+    const altOption = page.locator('.opt').filter({ hasNotText: new RegExp(`${dayNum}`, 'i') }).first()
+    await altOption.click()
+    await page.getByRole('button', { name: 'Move' }).click()
+
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+  })
 })

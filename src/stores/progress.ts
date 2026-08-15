@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 import type { ActiveProgress, BuiltinLState, Path0State, Weekday, WorkoutRecord } from '@/domain/types'
-import { buildBuiltinScheduleSlots } from '@/domain/schedule'
+import { buildBuiltinScheduleSlots, buildCustomScheduleSlots } from '@/domain/schedule'
 import { levelFromM } from '@/domain/levels'
 import { loadProgress, saveProgress, loadAllRecords, addRecord } from '@/db/repositories/progress'
 import { getCustomProgram } from '@/db/repositories/custom-programs'
@@ -67,7 +67,7 @@ export const useProgressStore = defineStore('progress', () => {
       customProgramId: programId,
       currentStepIndex: stepIndex,
       failStreak: 0,
-      schedule: buildBuiltinScheduleSlots(today, stepIndex, 8, 3, DEFAULT_WEEKDAYS),
+      schedule: buildCustomScheduleSlots(today, program.steps, stepIndex, 8),
       lastWorkoutDate: null,
     }
     await persist()

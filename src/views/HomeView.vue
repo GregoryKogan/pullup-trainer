@@ -159,6 +159,9 @@ async function reduceAnchor() {
       <div>
         <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
         <h1 v-if="nextSlot">{{ isWorkoutToday ? t('home.nextWorkout') : t('home.restToday') }}</h1>
+        <p v-if="nextSlot && !isWorkoutToday" class="sub opens-on">
+          {{ t('home.opensOn', { date: formatDisplayDate(nextSlot.date, locale) }) }}
+        </p>
         <h1 v-else>{{ t('home.title') }}</h1>
       </div>
       <span v-if="streakWeeks > 0" class="chip streak">{{ t('home.streakWeeks', { n: streakWeeks }) }}</span>
@@ -213,14 +216,13 @@ async function reduceAnchor() {
         {{ t('common.start') }}
       </button>
       <template v-else>
-        <RouterLink to="/calendar" class="btn accent">{{ t('home.openCalendar') }}</RouterLink>
-        <button type="button" class="btn ghost" @click="requestEarlyStart">
+        <button type="button" class="btn accent" @click="requestEarlyStart">
           {{ t('home.startEarly') }}
         </button>
         <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
           {{ t('home.repeatMissed') }}
         </button>
-        <p class="sub early-hint">{{ t('home.earlyStartHint') }}</p>
+        <RouterLink to="/calendar" class="btn ghost calendar-link">{{ t('home.openCalendar') }}</RouterLink>
       </template>
     </section>
     <p v-else class="sub">{{ t('home.noProgress') }}</p>
@@ -333,9 +335,8 @@ async function reduceAnchor() {
   align-items: center;
   padding: 8px 4px;
 }
-.early-hint {
-  margin-top: 8px;
-  text-align: center;
+.opens-on {
+  margin: 4px 0 0;
 }
 .next .btn {
   text-decoration: none;
