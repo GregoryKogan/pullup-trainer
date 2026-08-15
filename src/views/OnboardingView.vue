@@ -157,7 +157,7 @@ async function accept() {
 }
 .step-indicator {
   margin-bottom: 14px;
-  padding: 6px 0;
+  padding: 6px 9px;
   display: flex;
   align-items: center;
   gap: 10px;
