@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSettingsStore } from '@/stores/settings'
+import { setLocale } from '@/i18n'
 import type { InstallPlatform } from '@/utils/platform'
 
 const props = defineProps<{
@@ -12,10 +14,18 @@ const props = defineProps<{
 const emit = defineEmits<{ dismiss: []; install: [] }>()
 
 const { t, tm } = useI18n()
+const settingsStore = useSettingsStore()
 const tabs: InstallPlatform[] = ['ios', 'android', 'desktop', 'other']
 const activeTab = ref<InstallPlatform>(props.platform)
 const dialogRef = ref<HTMLElement | null>(null)
 let escapeHandler: ((e: KeyboardEvent) => void) | null = null
+
+async function setLang(lang: 'en' | 'ru') {
+  if (settingsStore.settings) {
+    await settingsStore.setLanguage(lang)
+  }
+  setLocale(lang)
+}
 
 watch(
   () => props.platform,
@@ -64,6 +74,25 @@ const steps = () => {
     >
       <p class="kicker">{{ t('pwa.title') }}</p>
       <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
+      <div class="langrow" role="group" :aria-label="t('settings.language')">
+        <span class="lang-label">{{ t('settings.language') }}</span>
+        <span class="seg">
+          <button
+            type="button"
+            :class="{ on: settingsStore.settings?.language === 'en' }"
+            @click="setLang('en')"
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            :class="{ on: settingsStore.settings?.language === 'ru' }"
+            @click="setLang('ru')"
+          >
+            RU
+          </button>
+        </span>
+      </div>
       <div class="tabs" role="tablist" :aria-label="t('pwa.title')">
         <button
           v-for="tab in tabs"
@@ -117,6 +146,20 @@ const steps = () => {
 </template>
 
 <style scoped>
+.langrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--line);
+}
+.lang-label {
+  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .pwa-modal h2 {
   font-family: 'Arial Black', system-ui, sans-serif;
   text-transform: uppercase;
