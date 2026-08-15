@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { REST_PRESET_SECONDS } from '@/constants/app'
 import { formatTime } from '@/utils/dates'
 
 const { t } = useI18n()
@@ -54,9 +55,15 @@ const offset = computed(() => {
     </svg>
     <div class="restbody">
       <div class="presets">
-        <button type="button" class="mini" @click="emit('preset', 90)">{{ t('workout.restPreset90') }}</button>
-        <button type="button" class="mini" @click="emit('preset', 180)">{{ t('workout.restPreset180') }}</button>
-        <button type="button" class="mini" @click="emit('preset', 300)">{{ t('workout.restPreset300') }}</button>
+        <button
+          v-for="sec in REST_PRESET_SECONDS"
+          :key="sec"
+          type="button"
+          class="mini"
+          @click="emit('preset', sec)"
+        >
+          {{ formatTime(sec) }}
+        </button>
       </div>
       <div class="restrow">
         <button type="button" class="mini skip-btn" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>

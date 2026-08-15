@@ -7,7 +7,8 @@ import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
 import { PALETTE_SLUGS } from '@/utils/theme'
 import { exportBackup, validateBackup, defaultSettings, type BackupExport } from '@/domain/export'
-import { APP_VERSION } from '@/constants/app'
+import { APP_VERSION, REST_PRESET_SECONDS } from '@/constants/app'
+import { formatTime } from '@/utils/dates'
 import { downloadJson } from '@/utils/platform'
 import { db } from '@/db/database'
 import { loadCustomPrograms } from '@/db/repositories/custom-programs'
@@ -191,7 +192,7 @@ async function confirmReset() {
       <div class="setrow">
         <span class="k">{{ t('settings.restDuration') }}</span>
         <span class="v">
-          <b>{{ Math.floor(settings.restDurationSeconds / 60) }}:{{ String(settings.restDurationSeconds % 60).padStart(2, '0') }}</b>
+          <b>{{ formatTime(settings.restDurationSeconds) }}</b>
           <button
             type="button"
             class="iconbtn"
@@ -216,28 +217,14 @@ async function confirmReset() {
         <span class="k">{{ t('settings.restPresets') }}</span>
         <span class="seg">
           <button
+            v-for="sec in REST_PRESET_SECONDS"
+            :key="sec"
             type="button"
-            :class="{ on: settings.restDurationSeconds === 90 }"
-            :aria-pressed="settings.restDurationSeconds === 90"
-            @click="setRestPreset(90)"
+            :class="{ on: settings.restDurationSeconds === sec }"
+            :aria-pressed="settings.restDurationSeconds === sec"
+            @click="setRestPreset(sec)"
           >
-            {{ t('workout.restPreset90') }}
-          </button>
-          <button
-            type="button"
-            :class="{ on: settings.restDurationSeconds === 180 }"
-            :aria-pressed="settings.restDurationSeconds === 180"
-            @click="setRestPreset(180)"
-          >
-            {{ t('workout.restPreset180') }}
-          </button>
-          <button
-            type="button"
-            :class="{ on: settings.restDurationSeconds === 300 }"
-            :aria-pressed="settings.restDurationSeconds === 300"
-            @click="setRestPreset(300)"
-          >
-            {{ t('workout.restPreset300') }}
+            {{ formatTime(sec) }}
           </button>
         </span>
       </div>
