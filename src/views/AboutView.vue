@@ -10,13 +10,13 @@ const router = useRouter()
   <div>
     <header class="head">
       <div>
-        <p class="kicker">Pull-up Trainer</p>
+        <p class="kicker">{{ t('about.kicker') }}</p>
         <h2>{{ t('about.title') }}</h2>
       </div>
     </header>
     <section class="panel">
       <p>{{ t('about.body') }}</p>
-      <p class="sub">v1.0.0</p>
+      <p class="sub">{{ t('about.version', { v: '1.0.0' }) }}</p>
       <button type="button" class="btn accent" @click="router.push('/why')">{{ t('about.whyLink') }}</button>
       <button type="button" class="btn ghost" @click="router.back()">{{ t('common.back') }}</button>
     </section>

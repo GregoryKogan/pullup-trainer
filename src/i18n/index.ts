@@ -18,4 +18,5 @@ export const i18n = createI18n({
 
 export function setLocale(lang: 'en' | 'ru') {
   i18n.global.locale.value = lang
+  document.documentElement.lang = lang
 }

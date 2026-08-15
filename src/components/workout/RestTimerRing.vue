@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { formatTime } from '@/utils/dates'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   remaining: number
@@ -42,7 +45,12 @@ const offset = computed(() => {
     <div class="restbody">
       <div class="restrow">
         <button type="button" class="mini" @click="emit('minus')">−15s</button>
-        <button type="button" class="mini" @click="emit('pause')">⏸</button>
+        <button type="button" class="mini" :aria-label="t('workout.pause')" @click="emit('pause')">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="6" y="5" width="4" height="14" fill="currentColor" />
+            <rect x="14" y="5" width="4" height="14" fill="currentColor" />
+          </svg>
+        </button>
         <button type="button" class="mini" @click="emit('plus')">+15s</button>
       </div>
       <div class="restrow">

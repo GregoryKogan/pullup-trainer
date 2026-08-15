@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 defineProps<{
-  sets: { planned: number; done?: number; current?: boolean; doneFlag?: boolean }[]
+  sets: {
+    planned: number
+    type?: string
+    unit?: string
+    done?: number
+    current?: boolean
+    doneFlag?: boolean
+  }[]
 }>()
 
 const emit = defineEmits<{ select: [index: number] }>()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -14,10 +24,13 @@ const emit = defineEmits<{ select: [index: number] }>()
       type="button"
       class="s"
       :class="{ done: s.doneFlag, now: s.current }"
+      :aria-label="t('workout.setLabel', { n: i + 1 })"
       @click="emit('select', i)"
     >
       <b>{{ s.done ?? s.planned }}</b>
-      <span>{{ s.doneFlag ? `Set ${i + 1}` : s.current ? 'Now' : `Set ${i + 1}` }}</span>
+      <span>{{
+        s.doneFlag ? t('workout.setLabel', { n: i + 1 }) : s.current ? t('workout.setNow') : t('workout.setLabel', { n: i + 1 })
+      }}</span>
     </button>
   </div>
 </template>

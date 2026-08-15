@@ -20,6 +20,8 @@ async function bootstrap() {
   await progressStore.hydrate()
   if (settingsStore.settings?.language) {
     setLocale(settingsStore.settings.language)
+  } else {
+    document.documentElement.lang = 'en'
   }
 
   app.mount('#app')

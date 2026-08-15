@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { InstallPlatform } from '@/utils/platform'
 
@@ -13,34 +13,63 @@ const emit = defineEmits<{ dismiss: []; install: [] }>()
 
 const { t, tm } = useI18n()
 const tabs: InstallPlatform[] = ['ios', 'android', 'desktop', 'other']
-const activeTab = computed(() => props.platform)
+const activeTab = ref<InstallPlatform>(props.platform)
 
-const steps = computed(() => {
+watch(
+  () => props.platform,
+  (p) => {
+    activeTab.value = p
+  },
+)
+
+const steps = () => {
   const key = `pwa.${activeTab.value}.steps`
   const val = tm(key)
   return Array.isArray(val) ? (val as string[]) : []
-})
+}
 </script>
 
 <template>
-  <div v-if="visible" class="modal-overlay modal-full" role="dialog" aria-modal="true">
+  <div v-if="visible" class="modal-overlay modal-full" role="dialog" aria-modal="true" :aria-label="t('pwa.title')">
     <div class="modal-card pwa-modal">
       <p class="kicker">{{ t('pwa.title') }}</p>
       <h2>{{ t('pwa.subtitle') }}</h2>
-      <div class="tabs">
-        <span v-for="tab in tabs" :key="tab" class="tab" :class="{ on: tab === activeTab }">
+      <div class="tabs" role="tablist">
+        <button
+          v-for="tab in tabs"
+          :key="tab"
+          type="button"
+          role="tab"
+          class="tab"
+          :class="{ on: tab === activeTab }"
+          :aria-selected="tab === activeTab"
+          @click="activeTab = tab"
+        >
           {{ t(`pwa.tabs.${tab}`) }}
-        </span>
+        </button>
       </div>
       <p v-if="activeTab === 'ios'" class="note">{{ t('pwa.ios.note') }}</p>
       <ol class="steps">
-        <li v-for="(step, i) in steps" :key="i">
+        <li v-for="(step, i) in steps()" :key="i">
           <span class="step-num">{{ i + 1 }}</span>
           <span>{{ step }}</span>
         </li>
       </ol>
       <div class="illus" aria-hidden="true">
-        <svg viewBox="0 0 200 120" width="200" height="120">
+        <svg v-if="activeTab === 'ios'" viewBox="0 0 200 120" width="200" height="120">
+          <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
+          <rect x="140" y="18" width="40" height="14" fill="var(--accent)" />
+          <path d="M150 25h20M160 20v10" stroke="var(--accent-ink)" stroke-width="2" />
+          <rect x="30" y="50" width="120" height="8" fill="var(--muted)" />
+          <rect x="30" y="70" width="90" height="8" fill="var(--muted)" />
+        </svg>
+        <svg v-else-if="activeTab === 'android'" viewBox="0 0 200 120" width="200" height="120">
+          <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
+          <rect x="150" y="16" width="28" height="28" fill="var(--accent)" />
+          <rect x="30" y="55" width="100" height="10" fill="var(--accent)" />
+          <rect x="30" y="75" width="80" height="8" fill="var(--muted)" />
+        </svg>
+        <svg v-else viewBox="0 0 200 120" width="200" height="120">
           <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
           <rect x="30" y="30" width="140" height="12" fill="var(--accent)" />
           <rect x="30" y="55" width="90" height="8" fill="var(--muted)" />
@@ -73,6 +102,10 @@ const steps = computed(() => {
   padding: 6px 10px;
   border: 2px solid var(--line);
   opacity: 0.6;
+  background: var(--card);
+  cursor: pointer;
+  color: var(--ink);
+  min-height: 44px;
 }
 .tab.on {
   background: var(--accent);
@@ -106,6 +139,7 @@ const steps = computed(() => {
   color: var(--accent-ink);
   border: 2px solid var(--line);
   font-weight: 800;
+  flex-shrink: 0;
 }
 .illus {
   display: flex;

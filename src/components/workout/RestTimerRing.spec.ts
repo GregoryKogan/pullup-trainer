@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import RestTimerRing from '@/components/workout/RestTimerRing.vue'
 
-const i18n = createI18n({ legacy: false, locale: 'en', messages: { en: { workout: { reset: 'Reset', skipRest: 'Skip', restHint: 'hint' } } } })
+const i18n = createI18n({ legacy: false, locale: 'en', messages: { en: { workout: { reset: 'Reset', skipRest: 'Skip', restHint: 'hint', pause: 'Pause' } } } })
 
 describe('RestTimerRing', () => {
   it('emits adjust events', async () => {

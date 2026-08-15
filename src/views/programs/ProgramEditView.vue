@@ -51,19 +51,19 @@ function addSet(stepIndex: number) {
       <input v-model="program.name" />
     </label>
     <section v-for="(step, si) in program.steps" :key="si" class="sec">
-      <h4>Step {{ si + 1 }}</h4>
+      <h4>{{ t('programs.stepN', { n: si + 1 }) }}</h4>
       <div v-for="(set, seti) in step.sets" :key="seti" class="setrow">
         <select v-model="set.type">
-          <option value="reps">reps</option>
-          <option value="max">max</option>
-          <option value="hold">hold</option>
-          <option value="negative">negative</option>
-          <option value="assisted">assisted</option>
+          <option value="reps">{{ t('programs.setTypes.reps') }}</option>
+          <option value="max">{{ t('programs.setTypes.max') }}</option>
+          <option value="hold">{{ t('programs.setTypes.hold') }}</option>
+          <option value="negative">{{ t('programs.setTypes.negative') }}</option>
+          <option value="assisted">{{ t('programs.setTypes.assisted') }}</option>
         </select>
         <input v-model.number="set.planned" type="number" min="1" />
         <select v-model="set.unit">
-          <option value="reps">reps</option>
-          <option value="seconds">seconds</option>
+          <option value="reps">{{ t('workout.reps') }}</option>
+          <option value="seconds">{{ t('workout.seconds') }}</option>
         </select>
       </div>
       <button type="button" class="btn ghost" @click="addSet(si)">{{ t('programs.addSet') }}</button>

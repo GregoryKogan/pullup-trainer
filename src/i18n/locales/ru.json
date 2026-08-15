@@ -27,7 +27,17 @@
     "volumeWeek": "Объём · нед",
     "stepProgress": "Шаг {step} · Цикл {cycle}",
     "shiftBanner": "План сдвинут — пропуск перенесён",
-    "noProgress": "Пройдите онбординг"
+    "noProgress": "Пройдите онбординг",
+    "levelAnchor": "Уровень {level} · M* {anchor}",
+    "path0Step": "Путь 0 · Шаг {step}",
+    "streakWeeks": "{n}н",
+    "repeatMissed": "Повторить пропущенную",
+    "aboutLink": "О приложении",
+    "whyLink": "Почему программа",
+    "retestTitle": "Пора перетестировать",
+    "retestBody": "Перерыв >2 нед — ретест максимума или лёгкий якорь.",
+    "retestNow": "Ретест",
+    "retestReduce": "Снизить якорь 10%"
   },
   "onboarding": {
     "introTitle": "Pull-up Trainer",
@@ -45,19 +55,40 @@
   },
   "workout": {
     "setOf": "Подход {current} из {total}",
+    "setLabel": "Подход {n}",
+    "setNow": "Сейчас",
     "nextUp": "Сейчас",
     "reps": "повт",
     "seconds": "сек",
-    "doneReps": "Готово — {n}",
+    "doneReps": "Готово — {n} повт",
+    "doneSeconds": "Готово — {n} сек",
+    "doneMax": "Готово — макс",
     "logFewer": "Меньше",
     "rest": "ОТДЫХ",
     "restHint": "Вибрация + уведомление · без звука",
+    "restPreset90": "90с",
+    "restPreset180": "3:00",
+    "restPreset300": "5:00",
     "skipRest": "Пропуск",
     "reset": "Сброс",
+    "pause": "Пауза",
     "exitWarn": "Выйти? Тренировка засчитается как провал.",
     "resultSuccess": "Тренировка выполнена",
     "resultFail": "Тренировка не завершена",
-    "volume": "{n} повторений"
+    "resultVolume": "{done} из {planned} по плану",
+    "resultNext": "Далее: шаг {step}",
+    "volume": "{n} повторений",
+    "focusReps": "повт · подход {n}",
+    "focusSeconds": "сек · подход {n}",
+    "focusMax": "макс · мин {n}",
+    "focusAssisted": "ассист · подход {n}",
+    "setType": {
+      "reps": "Повторы",
+      "max": "Максимум",
+      "hold": "Удержание",
+      "negative": "Негатив",
+      "assisted": "Ассист"
+    }
   },
   "calendar": {
     "title": "Календарь",
@@ -67,12 +98,23 @@
     "todayLegend": "Сегодня",
     "shiftNote": "Все следующие тренировки сдвигаются на ту же дельту.",
     "startNow": "Начать",
-    "repeatMissed": "Повторить"
+    "repeatMissed": "Повторить",
+    "dow": {
+      "mon": "Пн",
+      "tue": "Вт",
+      "wed": "Ср",
+      "thu": "Чт",
+      "fri": "Пт",
+      "sat": "Сб",
+      "sun": "Вс"
+    }
   },
   "stats": {
+    "kicker": "Прогресс",
     "title": "Статистика",
     "maxReps": "Максимум",
     "streak": "Стрик",
+    "streakWeeks": "{n}н",
     "volume": "Объём",
     "maxChart": "Максимум по датам",
     "maxChartSub": "тесты + лучшие подходы",
@@ -90,6 +132,19 @@
     "signal": "сигнал",
     "signalValue": "вибрация + уведомление",
     "noSound": "Без звука — по задумке",
+    "restPreset90": "90 сек",
+    "restPreset300": "5 мин",
+    "frequency": "частота",
+    "frequency3": "3× / нед",
+    "frequency2": "2× / нед",
+    "weekdays": "дни",
+    "importError": "Неверный файл бэкапа",
+    "importSuccess": "Бэкап восстановлен",
+    "themeLight": "светлая",
+    "themeSystem": "система",
+    "themeDark": "тёмная",
+    "vibrate": "вибрация",
+    "notify": "уведомление",
     "theme": "Тема",
     "themeMode": "режим",
     "palette": "палитра",
@@ -103,22 +158,56 @@
     "version": "версия",
     "programSources": "источники",
     "whyProgram": "Почему такая программа",
-    "customPrograms": "Свои программы"
+    "customPrograms": "Свои программы",
+    "palettes": {
+      "p01-volt": "P01 Volt",
+      "p02-signal-orange": "P02 Signal Orange",
+      "p03-cobalt": "P03 Cobalt",
+      "p04-magenta-pop": "P04 Magenta Pop",
+      "p05-taxi": "P05 Taxi",
+      "p06-paper-red": "P06 Paper Red",
+      "p07-mint-terminal": "P07 Mint Terminal",
+      "p08-amber": "P08 Amber",
+      "p09-cyan-future": "P09 Cyan Future",
+      "p10-crimson": "P10 Crimson",
+      "p11-spring-green": "P11 Spring Green",
+      "p12-ultraviolet": "P12 Ultraviolet",
+      "p13-coral-sunrise": "P13 Coral Sunrise",
+      "p14-mono-ink": "P14 Mono Ink"
+    }
   },
   "programs": {
+    "kicker": "Свои",
     "title": "Свои программы",
     "new": "Новая программа",
+    "defaultName": "Моя программа",
+    "edit": "Изменить",
     "name": "Название",
     "steps": "Шаги",
+    "stepN": "Шаг {n}",
     "addStep": "Добавить шаг",
     "addSet": "Добавить подход",
     "setActive": "Сделать активной",
-    "restDays": "Дней отдыха после шага"
+    "jumpToStep": "Начать с шага",
+    "deleteConfirm": "Удалить программу?",
+    "restDays": "Дней отдыха после шага",
+    "setTypes": {
+      "reps": "Повторы",
+      "max": "Максимум",
+      "hold": "Удержание",
+      "negative": "Негатив",
+      "assisted": "Ассист"
+    }
   },
   "about": {
+    "kicker": "Pull-up Trainer",
     "title": "О приложении",
     "body": "Бесплатное local-first PWA. Без аккаунтов, рекламы и облака.",
-    "whyLink": "Почему такая программа"
+    "whyLink": "Почему такая программа",
+    "version": "Версия {v}"
+  },
+  "why": {
+    "kicker": "Исследование"
   },
   "pwa": {
     "title": "Установите Pull-up Trainer",

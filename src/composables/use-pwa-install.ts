@@ -6,8 +6,6 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
-const DISMISS_KEY = 'pwa-install-dismissed-session'
-
 export function usePwaInstall() {
   const visible = shallowRef(false)
   const platform = shallowRef<InstallPlatform>('other')
@@ -19,11 +17,10 @@ export function usePwaInstall() {
       visible.value = false
       return
     }
-    visible.value = sessionStorage.getItem(DISMISS_KEY) !== '1'
+    visible.value = true
   }
 
   function dismiss() {
-    sessionStorage.setItem(DISMISS_KEY, '1')
     visible.value = false
   }
 

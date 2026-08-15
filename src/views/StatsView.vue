@@ -6,9 +6,10 @@ import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
 import { exportHistory } from '@/domain/export'
 import { downloadJson } from '@/utils/platform'
-import { startOfWeek } from '@/utils/dates'
+import { computeWeeklyStreak } from '@/utils/streak'
+import { formatDisplayDate, startOfWeek, todayLocal } from '@/utils/dates'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const progressStore = useProgressStore()
 const settingsStore = useSettingsStore()
 
@@ -36,7 +37,19 @@ const totalVolume = computed(() =>
   progressStore.records.reduce((s, r) => s + r.totals.volumeReps, 0),
 )
 
+const streakWeeks = computed(() => {
+  const p = progressStore.progress
+  const freq = p?.source === 'builtin' ? p.frequencyDays : 3
+  return computeWeeklyStreak(progressStore.records, freq, todayLocal())
+})
+
 const history = computed(() => progressStore.records.slice(0, 10))
+
+function recordLabel(r: (typeof progressStore.records)[0]) {
+  if (r.kind === 'test') return `${r.sets[0]?.done ?? 0} ${t('workout.reps')}`
+  const sets = r.sets.map((s) => s.done).join('·')
+  return sets || r.result
+}
 
 function exportHistoryJson() {
   const lang = settingsStore.settings?.language ?? 'en'
@@ -49,7 +62,7 @@ function exportHistoryJson() {
   <div>
     <header class="head">
       <div>
-        <p class="kicker">Progress</p>
+        <p class="kicker">{{ t('stats.kicker') }}</p>
         <h2>{{ t('stats.title') }}</h2>
       </div>
     </header>
@@ -59,7 +72,7 @@ function exportHistoryJson() {
         <span>{{ t('stats.maxReps') }}</span>
       </div>
       <div class="kpi">
-        <b>—</b>
+        <b>{{ streakWeeks > 0 ? t('stats.streakWeeks', { n: streakWeeks }) : '—' }}</b>
         <span>{{ t('stats.streak') }}</span>
       </div>
       <div class="kpi">
@@ -70,7 +83,7 @@ function exportHistoryJson() {
     <section class="sec">
       <h4>{{ t('stats.maxChart') }}</h4>
       <p class="sub">{{ t('stats.maxChartSub') }}</p>
-      <svg class="chart" viewBox="0 0 354 158" role="img">
+      <svg class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
         <polyline
           v-if="maxReps.length"
           class="line"
@@ -83,13 +96,13 @@ function exportHistoryJson() {
     </section>
     <section class="sec">
       <h4>{{ t('stats.weeklyVolume') }}</h4>
-      <svg class="chart" viewBox="0 0 354 140" role="img">
+      <svg class="chart" viewBox="0 0 354 140" role="img" :aria-label="t('stats.weeklyVolume')">
         <rect
           v-for="(b, i) in weeklyBars"
           :key="b.week"
           class="bar"
           :x="30 + i * 49"
-          :y="140 - b.vol"
+          :y="140 - Math.min(110, b.vol)"
           width="26"
           :height="Math.min(110, b.vol)"
           fill="var(--accent)"
@@ -100,10 +113,11 @@ function exportHistoryJson() {
       <h4>{{ t('stats.history') }}</h4>
       <ul class="hist">
         <li v-for="r in history" :key="r.id ?? r.startedAt">
-          <div class="date"><b>{{ r.date.slice(5) }}</b></div>
-          <div class="info">
-            <b>{{ r.kind === 'test' ? `${r.sets[0]?.done} reps` : r.result }}</b>
+          <div class="date">
+            <b>{{ formatDisplayDate(r.date, locale).slice(0, 6) }}</b>
+            <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
           </div>
+          <div class="info"><b>{{ recordLabel(r) }}</b></div>
           <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
             r.result === 'success' ? t('stats.success') : t('stats.partial')
           }}</span>
@@ -153,11 +167,19 @@ function exportHistoryJson() {
   padding: 11px 0;
   border-bottom: 2px solid var(--line);
 }
+.hist .date b {
+  display: block;
+}
+.hist .date span {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
 .pill {
   font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   padding: 4px 8px;
   border: 2px solid var(--line);
   text-transform: uppercase;
+  margin-left: auto;
 }
 .pill.ok {
   color: var(--ok);

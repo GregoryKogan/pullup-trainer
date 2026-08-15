@@ -27,7 +27,17 @@
     "volumeWeek": "Volume · week",
     "stepProgress": "Step {step} · Cycle {cycle}",
     "shiftBanner": "Plan shifted — missed workout moved forward",
-    "noProgress": "Complete onboarding to start"
+    "noProgress": "Complete onboarding to start",
+    "levelAnchor": "Level {level} · M* {anchor}",
+    "path0Step": "Path 0 · Step {step}",
+    "streakWeeks": "{n}w",
+    "repeatMissed": "Repeat missed workout",
+    "aboutLink": "About",
+    "whyLink": "Why program",
+    "retestTitle": "Time for a retest",
+    "retestBody": "Break over 2 weeks — retest your max or continue with a lighter anchor.",
+    "retestNow": "Retest max",
+    "retestReduce": "Reduce anchor 10%"
   },
   "onboarding": {
     "introTitle": "Pull-up Trainer",
@@ -45,19 +55,40 @@
   },
   "workout": {
     "setOf": "Set {current} of {total}",
+    "setLabel": "Set {n}",
+    "setNow": "Now",
     "nextUp": "Next up",
     "reps": "reps",
     "seconds": "sec",
     "doneReps": "Done — {n} reps",
+    "doneSeconds": "Done — {n} sec",
+    "doneMax": "Done — max",
     "logFewer": "Log fewer",
     "rest": "REST",
     "restHint": "Vibrate + notify on finish · no sound",
+    "restPreset90": "90s",
+    "restPreset180": "3:00",
+    "restPreset300": "5:00",
     "skipRest": "Skip",
     "reset": "Reset",
+    "pause": "Pause",
     "exitWarn": "Leave workout? Progress will count as fail.",
     "resultSuccess": "Workout complete",
     "resultFail": "Workout incomplete",
-    "volume": "{n} reps total"
+    "resultVolume": "{done} of {planned} planned",
+    "resultNext": "Next: step {step}",
+    "volume": "{n} reps total",
+    "focusReps": "reps · set {n}",
+    "focusSeconds": "sec · set {n}",
+    "focusMax": "max · min {n}",
+    "focusAssisted": "assisted reps · set {n}",
+    "setType": {
+      "reps": "Reps",
+      "max": "Max",
+      "hold": "Hold",
+      "negative": "Negative",
+      "assisted": "Assisted"
+    }
   },
   "calendar": {
     "title": "Calendar",
@@ -67,12 +98,23 @@
     "todayLegend": "Today",
     "shiftNote": "All following workouts shift by the same offset.",
     "startNow": "Start now",
-    "repeatMissed": "Repeat missed"
+    "repeatMissed": "Repeat missed",
+    "dow": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
   },
   "stats": {
+    "kicker": "Progress",
     "title": "Stats",
     "maxReps": "Max reps",
     "streak": "Streak",
+    "streakWeeks": "{n}w",
     "volume": "Volume",
     "maxChart": "Max reps by date",
     "maxChartSub": "tests + best sets",
@@ -90,6 +132,19 @@
     "signal": "signal",
     "signalValue": "vibrate + notify",
     "noSound": "No sound — by design",
+    "restPreset90": "90 sec",
+    "restPreset300": "5 min",
+    "frequency": "frequency",
+    "frequency3": "3× / week",
+    "frequency2": "2× / week",
+    "weekdays": "weekdays",
+    "importError": "Invalid backup file",
+    "importSuccess": "Backup restored",
+    "themeLight": "light",
+    "themeSystem": "system",
+    "themeDark": "dark",
+    "vibrate": "vibrate",
+    "notify": "notify",
     "theme": "Theme",
     "themeMode": "theme",
     "palette": "palette",
@@ -103,22 +158,56 @@
     "version": "version",
     "programSources": "program_sources",
     "whyProgram": "Why this program",
-    "customPrograms": "Custom programs"
+    "customPrograms": "Custom programs",
+    "palettes": {
+      "p01-volt": "P01 Volt",
+      "p02-signal-orange": "P02 Signal Orange",
+      "p03-cobalt": "P03 Cobalt",
+      "p04-magenta-pop": "P04 Magenta Pop",
+      "p05-taxi": "P05 Taxi",
+      "p06-paper-red": "P06 Paper Red",
+      "p07-mint-terminal": "P07 Mint Terminal",
+      "p08-amber": "P08 Amber",
+      "p09-cyan-future": "P09 Cyan Future",
+      "p10-crimson": "P10 Crimson",
+      "p11-spring-green": "P11 Spring Green",
+      "p12-ultraviolet": "P12 Ultraviolet",
+      "p13-coral-sunrise": "P13 Coral Sunrise",
+      "p14-mono-ink": "P14 Mono Ink"
+    }
   },
   "programs": {
+    "kicker": "Custom",
     "title": "Custom programs",
     "new": "New program",
+    "defaultName": "My Program",
+    "edit": "Edit",
     "name": "Program name",
     "steps": "Steps",
+    "stepN": "Step {n}",
     "addStep": "Add step",
     "addSet": "Add set",
     "setActive": "Set active",
-    "restDays": "Rest days after step"
+    "jumpToStep": "Start at step",
+    "deleteConfirm": "Delete this program?",
+    "restDays": "Rest days after step",
+    "setTypes": {
+      "reps": "Reps",
+      "max": "Max",
+      "hold": "Hold",
+      "negative": "Negative",
+      "assisted": "Assisted"
+    }
   },
   "about": {
+    "kicker": "Pull-up Trainer",
     "title": "About",
     "body": "Pull-up Trainer is a free local-first PWA. No accounts, no ads, no cloud.",
-    "whyLink": "Why this program"
+    "whyLink": "Why this program",
+    "version": "Version {v}"
+  },
+  "why": {
+    "kicker": "Research"
   },
   "pwa": {
     "title": "Install Pull-up Trainer",

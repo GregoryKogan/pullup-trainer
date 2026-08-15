@@ -5,9 +5,9 @@ import { useI18n } from 'vue-i18n'
 import AppTabBar from '@/components/AppTabBar.vue'
 import { useProgressStore } from '@/stores/progress'
 import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domain/schedule'
-import { formatLocalDate, todayLocal } from '@/utils/dates'
+import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 const progressStore = useProgressStore()
 
@@ -16,9 +16,13 @@ const selectedIndex = ref<number | null>(null)
 const selectedMoveDate = ref<string | null>(null)
 
 const today = todayLocal()
+const dowKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
 const monthLabel = computed(() =>
-  viewMonth.value.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+  viewMonth.value.toLocaleDateString(locale.value === 'ru' ? 'ru-RU' : 'en-US', {
+    month: 'long',
+    year: 'numeric',
+  }),
 )
 
 const completedDates = computed(
@@ -65,6 +69,15 @@ function selectDay(date: string) {
   }
 }
 
+const selectedSlot = computed(() =>
+  selectedIndex.value !== null ? schedule.value[selectedIndex.value] : null,
+)
+
+const isMissedSelected = computed(() => {
+  if (!selectedSlot.value) return false
+  return selectedSlot.value.date < today && !completedDates.value.has(selectedSlot.value.date)
+})
+
 const moveOptions = computed(() =>
   selectedIndex.value !== null ? getRescheduleOptions(schedule.value, selectedIndex.value) : [],
 )
@@ -89,6 +102,15 @@ async function applyMove() {
   selectedIndex.value = null
 }
 
+function startSelected() {
+  const date = selectedMoveDate.value ?? selectedSlot.value?.date
+  router.push(date ? `/workout/${date}` : '/workout')
+}
+
+function repeatMissed() {
+  if (selectedSlot.value) router.push(`/workout/${selectedSlot.value.date}`)
+}
+
 async function handleMissedAutoshift() {
   const p = progressStore.progress
   if (!p) return
@@ -106,13 +128,13 @@ handleMissedAutoshift()
     <div class="calhead">
       <h3>{{ monthLabel }}</h3>
       <div class="nav">
-        <button type="button" class="iconbtn" @click="prevMonth">‹</button>
-        <button type="button" class="iconbtn" @click="nextMonth">›</button>
+        <button type="button" class="iconbtn" :aria-label="t('common.back')" @click="prevMonth">‹</button>
+        <button type="button" class="iconbtn" aria-label="Next month" @click="nextMonth">›</button>
         <button type="button" class="today" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </div>
     <div class="calgrid">
-      <div v-for="d in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :key="d" class="dow">{{ d }}</div>
+      <div v-for="d in dowKeys" :key="d" class="dow">{{ t(`calendar.dow.${d}`) }}</div>
       <button
         v-for="cell in calendarDays"
         :key="cell.date"
@@ -128,9 +150,10 @@ handleMissedAutoshift()
       <span>{{ t('calendar.done') }}</span>
       <span>{{ t('calendar.missed') }}</span>
       <span>{{ t('calendar.planned') }}</span>
+      <span>{{ t('calendar.todayLegend') }}</span>
     </div>
     <div v-if="selectedIndex !== null" class="sheetcard panel">
-      <h4>{{ schedule[selectedIndex]?.date }}</h4>
+      <h4>{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
       <div class="optrow">
         <button
           v-for="opt in moveOptions"
@@ -140,13 +163,16 @@ handleMissedAutoshift()
           :class="{ on: selectedMoveDate === opt }"
           @click="selectedMoveDate = opt"
         >
-          {{ opt }}
+          {{ formatDisplayDate(opt, locale) }}
         </button>
       </div>
       <p class="sub">{{ t('calendar.shiftNote') }}</p>
       <div class="btnrow">
         <button type="button" class="btn accent" @click="applyMove">{{ t('common.move') }}</button>
-        <button type="button" class="btn ghost" @click="router.push('/workout')">{{ t('calendar.startNow') }}</button>
+        <button type="button" class="btn ghost" @click="startSelected">{{ t('calendar.startNow') }}</button>
+        <button v-if="isMissedSelected" type="button" class="btn ghost" @click="repeatMissed">
+          {{ t('calendar.repeatMissed') }}
+        </button>
       </div>
     </div>
     <AppTabBar />
@@ -177,6 +203,8 @@ handleMissedAutoshift()
   border: 2px solid var(--line);
   box-shadow: 3px 3px 0 var(--shadow);
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  cursor: pointer;
+  color: var(--ink);
 }
 .calgrid {
   display: grid;
@@ -189,12 +217,14 @@ handleMissedAutoshift()
   color: var(--muted);
 }
 .day {
+  position: relative;
   min-height: 44px;
   background: var(--card);
   border: 2px solid var(--line);
   box-shadow: 2px 2px 0 var(--shadow);
   font: 800 0.95rem/1 'Arial Black', system-ui, sans-serif;
   cursor: pointer;
+  color: var(--ink);
 }
 .day.out {
   opacity: 0.35;
@@ -208,6 +238,7 @@ handleMissedAutoshift()
 .day.missed {
   border-color: var(--muted);
   color: var(--muted);
+  background: var(--bg2);
 }
 .day.planned::after {
   content: '';
@@ -216,6 +247,8 @@ handleMissedAutoshift()
   background: var(--accent2);
   position: absolute;
   bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .day.today {
   background: var(--accent);
@@ -228,6 +261,7 @@ handleMissedAutoshift()
   display: flex;
   gap: 14px;
   justify-content: center;
+  flex-wrap: wrap;
   padding: 12px 0;
   font: 700 0.64rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
@@ -244,9 +278,16 @@ handleMissedAutoshift()
   border: 2px solid var(--line);
   background: var(--card);
   font: 800 0.74rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  cursor: pointer;
+  color: var(--ink);
 }
 .opt.on {
   background: var(--accent);
   color: var(--accent-ink);
+}
+.sheetcard h4 {
+  font-family: 'Arial Black', system-ui, sans-serif;
+  text-transform: uppercase;
+  margin: 0 0 8px;
 }
 </style>

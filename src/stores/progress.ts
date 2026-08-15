@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 import type { ActiveProgress, BuiltinLState, Path0State, Weekday, WorkoutRecord } from '@/domain/types'
-import { levelFromM } from '@/domain/levels'
 import { buildBuiltinScheduleSlots } from '@/domain/schedule'
+import { levelFromM } from '@/domain/levels'
 import { loadProgress, saveProgress, loadAllRecords, addRecord } from '@/db/repositories/progress'
 import { getCustomProgram } from '@/db/repositories/custom-programs'
 import { todayLocal } from '@/utils/dates'
@@ -88,6 +88,85 @@ export const useProgressStore = defineStore('progress', () => {
     await persist()
   }
 
+  async function updateBuiltinScheduleSettings(frequencyDays: 2 | 3, weekdays: Weekday[]) {
+    const p = progress.value
+    if (!p || p.source !== 'builtin') return
+    const stepRef = p.schedule[0]?.stepRef ?? 1
+    const count = Math.max(p.schedule.length, 8)
+    progress.value = {
+      ...p,
+      frequencyDays,
+      weekdays,
+      schedule: buildBuiltinScheduleSlots(todayLocal(), stepRef, count, frequencyDays, weekdays),
+    }
+    await persist()
+  }
+
+  async function applyRetest(m: number) {
+    const p = progress.value
+    if (!p || p.source !== 'builtin') return
+    const today = todayLocal()
+    if (m <= 0) {
+      progress.value = {
+        source: 'builtin',
+        frequencyDays: p.frequencyDays,
+        weekdays: p.weekdays,
+        schedule: buildBuiltinScheduleSlots(today, 1, 12, p.frequencyDays, p.weekdays),
+        lastWorkoutDate: p.lastWorkoutDate,
+        state: { path: 'P0', path0Step: 1, failStreak: 0 },
+      }
+    } else {
+      const level = levelFromM(m)
+      progress.value = {
+        source: 'builtin',
+        frequencyDays: p.frequencyDays,
+        weekdays: p.weekdays,
+        schedule: buildBuiltinScheduleSlots(today, 1, 8, p.frequencyDays, p.weekdays),
+        lastWorkoutDate: p.lastWorkoutDate,
+        state: {
+          path: 'L',
+          anchor: m,
+          level,
+          cycleIndex: 0,
+          stepInCycle: 1,
+          failStreak: 0,
+          lastRetestDate: today,
+          cycleBestMax: 0,
+        },
+      }
+    }
+    await persist()
+  }
+
+  async function reduceAnchor() {
+    const p = progress.value
+    if (!p || p.source !== 'builtin' || p.state.path !== 'L') return
+    const anchor = Math.max(1, Math.floor(p.state.anchor * 0.9))
+    progress.value = {
+      ...p,
+      state: {
+        ...p.state,
+        anchor,
+        level: levelFromM(anchor),
+        stepInCycle: 1,
+        failStreak: 0,
+        lastRetestDate: todayLocal(),
+      },
+    }
+    await persist()
+  }
+
+  function getMissedSlot() {
+    if (!progress.value) return null
+    const today = todayLocal()
+    const completed = new Set(
+      records.value.filter((r) => r.kind === 'workout' && r.result === 'success').map((r) => r.date),
+    )
+    const idx = progress.value.schedule.findIndex((s) => s.date < today && !completed.has(s.date))
+    if (idx < 0) return null
+    return { ...progress.value.schedule[idx], index: idx }
+  }
+
   return {
     progress,
     records,
@@ -97,6 +176,10 @@ export const useProgressStore = defineStore('progress', () => {
     saveRecord,
     getNextSlot,
     updateProgress,
+    updateBuiltinScheduleSettings,
+    applyRetest,
+    reduceAnchor,
+    getMissedSlot,
     persist,
   }
 })

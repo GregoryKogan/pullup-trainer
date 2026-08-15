@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createI18n } from 'vue-i18n'
 import SetCardsRow from '@/components/workout/SetCardsRow.vue'
+
+const i18n = createI18n({
+  legacy: false,
+  locale: 'en',
+  messages: { en: { workout: { setLabel: 'Set {n}', setNow: 'Now' } } },
+})
 
 describe('SetCardsRow', () => {
   it('renders set states', () => {
@@ -12,6 +19,7 @@ describe('SetCardsRow', () => {
           { planned: 5 },
         ],
       },
+      global: { plugins: [i18n] },
     })
     expect(wrapper.findAll('.s')).toHaveLength(3)
     expect(wrapper.find('.s.done').exists()).toBe(true)

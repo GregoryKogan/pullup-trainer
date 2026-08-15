@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SetCardsRow from '@/components/workout/SetCardsRow.vue'
 import RestTimerRing from '@/components/workout/RestTimerRing.vue'
@@ -21,8 +21,15 @@ import { useRestTimer } from '@/composables/use-rest-timer'
 import { requestNotificationPermission, signalRestEnd } from '@/composables/use-rest-signals'
 import { getCustomProgram } from '@/db/repositories/custom-programs'
 import { todayLocal, toIsoOffset, formatTime } from '@/utils/dates'
+import {
+  clampRestSeconds,
+  doneButtonKey,
+  focusSubtitleKey,
+  setTypeLabelKey,
+} from '@/utils/workout-display'
 import type { PlannedSet, ActiveProgress } from '@/domain/types'
 
+const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const workoutStore = useWorkoutSessionStore()
@@ -31,9 +38,19 @@ const settingsStore = useSettingsStore()
 
 const showFewer = ref(false)
 const fewerValue = ref(0)
+const maxDoneValue = ref(0)
 const elapsed = ref(0)
 let elapsedTimer: ReturnType<typeof setInterval> | null = null
 const startedAt = ref(new Date())
+
+const isPathP0 = computed(
+  () => progressStore.progress?.source === 'builtin' && progressStore.progress.state.path === 'P0',
+)
+
+const restDuration = computed(() => {
+  const base = settingsStore.settings?.restDurationSeconds ?? 180
+  return clampRestSeconds(base, isPathP0.value)
+})
 
 const restTimer = useRestTimer(async () => {
   const s = settingsStore.settings
@@ -45,9 +62,23 @@ const planned = computed(() => workoutStore.active?.planned ?? [])
 const current = computed(() => workoutStore.active?.currentIndex ?? 0)
 const currentSet = computed(() => planned.value[current.value])
 
+const stepLabel = computed(() => {
+  const p = progressStore.progress
+  if (!p) return ''
+  if (p.source === 'builtin' && p.state.path === 'L') {
+    return `${t('home.stepProgress', { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 })} · `
+  }
+  if (p.source === 'builtin' && p.state.path === 'P0') {
+    return `${t('home.path0Step', { step: p.state.path0Step })} · `
+  }
+  return ''
+})
+
 const setCards = computed(() =>
   planned.value.map((p, i) => ({
     planned: p.planned,
+    type: p.type,
+    unit: p.unit,
     done: workoutStore.active?.completed.find((c) => c.position === p.position)?.done,
     current: i === current.value && !workoutStore.isComplete(),
     doneFlag: !!workoutStore.active?.completed.find((c) => c.position === p.position),
@@ -57,9 +88,7 @@ const setCards = computed(() =>
 function resolvePlanned(): PlannedSet[] {
   const p = progressStore.progress
   if (!p) return []
-  if (p.source === 'custom') {
-    return []
-  }
+  if (p.source === 'custom') return []
   const slot = p.schedule[0]
   if (p.state.path === 'P0') return path0Session(p.state.path0Step).sets
   const k = slot?.stepRef ?? (p.state.path === 'L' ? p.state.stepInCycle : 1)
@@ -67,15 +96,22 @@ function resolvePlanned(): PlannedSet[] {
   return []
 }
 
+function workoutDate(): string {
+  const param = route.params.date
+  if (typeof param === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(param)) return param
+  return todayLocal()
+}
+
 async function loadSession() {
   const p = progressStore.progress
   if (!p) return
+  const date = workoutDate()
   if (p.source === 'custom') {
     const program = await getCustomProgram(p.customProgramId)
     const step = program?.steps[p.currentStepIndex]
     if (!step) return
     workoutStore.start({
-      date: todayLocal(),
+      date,
       planned: step.sets,
       programName: program?.name ?? 'Custom',
       program: 'custom',
@@ -83,10 +119,9 @@ async function loadSession() {
     })
     return
   }
-  const sets = resolvePlanned()
   workoutStore.start({
-    date: todayLocal(),
-    planned: sets,
+    date,
+    planned: resolvePlanned(),
     programName: 'Pull-up Trainer',
     program: 'builtin',
     startedAt: toIsoOffset(new Date()),
@@ -95,9 +130,7 @@ async function loadSession() {
 
 onMounted(async () => {
   await requestNotificationPermission()
-  if (!workoutStore.active) {
-    await loadSession()
-  }
+  if (!workoutStore.active) await loadSession()
   startedAt.value = new Date()
   elapsedTimer = setInterval(() => {
     elapsed.value = Math.floor((Date.now() - startedAt.value.getTime()) / 1000)
@@ -111,16 +144,14 @@ onBeforeUnmount(() => {
 })
 
 function onBeforeUnload(e: BeforeUnloadEvent) {
-  if (workoutStore.active && !workoutStore.isComplete()) {
-    e.preventDefault()
-  }
+  if (workoutStore.active && !workoutStore.isComplete()) e.preventDefault()
 }
 
 watch(
   () => workoutStore.restRunning,
   (running) => {
     if (running && settingsStore.settings?.restAutoStart) {
-      restTimer.start(settingsStore.settings.restDurationSeconds)
+      restTimer.start(restDuration.value)
     }
   },
 )
@@ -132,8 +163,22 @@ function finishSet(done: number) {
 }
 
 function openFewer() {
-  fewerValue.value = currentSet.value?.planned ?? 0
+  const set = currentSet.value
+  fewerValue.value = set?.planned ?? 0
+  maxDoneValue.value = set?.type === 'max' ? (set.planned + 20) : (set?.planned ?? 0)
   showFewer.value = true
+}
+
+function finishMaxSet() {
+  openFewer()
+  fewerValue.value = maxDoneValue.value || currentSet.value?.planned || 0
+}
+
+async function applyRestPreset(seconds: number) {
+  const clamped = clampRestSeconds(seconds, isPathP0.value)
+  await settingsStore.update({ restDurationSeconds: clamped })
+  restTimer.start(clamped)
+  workoutStore.restRunning = true
 }
 
 async function finishWorkout() {
@@ -143,9 +188,14 @@ async function finishWorkout() {
 
   const result = evaluateWorkout(active.completed, active.planned)
   const totals = computeTotals(active.completed)
+  const plannedTotal = active.planned.reduce(
+    (s, set) => s + (set.unit === 'reps' ? set.planned : 0),
+    0,
+  )
   const now = new Date()
 
   let context
+  let nextStep: number | undefined
   if (p.source === 'builtin' && p.state.path === 'L') {
     context = {
       level: p.state.level,
@@ -153,8 +203,10 @@ async function finishWorkout() {
       cycleIndex: p.state.cycleIndex,
       stepInCycle: p.state.stepInCycle,
     }
+    nextStep = result === 'success' ? p.state.stepInCycle + 1 : p.state.stepInCycle
   } else if (p.source === 'builtin' && p.state.path === 'P0') {
     context = { level: 'P0' as const, path0Step: p.state.path0Step }
+    nextStep = result === 'success' ? p.state.path0Step + 1 : p.state.path0Step
   }
 
   await progressStore.saveRecord({
@@ -188,6 +240,7 @@ async function finishWorkout() {
           p.weekdays,
         ),
       }
+      nextStep = newState.stepInCycle
     } else {
       const newState = applyPath0Result(p.state, active.completed, active.planned)
       updated = {
@@ -203,6 +256,7 @@ async function finishWorkout() {
           p.weekdays,
         ),
       }
+      nextStep = newState.path0Step
     }
   } else if (p.source === 'custom') {
     const program = await getCustomProgram(p.customProgramId)
@@ -225,30 +279,45 @@ async function finishWorkout() {
 
   await progressStore.updateProgress(updated)
   workoutStore.clear()
-  router.push({ name: 'result', query: { result } })
+  router.push({
+    name: 'result',
+    query: {
+      result,
+      volume: String(totals.volumeReps),
+      planned: String(plannedTotal),
+      done: String(totals.volumeReps),
+      next: nextStep !== undefined ? String(nextStep) : undefined,
+    },
+  })
 }
 
 function exitWorkout() {
-  if (confirm(t('workout.exitWarn'))) {
-    finishWorkout()
-  }
+  if (confirm(t('workout.exitWarn'))) finishWorkout()
 }
 </script>
 
 <template>
   <div v-if="workoutStore.active" class="workout">
     <div class="top">
-      <button type="button" class="iconbtn" aria-label="Close" @click="exitWorkout">×</button>
-      <span class="step">{{ t('workout.setOf', { current: current + 1, total: planned.length }) }}</span>
+      <button type="button" class="iconbtn" :aria-label="t('common.close')" @click="exitWorkout">×</button>
+      <span class="step">
+        {{ stepLabel }}{{ t('workout.setOf', { current: current + 1, total: planned.length }) }}
+      </span>
       <span class="clock">{{ formatTime(elapsed) }}</span>
     </div>
     <SetCardsRow :sets="setCards" />
     <div v-if="currentSet && !workoutStore.isComplete()" class="focus">
       <p class="kicker">{{ t('workout.nextUp') }}</p>
+      <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
       <div class="rep">{{ currentSet.planned }}</div>
       <p class="sub">
-        {{ currentSet.unit === 'seconds' ? t('workout.seconds') : t('workout.reps') }}
+        {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
       </p>
+    </div>
+    <div v-if="!workoutStore.restRunning && !workoutStore.isComplete()" class="presets">
+      <button type="button" class="mini" @click="applyRestPreset(90)">{{ t('workout.restPreset90') }}</button>
+      <button type="button" class="mini" @click="applyRestPreset(180)">{{ t('workout.restPreset180') }}</button>
+      <button type="button" class="mini" @click="applyRestPreset(300)">{{ t('workout.restPreset300') }}</button>
     </div>
     <RestTimerRing
       v-if="workoutStore.restRunning"
@@ -262,13 +331,28 @@ function exitWorkout() {
       @skip="workoutStore.restRunning = false"
     />
     <div v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning" class="btnrow">
-      <button type="button" class="btn accent" style="flex: 1.6" @click="finishSet(currentSet.planned)">
-        {{ t('workout.doneReps', { n: currentSet.planned }) }}
+      <button
+        v-if="currentSet.type === 'max'"
+        type="button"
+        class="btn accent"
+        style="flex: 1.6"
+        @click="finishMaxSet"
+      >
+        {{ t('workout.doneMax') }}
+      </button>
+      <button
+        v-else
+        type="button"
+        class="btn accent"
+        style="flex: 1.6"
+        @click="finishSet(currentSet.planned)"
+      >
+        {{ t(doneButtonKey(currentSet), { n: currentSet.planned }) }}
       </button>
       <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logFewer') }}</button>
     </div>
     <div v-if="showFewer" class="fewer panel">
-      <input v-model.number="fewerValue" type="number" min="0" :max="currentSet?.planned" />
+      <input v-model.number="fewerValue" type="number" min="0" :max="maxDoneValue" />
       <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
     </div>
   </div>
@@ -297,6 +381,12 @@ function exitWorkout() {
   padding: 18px 12px 14px;
   margin-bottom: 14px;
 }
+.type-tag {
+  font: 800 0.65rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin: 0 0 8px;
+}
 .rep {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 7.2rem;
@@ -305,10 +395,28 @@ function exitWorkout() {
   color: transparent;
   -webkit-text-stroke: 2.5px var(--accent);
 }
+.presets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.presets .mini {
+  flex: 1;
+  min-height: 44px;
+  background: var(--card);
+  border: 2px solid var(--line);
+  box-shadow: 3px 3px 0 var(--shadow);
+  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  cursor: pointer;
+  color: var(--ink);
+}
 .fewer input {
   width: 100%;
   min-height: 44px;
   margin-bottom: 8px;
   font-size: 1.2rem;
+  border: 2px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
 }
 </style>
