@@ -345,12 +345,25 @@ function exportHistoryJson() {
   padding: 11px 0;
   border-bottom: 2px solid var(--line);
 }
+.hist .date {
+  flex: 0 0 auto;
+  min-width: 0;
+}
 .hist .date b {
   display: block;
+  font: 800 0.86rem/1.2 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .hist .date span {
-  font-size: 0.72rem;
+  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+}
+.hist .info {
+  flex: 1;
+  min-width: 0;
+}
+.hist .info b {
+  display: block;
+  font: 800 0.85rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .pill {
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
