@@ -1,0 +1,5 @@
+# Tool workspace (local assistant session data)
+.gigatool/
+
+# macOS
+.DS_Store
