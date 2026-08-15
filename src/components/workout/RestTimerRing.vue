@@ -11,7 +11,6 @@ const props = withDefaults(
   defineProps<{
     remaining: number
     total: number
-    paused: boolean
     label: string
     minSeconds?: number
     maxSeconds?: number
@@ -25,7 +24,6 @@ const props = withDefaults(
 const emit = defineEmits<{
   minus: []
   plus: []
-  pause: []
   reset: []
   skip: []
   preset: [seconds: number]
@@ -95,15 +93,6 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
         <button
           type="button"
           class="mini icon-mini"
-          :aria-label="paused ? t('workout.resume') : t('workout.pause')"
-          @click="emit('pause')"
-        >
-          <AppIcon v-if="!paused" name="pause" :size="16" />
-          <AppIcon v-else name="play" :size="16" />
-        </button>
-        <button
-          type="button"
-          class="mini icon-mini"
           :class="{ inactive: atMax }"
           :disabled="atMax"
           :aria-label="t('workout.adjustPlus')"
@@ -113,7 +102,10 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
         </button>
       </div>
       <div class="restrow">
-        <button type="button" class="mini skip-btn" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>
+        <button type="button" class="mini skip-btn" @click="emit('skip')">
+          <AppIcon name="arrow-right" :size="15" />
+          {{ $t('workout.skipRest') }}
+        </button>
         <button v-if="total > 0" type="button" class="mini reset-btn" @click="emit('reset')">
           <AppIcon name="reset" :size="15" />
           {{ $t('workout.reset') }}
@@ -226,6 +218,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   align-items: center;
   justify-content: center;
 }
+.skip-btn,
 .reset-btn {
   display: inline-flex;
   align-items: center;
@@ -234,14 +227,15 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 }
 .resthint {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: 6px;
   font: 700 0.68rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
   margin: 10px 0 0;
+  text-align: center;
 }
 .resthint svg {
   flex: 0 0 auto;
-  margin-top: 1px;
 }
 </style>

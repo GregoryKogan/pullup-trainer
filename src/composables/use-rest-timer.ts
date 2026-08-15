@@ -3,7 +3,6 @@ import { onUnmounted, shallowRef } from 'vue'
 export function useRestTimer(onFinish: () => void) {
   const remaining = shallowRef(0)
   const total = shallowRef(0)
-  const paused = shallowRef(false)
   const minSeconds = shallowRef(0)
   const maxSeconds = shallowRef(Number.MAX_SAFE_INTEGER)
   let timer: ReturnType<typeof setInterval> | null = null
@@ -30,9 +29,7 @@ export function useRestTimer(onFinish: () => void) {
     const clamped = clampSeconds(seconds)
     total.value = clamped
     remaining.value = clamped
-    paused.value = false
     timer = setInterval(() => {
-      if (paused.value) return
       if (remaining.value <= 0) {
         clear()
         onFinish()
@@ -46,10 +43,6 @@ export function useRestTimer(onFinish: () => void) {
     remaining.value = clampSeconds(remaining.value + delta)
   }
 
-  function togglePause() {
-    paused.value = !paused.value
-  }
-
   function reset() {
     remaining.value = total.value
   }
@@ -61,5 +54,5 @@ export function useRestTimer(onFinish: () => void) {
 
   onUnmounted(clear)
 
-  return { remaining, total, paused, start, adjust, togglePause, reset, skip, clear, setBounds }
+  return { remaining, total, start, adjust, reset, skip, clear, setBounds }
 }
