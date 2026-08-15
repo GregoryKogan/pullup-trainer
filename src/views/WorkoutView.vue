@@ -42,6 +42,7 @@ const showExitConfirm = ref(false)
 const loadFailed = ref(false)
 const fewerValue = ref(0)
 const maxDoneValue = ref(0)
+const maxDoneInput = ref(0)
 const elapsed = ref(0)
 let elapsedTimer: ReturnType<typeof setInterval> | null = null
 const startedAt = ref(new Date())
@@ -86,6 +87,12 @@ const fewerLabelKey = computed(() => {
   const set = currentSet.value
   if (!set) return 'workout.fewerLabelReps'
   return set.unit === 'seconds' ? 'workout.fewerLabelSeconds' : 'workout.fewerLabelReps'
+})
+
+const maxDoneLimit = computed(() => {
+  const set = currentSet.value
+  if (!set || set.type !== 'max') return 0
+  return set.planned + 20
 })
 
 const setCards = computed(() =>
@@ -191,6 +198,17 @@ watch(
   },
 )
 
+watch(
+  () => [current.value, currentSet.value?.position] as const,
+  () => {
+    const set = currentSet.value
+    if (set?.type === 'max') {
+      maxDoneInput.value = set.planned
+    }
+  },
+  { immediate: true },
+)
+
 function finishSet(done: number) {
   workoutStore.completeSet(done)
   showFewer.value = false
@@ -204,12 +222,6 @@ async function openFewer() {
   showFewer.value = true
   await nextTick()
   document.getElementById('fewer-input')?.focus()
-}
-
-function finishMaxSet() {
-  const set = currentSet.value
-  if (!set) return
-  finishSet(set.planned)
 }
 
 async function applyRestPreset(seconds: number) {
@@ -368,6 +380,7 @@ function confirmExit() {
       <p class="sub" aria-live="polite">
         {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
       </p>
+      <p v-if="currentSet.type === 'max'" class="sub hint">{{ t('workout.maxDoneHint', { min: currentSet.planned }) }}</p>
     </div>
     <RestTimerRing
       v-if="workoutStore.restRunning"
@@ -384,27 +397,28 @@ function confirmExit() {
     />
     <div
       v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning && !showFewer"
-      class="btnrow"
+      class="actions"
     >
-      <button
-        v-if="currentSet.type === 'max'"
-        type="button"
-        class="btn accent"
-        style="flex: 1.6"
-        @click="finishMaxSet"
-      >
-        {{ t('workout.doneMax') }}
-      </button>
-      <button
-        v-else
-        type="button"
-        class="btn accent"
-        style="flex: 1.6"
-        @click="finishSet(currentSet.planned)"
-      >
-        {{ t(doneButtonKey(currentSet), { n: currentSet.planned }) }}
-      </button>
-      <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logFewer') }}</button>
+      <div v-if="currentSet.type === 'max'" class="max-done panel">
+        <label class="fewer-label" for="max-done-input">{{ t('workout.maxDoneLabel') }}</label>
+        <input
+          id="max-done-input"
+          v-model.number="maxDoneInput"
+          type="number"
+          min="0"
+          :max="maxDoneLimit"
+          :aria-label="t('workout.maxDoneLabel')"
+        />
+        <button type="button" class="btn accent" @click="finishSet(maxDoneInput)">
+          {{ t('workout.doneMax') }}
+        </button>
+      </div>
+      <div v-else class="btnrow">
+        <button type="button" class="btn accent" style="flex: 1.6" @click="finishSet(currentSet.planned)">
+          {{ t(doneButtonKey(currentSet), { n: currentSet.planned }) }}
+        </button>
+        <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logDifferent') }}</button>
+      </div>
     </div>
     <div v-if="showFewer" class="fewer panel">
       <label class="fewer-label" :for="'fewer-input'">{{ t(fewerLabelKey) }}</label>
@@ -485,7 +499,8 @@ function confirmExit() {
     -webkit-text-stroke: 2.5px var(--accent);
   }
 }
-.fewer input {
+.fewer input,
+.max-done input {
   width: 100%;
   min-height: 50px;
   font-size: 1.5rem;
@@ -494,6 +509,12 @@ function confirmExit() {
   background: var(--bg);
   color: var(--ink);
   margin-bottom: 12px;
+}
+.max-done {
+  margin-bottom: 0;
+}
+.hint {
+  margin: 8px 0 0;
 }
 .fewer-label {
   display: block;

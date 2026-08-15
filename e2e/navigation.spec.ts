@@ -31,6 +31,13 @@ test.describe('Navigation', () => {
     await page.getByRole('button', { name: 'Back' }).click()
     await expect(page).toHaveURL(/\/settings/)
   })
+
+  test('RU locale shows translated start on home', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: 'RU' }).click()
+    await page.getByRole('link', { name: 'Главная' }).click()
+    await expect(page.getByRole('button', { name: 'Начать' })).toBeVisible()
+  })
 })
 
 test.describe('PWA modal', () => {

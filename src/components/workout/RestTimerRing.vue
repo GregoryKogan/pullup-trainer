@@ -58,6 +58,9 @@ const offset = computed(() => {
         <button type="button" class="mini" @click="emit('preset', 180)">{{ t('workout.restPreset180') }}</button>
         <button type="button" class="mini" @click="emit('preset', 300)">{{ t('workout.restPreset300') }}</button>
       </div>
+      <div class="restrow">
+        <button type="button" class="mini skip-btn" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>
+      </div>
       <div v-if="total > 0" class="restrow">
         <button type="button" class="mini" @click="emit('minus')">{{ t('workout.adjustMinus') }}</button>
         <button
@@ -78,7 +81,6 @@ const offset = computed(() => {
       </div>
       <div v-if="total > 0" class="restrow">
         <button type="button" class="mini" @click="emit('reset')">{{ $t('workout.reset') }}</button>
-        <button type="button" class="mini" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>
       </div>
       <p class="resthint">{{ $t('workout.restHint') }}</p>
     </div>
@@ -159,6 +161,9 @@ const offset = computed(() => {
 .mini:focus-visible {
   outline: 3px solid var(--accent2);
   outline-offset: 2px;
+}
+.skip-btn {
+  flex: 1;
 }
 .resthint {
   font: 700 0.68rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;

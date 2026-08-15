@@ -21,4 +21,19 @@ test.describe('Onboarding', () => {
     await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
     await expect(page.getByText(/base|level|your level/i)).toBeVisible()
   })
+
+  test('M=0 lands on starting path', async ({ page }) => {
+    await page.getByRole('button', { name: 'Next' }).click()
+    await page.locator('#onboarding-reps').fill('0')
+    await page.getByRole('button', { name: 'Next' }).click()
+
+    await expect(page.getByText(/starting path|beginner path|scap pulls/i)).toBeVisible()
+    await page.getByRole('button', { name: 'Start program' }).click()
+    await dismissPwaModal(page)
+
+    await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
+    await expect(
+      page.getByRole('paragraph').filter({ hasText: /starting path · step 1/i }).first(),
+    ).toBeVisible()
+  })
 })

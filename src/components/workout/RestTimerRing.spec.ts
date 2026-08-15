@@ -10,6 +10,7 @@ const i18n = createI18n({
     en: {
       workout: {
         reset: 'Reset',
+        chooseRest: 'Pick duration',
         skipRest: 'Skip',
         restHint: 'hint',
         pause: 'Pause',
@@ -29,7 +30,7 @@ describe('RestTimerRing', () => {
       global: { plugins: [i18n] },
       props: { remaining: 90, total: 180, paused: false, label: 'REST' },
     })
-    await wrapper.findAll('.mini')[3].trigger('click')
+    await wrapper.findAll('.mini')[4].trigger('click')
     expect(wrapper.emitted('minus')).toBeTruthy()
   })
 })

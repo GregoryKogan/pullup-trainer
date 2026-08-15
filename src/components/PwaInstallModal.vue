@@ -77,84 +77,88 @@ function onTabKeydown(e: KeyboardEvent) {
         :aria-labelledby="'pwa-dialog-title'"
         :aria-describedby="'pwa-dialog-desc'"
       >
-        <p class="kicker">{{ t('pwa.title') }}</p>
-        <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
-        <p id="pwa-dialog-desc" class="sub pwa-lead">{{ t('pwa.lead') }}</p>
-        <div class="langrow" role="group" :aria-label="t('settings.language')">
-          <span class="lang-label">{{ t('settings.language') }}</span>
-          <span class="seg">
+        <div class="pwa-scroll">
+          <p class="kicker">{{ t('pwa.title') }}</p>
+          <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
+          <p id="pwa-dialog-desc" class="sub pwa-lead">{{ t('pwa.lead') }}</p>
+          <div class="langrow" role="group" :aria-label="t('settings.language')">
+            <span class="lang-label">{{ t('settings.language') }}</span>
+            <span class="seg">
+              <button
+                type="button"
+                :class="{ on: settingsStore.settings?.language === 'en' }"
+                :aria-pressed="settingsStore.settings?.language === 'en'"
+                @click="setLang('en')"
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                :class="{ on: settingsStore.settings?.language === 'ru' }"
+                :aria-pressed="settingsStore.settings?.language === 'ru'"
+                @click="setLang('ru')"
+              >
+                RU
+              </button>
+            </span>
+          </div>
+          <div class="tabs" role="tablist" :aria-label="t('pwa.title')" @keydown="onTabKeydown">
             <button
+              v-for="tab in tabs"
+              :id="`pwa-tab-${tab}`"
+              :key="tab"
               type="button"
-              :class="{ on: settingsStore.settings?.language === 'en' }"
-              :aria-pressed="settingsStore.settings?.language === 'en'"
-              @click="setLang('en')"
+              role="tab"
+              class="tab"
+              :class="{ on: tab === activeTab }"
+              :aria-selected="tab === activeTab"
+              :aria-controls="`pwa-panel-${tab}`"
+              :tabindex="tab === activeTab ? 0 : -1"
+              @click="selectTab(tab)"
             >
-              EN
+              {{ t(`pwa.tabs.${tab}`) }}
             </button>
-            <button
-              type="button"
-              :class="{ on: settingsStore.settings?.language === 'ru' }"
-              :aria-pressed="settingsStore.settings?.language === 'ru'"
-              @click="setLang('ru')"
-            >
-              RU
-            </button>
-          </span>
-        </div>
-        <div class="tabs" role="tablist" :aria-label="t('pwa.title')" @keydown="onTabKeydown">
-          <button
-            v-for="tab in tabs"
-            :id="`pwa-tab-${tab}`"
-            :key="tab"
-            type="button"
-            role="tab"
-            class="tab"
-            :class="{ on: tab === activeTab }"
-            :aria-selected="tab === activeTab"
-            :aria-controls="`pwa-panel-${tab}`"
-            :tabindex="tab === activeTab ? 0 : -1"
-            @click="selectTab(tab)"
+          </div>
+          <p v-if="activeTab === 'ios'" class="note">{{ t('pwa.ios.note') }}</p>
+          <ol
+            :id="`pwa-panel-${activeTab}`"
+            class="steps"
+            role="tabpanel"
+            :aria-labelledby="`pwa-tab-${activeTab}`"
           >
-            {{ t(`pwa.tabs.${tab}`) }}
+            <li v-for="(step, i) in steps()" :key="i">
+              <span class="step-num">{{ i + 1 }}</span>
+              <span>{{ step }}</span>
+            </li>
+          </ol>
+          <div class="illus" aria-hidden="true">
+            <svg v-if="activeTab === 'ios'" viewBox="0 0 200 120" width="200" height="120">
+              <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
+              <rect x="140" y="18" width="40" height="14" fill="var(--accent)" />
+              <path d="M150 25h20M160 20v10" stroke="var(--accent-ink)" stroke-width="2" />
+              <rect x="30" y="50" width="120" height="8" fill="var(--muted)" />
+              <rect x="30" y="70" width="90" height="8" fill="var(--muted)" />
+            </svg>
+            <svg v-else-if="activeTab === 'android'" viewBox="0 0 200 120" width="200" height="120">
+              <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
+              <rect x="150" y="16" width="28" height="28" fill="var(--accent)" />
+              <rect x="30" y="55" width="100" height="10" fill="var(--accent)" />
+              <rect x="30" y="75" width="80" height="8" fill="var(--muted)" />
+            </svg>
+            <svg v-else viewBox="0 0 200 120" width="200" height="120">
+              <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
+              <rect x="30" y="30" width="140" height="12" fill="var(--accent)" />
+              <rect x="30" y="55" width="90" height="8" fill="var(--muted)" />
+              <rect x="30" y="75" width="110" height="8" fill="var(--muted)" />
+            </svg>
+          </div>
+        </div>
+        <div class="pwa-footer">
+          <button v-if="canInstall" type="button" class="btn accent" @click="emit('install')">
+            {{ t('common.install') }}
           </button>
+          <button type="button" class="btn outline" @click="emit('dismiss')">{{ t('common.dismiss') }}</button>
         </div>
-        <p v-if="activeTab === 'ios'" class="note">{{ t('pwa.ios.note') }}</p>
-        <ol
-          :id="`pwa-panel-${activeTab}`"
-          class="steps"
-          role="tabpanel"
-          :aria-labelledby="`pwa-tab-${activeTab}`"
-        >
-          <li v-for="(step, i) in steps()" :key="i">
-            <span class="step-num">{{ i + 1 }}</span>
-            <span>{{ step }}</span>
-          </li>
-        </ol>
-        <div class="illus" aria-hidden="true">
-          <svg v-if="activeTab === 'ios'" viewBox="0 0 200 120" width="200" height="120">
-            <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
-            <rect x="140" y="18" width="40" height="14" fill="var(--accent)" />
-            <path d="M150 25h20M160 20v10" stroke="var(--accent-ink)" stroke-width="2" />
-            <rect x="30" y="50" width="120" height="8" fill="var(--muted)" />
-            <rect x="30" y="70" width="90" height="8" fill="var(--muted)" />
-          </svg>
-          <svg v-else-if="activeTab === 'android'" viewBox="0 0 200 120" width="200" height="120">
-            <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
-            <rect x="150" y="16" width="28" height="28" fill="var(--accent)" />
-            <rect x="30" y="55" width="100" height="10" fill="var(--accent)" />
-            <rect x="30" y="75" width="80" height="8" fill="var(--muted)" />
-          </svg>
-          <svg v-else viewBox="0 0 200 120" width="200" height="120">
-            <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
-            <rect x="30" y="30" width="140" height="12" fill="var(--accent)" />
-            <rect x="30" y="55" width="90" height="8" fill="var(--muted)" />
-            <rect x="30" y="75" width="110" height="8" fill="var(--muted)" />
-          </svg>
-        </div>
-        <button v-if="canInstall" type="button" class="btn accent" @click="emit('install')">
-          {{ t('common.install') }}
-        </button>
-        <button type="button" class="btn outline" @click="emit('dismiss')">{{ t('common.dismiss') }}</button>
       </div>
     </div>
   </Teleport>
@@ -174,6 +178,28 @@ function onTabKeydown(e: KeyboardEvent) {
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   text-transform: uppercase;
   color: var(--muted);
+}
+.pwa-modal {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  min-height: 100dvh;
+}
+.pwa-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top, 0px)) 16px 12px;
+}
+.pwa-footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px max(16px, env(safe-area-inset-bottom, 0px));
+  border-top: 2px solid var(--line);
+  background: var(--card);
 }
 .pwa-modal h2 {
   font-family: 'Arial Black', system-ui, sans-serif;

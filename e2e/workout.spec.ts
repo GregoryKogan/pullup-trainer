@@ -12,25 +12,14 @@ async function enterWorkout(page: Page) {
 }
 
 async function clearRestGate(page: Page) {
-  const skip = page.getByRole('button', { name: 'Skip' })
+  const skip = page.getByRole('button', { name: /skip|пропуск/i })
   if (await skip.isVisible().catch(() => false)) {
-    await skip.click()
-    return
-  }
-  const preset90 = page.getByRole('button', { name: '90s' })
-  if (await preset90.isVisible().catch(() => false)) {
-    await preset90.click()
-    await skip.waitFor({ state: 'visible', timeout: 5000 })
     await skip.click()
   }
 }
 
 async function skipRestIfNeeded(page: Page) {
   await clearRestGate(page)
-  const skip = page.getByRole('button', { name: 'Skip' })
-  if (await skip.isVisible().catch(() => false)) {
-    await skip.click()
-  }
 }
 
 test.describe('Workout', () => {
@@ -46,7 +35,8 @@ test.describe('Workout', () => {
       await skipRestIfNeeded(page)
     }
 
-    await page.getByRole('button', { name: 'Done — max' }).click()
+    await page.locator('#max-done-input').fill('8')
+    await page.getByRole('button', { name: 'Done' }).click()
     await expect(page.locator('.status-kicker')).toContainText(/workout complete|workout incomplete/i)
   })
 })
