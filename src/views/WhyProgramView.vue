@@ -3,6 +3,7 @@ import { computed, nextTick, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import ScrollToTopFab from '@/components/ScrollToTopFab.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { safeBack, scrollToHash } from '@/utils/navigation'
 
 const { t, tm } = useI18n()
@@ -33,7 +34,10 @@ const sources = computed(() => {
 <template>
   <div class="science page">
     <div class="subpage-head">
-      <button type="button" class="btn ghost" @click="safeBack(router)">{{ t('common.back') }}</button>
+      <button type="button" class="btn ghost" @click="safeBack(router)">
+        <AppIcon name="chev-left" />
+        {{ t('common.back') }}
+      </button>
       <header class="head">
         <div>
           <p class="kicker">{{ t('why.kicker') }}</p>

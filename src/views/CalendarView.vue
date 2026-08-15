@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { useModalA11y } from '@/composables/use-modal-a11y'
 import { useProgressStore } from '@/stores/progress'
 import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domain/schedule'
@@ -218,8 +219,12 @@ onBeforeUnmount(() => {
         <h1>{{ monthLabel }}</h1>
       </div>
       <div class="nav">
-        <button type="button" class="iconbtn" :aria-label="t('calendar.prevMonth')" @click="prevMonth">‹</button>
-        <button type="button" class="iconbtn" :aria-label="t('calendar.nextMonth')" @click="nextMonth">›</button>
+        <button type="button" class="iconbtn" :aria-label="t('calendar.prevMonth')" @click="prevMonth">
+          <AppIcon name="chev-left" />
+        </button>
+        <button type="button" class="iconbtn" :aria-label="t('calendar.nextMonth')" @click="nextMonth">
+          <AppIcon name="chev-right" />
+        </button>
         <button type="button" class="today-btn" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </header>
@@ -240,6 +245,8 @@ onBeforeUnmount(() => {
         @click="selectDay(cell.date)"
       >
         {{ cell.day }}
+        <span v-if="dayStatus(cell.date) === 'done'" class="day-icon"><AppIcon name="check" /></span>
+        <span v-else-if="dayStatus(cell.date) === 'missed'" class="day-icon"><AppIcon name="x" /></span>
       </button>
     </div>
     <div class="legend page-bottom">
@@ -266,7 +273,14 @@ onBeforeUnmount(() => {
         >
           <div class="sheet-head">
             <h4 id="calendar-sheet-title">{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
-            <button type="button" class="sheet-close" @click="dismissSheet">{{ t('calendar.closeSheet') }}</button>
+            <button
+              type="button"
+              class="iconbtn sheet-close"
+              :aria-label="t('calendar.closeSheet')"
+              @click="dismissSheet"
+            >
+              <AppIcon name="x" />
+            </button>
           </div>
           <div class="optrow">
             <button
@@ -281,7 +295,10 @@ onBeforeUnmount(() => {
               {{ formatDisplayDate(opt, locale) }}
             </button>
           </div>
-          <p id="calendar-sheet-desc" class="sub">{{ t('calendar.shiftNote') }}</p>
+          <p id="calendar-sheet-desc" class="sub shift-note">
+            <AppIcon name="info" />
+            {{ t('calendar.shiftNote') }}
+          </p>
           <div class="btnrow">
             <button
               type="button"
@@ -382,6 +399,26 @@ onBeforeUnmount(() => {
   border-color: var(--muted);
   color: var(--muted);
   background: var(--bg2);
+}
+.day .day-icon {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+}
+.day.done .day-icon {
+  color: var(--ok);
+}
+.day.missed .day-icon {
+  color: var(--bad);
+}
+.shift-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.shift-note svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
 }
 .day.planned::after {
   content: '';
@@ -485,13 +522,6 @@ onBeforeUnmount(() => {
 .sheet-close {
   appearance: none;
   cursor: pointer;
-  min-height: 44px;
-  padding: 0 10px;
-  border: 2px solid var(--line);
-  background: var(--bg);
-  font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  text-transform: uppercase;
-  color: var(--muted);
   flex-shrink: 0;
 }
 .sheet-backdrop {

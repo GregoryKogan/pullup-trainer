@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { getCustomProgram, saveCustomProgram } from '@/db/repositories/custom-programs'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import type { CustomProgram, SetType, SetUnit } from '@/domain/types'
 
 const route = useRoute()
@@ -73,7 +74,10 @@ function onSetTypeChange(stepIndex: number, setIndex: number) {
 <template>
   <div v-if="program" class="page">
     <div class="subpage-head">
-      <RouterLink to="/programs" class="btn ghost">{{ t('common.back') }}</RouterLink>
+      <RouterLink to="/programs" class="btn ghost">
+        <AppIcon name="chev-left" />
+        {{ t('common.back') }}
+      </RouterLink>
       <header class="head">
         <div>
           <p class="kicker">{{ t('programs.kicker') }}</p>

@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import SetCardsRow from '@/components/workout/SetCardsRow.vue'
 import RestTimerRing from '@/components/workout/RestTimerRing.vue'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { useWorkoutSessionStore } from '@/stores/workout-session'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
@@ -381,9 +382,7 @@ function confirmExit() {
         :aria-describedby="'workout-exit-hint'"
         @click="exitWorkout"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" />
-        </svg>
+        <AppIcon name="x" :size="18" />
       </button>
       <span class="step">
         {{ stepLabel }}{{ t('workout.setOf', { current: current + 1, total: planned.length }) }}

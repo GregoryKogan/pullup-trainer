@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { REST_PRESET_SECONDS } from '@/constants/app'
 import { formatTime } from '@/utils/dates'
 
@@ -69,27 +70,32 @@ const offset = computed(() => {
         <button type="button" class="mini skip-btn" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>
       </div>
       <div v-if="total > 0" class="restrow">
-        <button type="button" class="mini" @click="emit('minus')">{{ t('workout.adjustMinus') }}</button>
+        <button type="button" class="mini icon-mini" :aria-label="t('workout.adjustMinus')" @click="emit('minus')">
+          <AppIcon name="minus" :size="16" />
+        </button>
         <button
           type="button"
-          class="mini"
+          class="mini icon-mini"
           :aria-label="paused ? t('workout.resume') : t('workout.pause')"
           @click="emit('pause')"
         >
-          <svg v-if="!paused" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="6" y="5" width="4" height="14" fill="currentColor" />
-            <rect x="14" y="5" width="4" height="14" fill="currentColor" />
-          </svg>
-          <svg v-else width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 5v14l11-7z" fill="currentColor" />
-          </svg>
+          <AppIcon v-if="!paused" name="pause" :size="16" />
+          <AppIcon v-else name="play" :size="16" />
         </button>
-        <button type="button" class="mini" @click="emit('plus')">{{ t('workout.adjustPlus') }}</button>
+        <button type="button" class="mini icon-mini" :aria-label="t('workout.adjustPlus')" @click="emit('plus')">
+          <AppIcon name="plus" :size="16" />
+        </button>
       </div>
       <div v-if="total > 0" class="restrow">
-        <button type="button" class="mini" @click="emit('reset')">{{ $t('workout.reset') }}</button>
+        <button type="button" class="mini reset-btn" @click="emit('reset')">
+          <AppIcon name="reset" :size="15" />
+          {{ $t('workout.reset') }}
+        </button>
       </div>
-      <p class="resthint">{{ $t('workout.restHint') }}</p>
+      <p class="resthint">
+        <AppIcon name="vibrate" />
+        {{ $t('workout.restHint') }}
+      </p>
     </div>
   </section>
 </template>
@@ -169,12 +175,32 @@ const offset = computed(() => {
   outline: 3px solid var(--accent2);
   outline-offset: 2px;
 }
+.icon-mini {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+}
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
 .skip-btn {
   flex: 1;
 }
 .resthint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
   font: 700 0.68rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
   margin: 0;
+}
+.resthint svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
 }
 </style>

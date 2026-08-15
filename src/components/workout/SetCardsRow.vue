@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import AppIcon from '@/components/icons/AppIcon.vue'
 
 defineProps<{
   sets: {
@@ -26,9 +27,7 @@ const { t } = useI18n()
         :aria-label="t('workout.setLabel', { n: i + 1 })"
         :aria-current="s.current ? 'step' : undefined"
       >
-        <svg v-if="s.doneFlag" class="check" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-          <path d="M2 8.5 6 12.5 14 3.5" fill="none" stroke="currentColor" stroke-width="2.2" />
-        </svg>
+        <span v-if="s.doneFlag" class="check"><AppIcon name="check" :size="12" /></span>
         <b>{{ s.done ?? s.planned }}</b>
         <span>{{
           s.doneFlag ? t('workout.setLabel', { n: i + 1 }) : s.current ? t('workout.setNow') : t('workout.setLabel', { n: i + 1 })
@@ -73,6 +72,7 @@ const { t } = useI18n()
   top: 4px;
   right: 4px;
   color: var(--ok);
+  display: flex;
 }
 .setsrow b {
   font: 800 1.2rem/1 ui-monospace, 'SF Mono', Menlo, monospace;

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
 import { PALETTE_SLUGS } from '@/utils/theme'
@@ -212,7 +213,7 @@ async function confirmReset() {
             :disabled="restAtMin"
             @click="changeRest(-15)"
           >
-            −
+            <AppIcon name="minus" />
           </button>
           <button
             type="button"
@@ -223,7 +224,7 @@ async function confirmReset() {
             :disabled="restAtMax"
             @click="changeRest(15)"
           >
-            +
+            <AppIcon name="plus" />
           </button>
         </span>
       </div>
@@ -283,7 +284,7 @@ async function confirmReset() {
       </div>
       <div class="setrow last">
         <span class="k">{{ t('settings.signal') }}</span>
-        <span class="v"><b>{{ t('settings.signalValue') }}</b></span>
+        <span class="v signal-value"><AppIcon name="vibrate" /><b>{{ t('settings.signalValue') }}</b></span>
       </div>
       <p class="sub">{{ t('settings.noSound') }}</p>
     </section>
@@ -396,8 +397,12 @@ async function confirmReset() {
     </section>
     <section class="sec">
       <h4>{{ t('settings.data') }}</h4>
-      <button type="button" class="btn" @click="exportBackupFile">{{ t('settings.exportBackup') }}</button>
+      <button type="button" class="btn" @click="exportBackupFile">
+        <AppIcon name="download" />
+        {{ t('settings.exportBackup') }}
+      </button>
       <label class="btn">
+        <AppIcon name="upload" />
         {{ t('settings.importBackup') }}
         <input
           type="file"
@@ -410,7 +415,10 @@ async function confirmReset() {
       <p v-if="importMessage" class="sub" :class="{ ok: importMessage === t('settings.importSuccess') }">
         {{ importMessage }}
       </p>
-      <button type="button" class="btn ghost danger" @click="resetAll">{{ t('settings.resetAll') }}</button>
+      <button type="button" class="btn ghost danger" @click="resetAll">
+        <AppIcon name="trash" />
+        {{ t('settings.resetAll') }}
+      </button>
     </section>
     <section class="sec page-bottom">
       <h4>{{ t('settings.about') }}</h4>
@@ -478,5 +486,8 @@ select {
 }
 .sub.ok {
   color: var(--ok);
+}
+.signal-value {
+  gap: 6px;
 }
 </style>

@@ -6,6 +6,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { exportHistory } from '@/domain/export'
 import { APP_VERSION } from '@/constants/app'
 import { downloadJson } from '@/utils/platform'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
 
@@ -263,7 +264,10 @@ function exportHistoryJson() {
       >
         {{ showAllHistory ? t('stats.showLess') : t('stats.showAll') }}
       </button>
-      <button type="button" class="btn accent" @click="exportHistoryJson">{{ t('stats.export') }}</button>
+      <button type="button" class="btn accent" @click="exportHistoryJson">
+        <AppIcon name="download" />
+        {{ t('stats.export') }}
+      </button>
     </section>
   </div>
 </template>

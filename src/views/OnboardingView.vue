@@ -9,6 +9,7 @@ import { computeTotals } from '@/domain/progression'
 import { setLocale } from '@/i18n'
 import { todayLocal, toIsoOffset } from '@/utils/dates'
 import { blockRepFractionKey, clampRepCount, isValidRepCount, REP_COUNT_MAX, syncRepInput } from '@/utils/reps-input'
+import AppIcon from '@/components/icons/AppIcon.vue'
 
 const step = ref<'intro' | 'test' | 'recommend'>('intro')
 const reps = ref(0)
@@ -121,7 +122,7 @@ async function accept() {
             :disabled="repsAtMin"
             @click="adjustReps(-1)"
           >
-            −
+            <AppIcon name="minus" />
           </button>
           <input
             id="onboarding-reps"
@@ -143,7 +144,7 @@ async function accept() {
             :disabled="repsAtMax"
             @click="adjustReps(1)"
           >
-            +
+            <AppIcon name="plus" />
           </button>
         </div>
       </label>

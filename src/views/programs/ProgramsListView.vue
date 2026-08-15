@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { loadCustomPrograms, saveCustomProgram, deleteCustomProgram } from '@/db/repositories/custom-programs'
 import { useProgressStore } from '@/stores/progress'
 import type { CustomProgram } from '@/domain/types'
@@ -55,7 +56,10 @@ async function activate(id: number) {
 <template>
   <div class="page">
     <div class="subpage-head">
-      <button type="button" class="btn ghost" @click="router.push('/settings')">{{ t('common.back') }}</button>
+      <button type="button" class="btn ghost" @click="router.push('/settings')">
+        <AppIcon name="chev-left" />
+        {{ t('common.back') }}
+      </button>
       <header class="head">
         <div>
           <p class="kicker">{{ t('programs.kicker') }}</p>

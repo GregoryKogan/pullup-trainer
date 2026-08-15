@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useWorkoutSessionStore } from '@/stores/workout-session'
+import AppIcon from '@/components/icons/AppIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -54,12 +55,8 @@ onMounted(() => {
     <div class="result panel" :class="success ? 'ok' : 'fail'" role="status" aria-live="polite" aria-atomic="true">
       <h1 class="sr-only">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</h1>
       <div class="icon" aria-hidden="true">
-        <svg v-if="success" width="48" height="48" viewBox="0 0 24 24">
-          <path d="M4 12.5 9.5 18 20 6" fill="none" stroke="currentColor" stroke-width="2.5" />
-        </svg>
-        <svg v-else width="48" height="48" viewBox="0 0 24 24">
-          <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" />
-        </svg>
+        <AppIcon v-if="success" name="check" :size="64" />
+        <AppIcon v-else name="x" :size="64" />
       </div>
       <p ref="statusRef" tabindex="-1" class="kicker status-kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
       <p v-if="planned > 0" class="summary">{{ t('workout.resultVolume', { done, planned }) }}</p>

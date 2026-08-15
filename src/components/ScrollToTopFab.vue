@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import { useScrollTopFab } from '@/composables/use-scroll-top-fab'
 
 const props = defineProps<{ anchorSelector?: string }>()
@@ -16,10 +17,7 @@ const { visible, scrollToTop } = useScrollTopFab(props.anchorSelector)
     :aria-label="t('common.scrollToTop')"
     @click="scrollToTop"
   >
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-      <path d="M12 19V5" />
-      <path d="m6 11 6-6 6 6" />
-    </svg>
+    <AppIcon name="upload" :size="20" />
   </button>
 </template>
 

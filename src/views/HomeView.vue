@@ -11,6 +11,7 @@ import { computeWeeklyStreak } from '@/utils/streak'
 import { formatDisplayDate, startOfWeek, todayLocal } from '@/utils/dates'
 import { blockRepFractionKey, isValidRepCount, syncRepInput } from '@/utils/reps-input'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -171,10 +172,16 @@ async function reduceAnchor() {
         </p>
         <h1 v-else>{{ t('home.title') }}</h1>
       </div>
-      <span v-if="streakWeeks > 0" class="chip streak">{{ t('home.streakWeeks', { n: streakWeeks }) }}</span>
+      <span v-if="streakWeeks > 0" class="chip streak">
+        <AppIcon name="flame" :size="16" />
+        {{ t('home.streakWeeks', { n: streakWeeks }) }}
+      </span>
     </header>
 
-    <div v-if="missedSlot" class="banner">{{ t('home.shiftBanner') }}</div>
+    <div v-if="missedSlot" class="banner">
+      <AppIcon name="bell" :size="15" />
+      {{ t('home.shiftBanner') }}
+    </div>
 
     <section v-if="needsRetestPrompt && !showRetest" class="panel retest">
       <p class="kicker">{{ t('home.retestTitle') }}</p>
@@ -225,10 +232,12 @@ async function reduceAnchor() {
         @click="startWorkout(nextSlot.date)"
       >
         {{ t('common.start') }}
+        <AppIcon name="arrow-right" />
       </button>
       <template v-else>
         <button type="button" class="btn accent" @click="requestEarlyStart">
           {{ t('home.startEarly') }}
+          <AppIcon name="arrow-right" />
         </button>
         <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
           {{ t('home.repeatMissed') }}
@@ -265,6 +274,9 @@ async function reduceAnchor() {
 
 <style scoped>
 .chip.streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   padding: 8px 12px;
   background: var(--accent2);
@@ -273,11 +285,17 @@ async function reduceAnchor() {
   box-shadow: 3px 3px 0 var(--shadow);
 }
 .banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   background: var(--card);
   border: 2px solid var(--line);
   padding: 10px 12px;
   margin-bottom: 12px;
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
+}
+.banner svg {
   color: var(--muted);
 }
 .next h2.workout-date {
