@@ -67,7 +67,7 @@ const { t } = useI18n()
   font: 800 1.2rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .setsrow span {
-  font: 700 0.56rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 700 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);

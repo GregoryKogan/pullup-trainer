@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useProgressStore } from '@/stores/progress'
+import { getCustomProgram } from '@/db/repositories/custom-programs'
 import { session } from '@/domain/session'
 import { detectReturnPolicy } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
@@ -15,6 +16,7 @@ const progressStore = useProgressStore()
 
 const showRetest = ref(false)
 const retestReps = ref(0)
+const customPlanPreview = ref('')
 const today = todayLocal()
 
 const nextSlot = computed(() => progressStore.getNextSlot())
@@ -34,8 +36,29 @@ const setsPreview = computed(() => {
   if (p.source === 'builtin' && p.state.path === 'P0') {
     return t('home.path0Step', { step: nextSlot.value.stepRef })
   }
-  return ''
+  return customPlanPreview.value
 })
+
+watch(
+  () => [progressStore.progress, nextSlot.value] as const,
+  async ([p, slot]) => {
+    if (!p || p.source !== 'custom' || !slot) {
+      customPlanPreview.value = ''
+      return
+    }
+    const program = await getCustomProgram(p.customProgramId)
+    const step = program?.steps[slot.stepRef]
+    if (!step) {
+      customPlanPreview.value = ''
+      return
+    }
+    const parts = step.sets.map((x) =>
+      x.type === 'max' ? t('home.planMax') : String(x.planned),
+    )
+    customPlanPreview.value = t('home.planPreview', { sets: parts.join(' + ') })
+  },
+  { immediate: true },
+)
 
 const maxReps = computed(() => {
   let max = 0
@@ -118,7 +141,7 @@ async function reduceAnchor() {
     <header class="head">
       <div>
         <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
-        <h2>{{ t('home.title') }}</h2>
+        <h1>{{ t('home.title') }}</h1>
       </div>
       <span v-if="streakWeeks > 0" class="chip streak">{{ t('home.streakWeeks', { n: streakWeeks }) }}</span>
     </header>
@@ -138,7 +161,7 @@ async function reduceAnchor() {
       <p class="kicker">{{ t('onboarding.testTitle') }}</p>
       <label class="field">
         <span>{{ t('onboarding.repsLabel') }}</span>
-        <input v-model.number="retestReps" type="number" min="0" max="100" />
+        <input id="retest-reps" v-model.number="retestReps" type="number" min="0" max="100" />
       </label>
       <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
       <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
@@ -165,7 +188,10 @@ async function reduceAnchor() {
         {{ t('common.start') }}
       </button>
       <template v-else>
-        <RouterLink to="/calendar" class="btn">{{ t('home.openCalendar') }}</RouterLink>
+        <button type="button" class="btn accent" @click="startWorkout(nextSlot.date)">
+          {{ t('home.startEarly') }}
+        </button>
+        <RouterLink to="/calendar" class="btn ghost">{{ t('home.openCalendar') }}</RouterLink>
         <p class="sub early-hint">{{ t('home.earlyStartHint') }}</p>
       </template>
       <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
@@ -186,8 +212,8 @@ async function reduceAnchor() {
     </div>
 
     <div class="links">
-      <RouterLink to="/about">{{ t('home.aboutLink') }}</RouterLink>
-      <RouterLink to="/why">{{ t('home.whyLink') }}</RouterLink>
+      <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
+      <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
     </div>
   </div>
 </template>

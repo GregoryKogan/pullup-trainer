@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import { toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useModalA11y } from '@/composables/use-modal-a11y'
 
-defineProps<{
+const props = defineProps<{
   visible: boolean
   message: string
 }>()
 
 const emit = defineEmits<{ confirm: []; cancel: [] }>()
 const { t } = useI18n()
+
+const { panelRef } = useModalA11y(toRef(props, 'visible'), {
+  onEscape: () => emit('cancel'),
+  initialFocusSelector: '[data-modal-primary]',
+})
 </script>
 
 <template>
@@ -17,12 +24,17 @@ const { t } = useI18n()
       class="modal-overlay"
       role="alertdialog"
       aria-modal="true"
+      :aria-labelledby="'confirm-title'"
+      :aria-describedby="'confirm-desc'"
       @click.self="emit('cancel')"
     >
-      <div class="modal-card panel confirm-panel">
-        <p class="confirm-msg">{{ message }}</p>
+      <div ref="panelRef" class="modal-card panel confirm-panel" tabindex="-1">
+        <p id="confirm-title" class="confirm-title">{{ t('common.confirm') }}</p>
+        <p id="confirm-desc" class="confirm-msg">{{ message }}</p>
         <div class="btnrow">
-          <button type="button" class="btn accent" @click="emit('confirm')">{{ t('common.confirm') }}</button>
+          <button type="button" class="btn accent" data-modal-primary @click="emit('confirm')">
+            {{ t('common.confirm') }}
+          </button>
           <button type="button" class="btn ghost" @click="emit('cancel')">{{ t('common.cancel') }}</button>
         </div>
       </div>
@@ -34,6 +46,11 @@ const { t } = useI18n()
 .confirm-panel {
   max-width: 360px;
   width: 100%;
+}
+.confirm-title {
+  font: 800 0.95rem/1.2 'Arial Black', system-ui, sans-serif;
+  text-transform: uppercase;
+  margin: 0 0 8px;
 }
 .confirm-msg {
   font: 700 0.85rem/1.4 ui-monospace, 'SF Mono', Menlo, monospace;

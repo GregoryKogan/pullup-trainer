@@ -112,8 +112,8 @@ const offset = computed(() => {
   fill: var(--ink);
 }
 .ring-lab {
-  font: 700 8px/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  letter-spacing: 0.28em;
+  font: 700 10px/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.18em;
   fill: var(--muted);
 }
 .restbody {

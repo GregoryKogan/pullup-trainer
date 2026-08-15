@@ -29,7 +29,8 @@
     "restToday": "Сегодня отдых",
     "opensOn": "Следующая тренировка: {date}",
     "openCalendar": "Открыть календарь",
-    "earlyStartHint": "Можно начать раньше через календарь.",
+    "startEarly": "Начать сейчас",
+    "earlyStartHint": "Или открой календарь, чтобы перенести.",
     "maxReps": "Максимум",
     "volumeWeek": "Повторов за неделю",
     "planPreview": "План: {sets}",
@@ -70,7 +71,8 @@
       "l": "Уровень: {level}. Твой максимум — {m} подтягиваний. Первый цикл начинается с шага 1."
     },
     "accept": "Начать программу",
-    "override": "Изменить максимум"
+    "override": "Изменить максимум",
+    "repsInvalid": "Введи 0 или больше подтягиваний."
   },
   "workout": {
     "setOf": "Подход {current} из {total}",
@@ -83,6 +85,7 @@
     "doneSeconds": "Готово — {n} сек",
     "doneMax": "Готово — макс",
     "logFewer": "Меньше",
+    "fewerLabel": "Сделано повторов",
     "rest": "ОТДЫХ",
     "restHint": "Вибрация + уведомление · без звука",
     "restPreset90": "90с",
@@ -127,6 +130,9 @@
     "shiftNote": "Все следующие тренировки сдвигаются на ту же дельту.",
     "startNow": "Начать",
     "repeatMissed": "Повторить",
+    "closeSheet": "Закрыть",
+    "autoshiftApplied": "Пропущенная тренировка перенесена в плане.",
+    "earlyStartConfirm": "Начать эту тренировку раньше запланированного дня?",
     "nextMonth": "Следующий месяц",
     "prevMonth": "Предыдущий месяц",
     "dow": {
@@ -166,15 +172,14 @@
     "signalValue": "Вибрация + уведомление",
     "noSound": "Без звука — по задумке",
     "restPresets": "Пресеты",
-    "restPreset90": "90 сек",
-    "restPreset180": "3 мин",
-    "restPreset300": "5 мин",
     "frequency": "Частота",
     "frequency3": "3× / нед",
     "frequency2": "2× / нед",
     "weekdays": "Дни",
+    "weekdaysLimit": "Выбери {n} дней",
     "importError": "Неверный файл бэкапа",
     "importSuccess": "Бэкап восстановлен",
+    "importConfirm": "Заменить все локальные данные этим бэкапом?",
     "themeLight": "Светлая",
     "themeSystem": "Система",
     "themeDark": "Тёмная",
@@ -190,8 +195,6 @@
     "resetAll": "Сбросить все данные",
     "resetConfirm": "Удалить все данные? Нельзя отменить.",
     "about": "О приложении",
-    "version": "Версия",
-    "programSources": "Источники программы",
     "whyProgram": "Почему такая программа",
     "customPrograms": "Свои программы",
     "restDecrease": "Уменьшить время отдыха",
@@ -229,6 +232,11 @@
     "deleteConfirm": "Удалить программу?",
     "useBuiltin": "Встроенная программа",
     "restDays": "Дней отдыха после шага",
+    "fieldType": "Тип",
+    "fieldPlanned": "Цель",
+    "fieldUnit": "Единица",
+    "deleteSet": "Удалить подход",
+    "deleteStep": "Удалить шаг",
     "customFallback": "Своя программа",
     "notFound": "Программа не найдена",
     "setTypes": {
@@ -256,7 +264,7 @@
     "tabs": {
       "ios": "iOS",
       "android": "Android",
-      "desktop": "Desktop",
+      "desktop": "Компьютер",
       "other": "Другое"
     },
     "ios": {

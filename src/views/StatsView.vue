@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
 import { exportHistory } from '@/domain/export'
+import { APP_VERSION } from '@/constants/app'
 import { downloadJson } from '@/utils/platform'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
@@ -56,12 +57,16 @@ const weeklyChartMax = computed(() => Math.max(1, ...weeklyBars.value.map((b) =>
 function recordLabel(r: (typeof progressStore.records)[0]) {
   if (r.kind === 'test') return `${r.sets[0]?.done ?? 0} ${t('workout.reps')}`
   const sets = r.sets.map((s) => s.done).join('·')
-  return sets || (r.result === 'success' ? t('stats.success') : t('stats.partial'))
+  return sets || '—'
+}
+
+function chartDateLabel(date: string) {
+  return formatShortDate(date, locale.value)
 }
 
 function exportHistoryJson() {
   const lang = settingsStore.settings?.language ?? 'en'
-  const data = exportHistory(progressStore.records, '1.0.0', lang)
+  const data = exportHistory(progressStore.records, APP_VERSION, lang)
   downloadJson('pullup-trainer-history.json', data)
 }
 </script>
@@ -71,7 +76,7 @@ function exportHistoryJson() {
     <header class="head">
       <div>
         <p class="kicker">{{ t('stats.kicker') }}</p>
-        <h2>{{ t('stats.title') }}</h2>
+        <h1>{{ t('stats.title') }}</h1>
       </div>
     </header>
     <div class="kpis">
@@ -93,6 +98,10 @@ function exportHistoryJson() {
       <p class="sub">{{ t('stats.maxChartSub') }}</p>
       <p v-if="maxReps.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
       <svg v-else class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
+        <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
+        <text class="chart-tick" x="24" :y="chartY(maxChartMax, maxChartMax) + 4" text-anchor="end">
+          {{ maxChartMax }}
+        </text>
         <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
         <line
           v-for="i in 4"
@@ -113,20 +122,35 @@ function exportHistoryJson() {
           stroke="var(--accent)"
           stroke-width="2.5"
         />
-        <circle
-          v-for="(p, i) in maxReps"
-          :key="p.date"
-          :cx="30 + i * 60"
-          :cy="chartY(p.value, maxChartMax)"
-          r="5"
-          fill="var(--accent)"
-        />
+        <g v-for="(p, i) in maxReps" :key="p.date">
+          <circle
+            :cx="30 + i * 60"
+            :cy="chartY(p.value, maxChartMax)"
+            r="5"
+            fill="var(--accent)"
+          />
+          <text class="chart-label" :x="30 + i * 60" y="148" text-anchor="middle">
+            {{ chartDateLabel(p.date) }}
+          </text>
+          <text
+            class="chart-val"
+            :x="30 + i * 60"
+            :y="chartY(p.value, maxChartMax) - 8"
+            text-anchor="middle"
+          >
+            {{ p.value }}
+          </text>
+        </g>
       </svg>
     </section>
     <section class="sec">
       <h4>{{ t('stats.weeklyVolume') }}</h4>
       <p v-if="weeklyBars.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
-      <svg v-else class="chart" viewBox="0 0 354 140" role="img" :aria-label="t('stats.weeklyVolume')">
+      <svg v-else class="chart" viewBox="0 0 354 148" role="img" :aria-label="t('stats.weeklyVolume')">
+        <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
+        <text class="chart-tick" x="24" :y="chartY(weeklyChartMax, weeklyChartMax) + 4" text-anchor="end">
+          {{ weeklyChartMax }}
+        </text>
         <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
         <line
           v-for="i in 4"
@@ -139,16 +163,28 @@ function exportHistoryJson() {
           stroke-width="1"
           opacity="0.35"
         />
-        <rect
-          v-for="(b, i) in weeklyBars"
-          :key="b.week"
-          class="bar"
-          :x="30 + i * 49"
-          :y="chartY(b.vol, weeklyChartMax)"
-          width="26"
-          :height="130 - chartY(b.vol, weeklyChartMax)"
-          fill="var(--accent)"
-        />
+        <g v-for="(b, i) in weeklyBars" :key="b.week">
+          <rect
+            class="bar"
+            :x="30 + i * 49"
+            :y="chartY(b.vol, weeklyChartMax)"
+            width="26"
+            :height="130 - chartY(b.vol, weeklyChartMax)"
+            fill="var(--accent)"
+          />
+          <text class="chart-label" :x="43 + i * 49" y="144" text-anchor="middle">
+            {{ chartDateLabel(b.week) }}
+          </text>
+          <text
+            v-if="b.vol > 0"
+            class="chart-val"
+            :x="43 + i * 49"
+            :y="chartY(b.vol, weeklyChartMax) - 6"
+            text-anchor="middle"
+          >
+            {{ b.vol }}
+          </text>
+        </g>
       </svg>
     </section>
     <section class="sec">
@@ -198,6 +234,16 @@ function exportHistoryJson() {
 }
 .chart {
   width: 100%;
+}
+.chart-tick,
+.chart-label,
+.chart-val {
+  font: 700 9px/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  fill: var(--muted);
+}
+.chart-val {
+  fill: var(--ink);
+  font-size: 10px;
 }
 .hist {
   list-style: none;

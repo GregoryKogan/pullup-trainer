@@ -57,7 +57,7 @@ async function activate(id: number) {
     <header class="head">
       <div>
         <p class="kicker">{{ t('programs.kicker') }}</p>
-        <h2>{{ t('programs.title') }}</h2>
+        <h1>{{ t('programs.title') }}</h1>
       </div>
     </header>
     <button type="button" class="btn accent" @click="createProgram">{{ t('programs.new') }}</button>

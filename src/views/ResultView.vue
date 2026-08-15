@@ -2,25 +2,37 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useWorkoutSessionStore } from '@/stores/workout-session'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const workoutStore = useWorkoutSessionStore()
 
 function parseNum(value: unknown): number {
   const n = Number(value ?? 0)
   return Number.isFinite(n) ? n : 0
 }
 
-const success = computed(() => route.query.result === 'success')
-const volume = computed(() => parseNum(route.query.volume))
-const planned = computed(() => parseNum(route.query.planned))
-const done = computed(() => parseNum(route.query.done))
-const nextStep = computed(() => route.query.next)
+const summary = computed(() => workoutStore.lastResult)
+
+const success = computed(() => {
+  if (summary.value) return summary.value.result === 'success'
+  return route.query.result === 'success'
+})
+
+const volume = computed(() => summary.value?.volume ?? parseNum(route.query.volume))
+const planned = computed(() => summary.value?.planned ?? parseNum(route.query.planned))
+const done = computed(() => summary.value?.done ?? parseNum(route.query.done))
+const nextStep = computed(() => {
+  if (summary.value?.nextStep !== undefined) return String(summary.value.nextStep)
+  return route.query.next
+})
 </script>
 
 <template>
-  <div class="result panel" :class="success ? 'ok' : 'fail'">
+  <div class="result panel" :class="success ? 'ok' : 'fail'" role="status">
+    <h1 class="sr-only">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</h1>
     <div class="icon" aria-hidden="true">
       <svg v-if="success" width="48" height="48" viewBox="0 0 24 24">
         <path d="M4 12.5 9.5 18 20 6" fill="none" stroke="currentColor" stroke-width="2.5" />

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppTabBar from '@/components/AppTabBar.vue'
 import PwaInstallModal from '@/components/PwaInstallModal.vue'
 import { usePwaInstall } from '@/composables/use-pwa-install'
 
 const route = useRoute()
+const { t } = useI18n()
 const pwa = usePwaInstall()
 
 const showTabBar = computed(() =>
@@ -23,7 +25,7 @@ const showTabBar = computed(() =>
         <symbol id="icon-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.4" fill="var(--bg)"/><circle cx="15" cy="17" r="2.4" fill="var(--bg)"/></symbol>
       </defs>
     </svg>
-    <main class="app-main">
+    <main class="app-main" :aria-label="t('common.appTitle')">
       <RouterView />
     </main>
     <AppTabBar v-if="showTabBar" />

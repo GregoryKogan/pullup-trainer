@@ -6,7 +6,8 @@ import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
 import { PALETTE_SLUGS } from '@/utils/theme'
-import { exportBackup, validateBackup, defaultSettings } from '@/domain/export'
+import { exportBackup, validateBackup, defaultSettings, type BackupExport } from '@/domain/export'
+import { APP_VERSION } from '@/constants/app'
 import { downloadJson } from '@/utils/platform'
 import { db } from '@/db/database'
 import { loadCustomPrograms } from '@/db/repositories/custom-programs'
@@ -22,6 +23,8 @@ const progressStore = useProgressStore()
 
 const importMessage = ref('')
 const showResetConfirm = ref(false)
+const showImportConfirm = ref(false)
+const pendingImport = ref<BackupExport | null>(null)
 const weekdayOptions: Weekday[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 const settings = computed(() => settingsStore.settings)
@@ -78,7 +81,17 @@ async function setPalette(slug: string) {
 async function setFrequency(days: 2 | 3) {
   const p = builtinProgress.value
   if (!p) return
-  await progressStore.updateBuiltinScheduleSettings(days, p.weekdays)
+  let weekdays = [...p.weekdays]
+  if (weekdays.length > days) {
+    weekdays = weekdays.slice(0, days)
+  }
+  await progressStore.updateBuiltinScheduleSettings(days, weekdays)
+}
+
+function isWeekdayDisabled(day: Weekday) {
+  const p = builtinProgress.value
+  if (!p) return true
+  return !p.weekdays.includes(day) && p.weekdays.length >= p.frequencyDays
 }
 
 async function toggleWeekday(day: Weekday) {
@@ -89,6 +102,7 @@ async function toggleWeekday(day: Weekday) {
     if (set.size <= 1) return
     set.delete(day)
   } else {
+    if (set.size >= p.frequencyDays) return
     set.add(day)
   }
   await progressStore.updateBuiltinScheduleSettings(p.frequencyDays, [...set])
@@ -101,7 +115,7 @@ async function exportBackupFile() {
     programs,
     progressStore.progress,
     progressStore.records,
-    '1.0.0',
+    APP_VERSION,
   )
   downloadJson('pullup-trainer-backup.json', data)
 }
@@ -118,6 +132,20 @@ async function importBackupFile(e: Event) {
       importMessage.value = t('settings.importError')
       return
     }
+    pendingImport.value = data
+    showImportConfirm.value = true
+  } catch {
+    importMessage.value = t('settings.importError')
+  }
+  input.value = ''
+}
+
+async function confirmImport() {
+  const data = pendingImport.value
+  showImportConfirm.value = false
+  pendingImport.value = null
+  if (!data) return
+  try {
     await saveSettings(data.settings)
     await db.customPrograms.clear()
     for (const p of data.customPrograms) {
@@ -134,7 +162,6 @@ async function importBackupFile(e: Event) {
   } catch {
     importMessage.value = t('settings.importError')
   }
-  input.value = ''
 }
 
 async function resetAll() {
@@ -156,7 +183,7 @@ async function confirmReset() {
     <header class="head">
       <div>
         <p class="kicker">{{ t('settings.designKicker') }}</p>
-        <h2>{{ t('settings.title') }}</h2>
+        <h1>{{ t('settings.title') }}</h1>
       </div>
     </header>
     <section class="sec">
@@ -249,14 +276,25 @@ async function confirmReset() {
       <div class="setrow">
         <span class="k">{{ t('settings.frequency') }}</span>
         <span class="seg">
-          <button type="button" :class="{ on: builtinProgress.frequencyDays === 3 }" @click="setFrequency(3)">
+          <button
+            type="button"
+            :class="{ on: builtinProgress.frequencyDays === 3 }"
+            :aria-pressed="builtinProgress.frequencyDays === 3"
+            @click="setFrequency(3)"
+          >
             {{ t('settings.frequency3') }}
           </button>
-          <button type="button" :class="{ on: builtinProgress.frequencyDays === 2 }" @click="setFrequency(2)">
+          <button
+            type="button"
+            :class="{ on: builtinProgress.frequencyDays === 2 }"
+            :aria-pressed="builtinProgress.frequencyDays === 2"
+            @click="setFrequency(2)"
+          >
             {{ t('settings.frequency2') }}
           </button>
         </span>
       </div>
+      <p class="sub">{{ t('settings.weekdaysLimit', { n: builtinProgress.frequencyDays }) }}</p>
       <div class="setrow last">
         <span class="k">{{ t('settings.weekdays') }}</span>
         <span class="weekdays">
@@ -266,6 +304,8 @@ async function confirmReset() {
             type="button"
             class="wd"
             :class="{ on: builtinProgress.weekdays.includes(day) }"
+            :disabled="isWeekdayDisabled(day)"
+            :aria-pressed="builtinProgress.weekdays.includes(day)"
             @click="toggleWeekday(day)"
           >
             {{ t(`calendar.dow.${day}`) }}
@@ -278,13 +318,28 @@ async function confirmReset() {
       <div class="setrow">
         <span class="k">{{ t('settings.themeMode') }}</span>
         <span class="seg">
-          <button type="button" :class="{ on: settings.themeMode === 'light' }" @click="setMode('light')">
+          <button
+            type="button"
+            :class="{ on: settings.themeMode === 'light' }"
+            :aria-pressed="settings.themeMode === 'light'"
+            @click="setMode('light')"
+          >
             {{ t('settings.themeLight') }}
           </button>
-          <button type="button" :class="{ on: settings.themeMode === 'system' }" @click="setMode('system')">
+          <button
+            type="button"
+            :class="{ on: settings.themeMode === 'system' }"
+            :aria-pressed="settings.themeMode === 'system'"
+            @click="setMode('system')"
+          >
             {{ t('settings.themeSystem') }}
           </button>
-          <button type="button" :class="{ on: settings.themeMode === 'dark' }" @click="setMode('dark')">
+          <button
+            type="button"
+            :class="{ on: settings.themeMode === 'dark' }"
+            :aria-pressed="settings.themeMode === 'dark'"
+            @click="setMode('dark')"
+          >
             {{ t('settings.themeDark') }}
           </button>
         </span>
@@ -298,8 +353,22 @@ async function confirmReset() {
       <div class="setrow last">
         <span class="k">{{ t('settings.language') }}</span>
         <span class="seg">
-          <button type="button" :class="{ on: settings.language === 'en' }" @click="setLang('en')">EN</button>
-          <button type="button" :class="{ on: settings.language === 'ru' }" @click="setLang('ru')">RU</button>
+          <button
+            type="button"
+            :class="{ on: settings.language === 'en' }"
+            :aria-pressed="settings.language === 'en'"
+            @click="setLang('en')"
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            :class="{ on: settings.language === 'ru' }"
+            :aria-pressed="settings.language === 'ru'"
+            @click="setLang('ru')"
+          >
+            RU
+          </button>
         </span>
       </div>
     </section>
@@ -326,6 +395,12 @@ async function confirmReset() {
       :message="t('settings.resetConfirm')"
       @confirm="confirmReset"
       @cancel="showResetConfirm = false"
+    />
+    <ConfirmPanel
+      :visible="showImportConfirm"
+      :message="t('settings.importConfirm')"
+      @confirm="confirmImport"
+      @cancel="showImportConfirm = false"
     />
   </div>
 </template>
@@ -357,6 +432,10 @@ select {
 .wd.on {
   background: var(--accent);
   color: var(--accent-ink);
+}
+.wd:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 .sub.ok {
   color: var(--ok);

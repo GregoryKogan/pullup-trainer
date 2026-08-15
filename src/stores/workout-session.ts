@@ -12,9 +12,18 @@ export interface ActiveWorkout {
   program: 'builtin' | 'custom'
 }
 
+export interface WorkoutResultSummary {
+  result: 'success' | 'fail'
+  volume: number
+  planned: number
+  done: number
+  nextStep?: number
+}
+
 export const useWorkoutSessionStore = defineStore('workoutSession', () => {
   const active = shallowRef<ActiveWorkout | null>(null)
   const restRunning = shallowRef(false)
+  const lastResult = shallowRef<WorkoutResultSummary | null>(null)
 
   function start(session: {
     date: string
@@ -51,9 +60,13 @@ export const useWorkoutSessionStore = defineStore('workoutSession', () => {
     restRunning.value = false
   }
 
+  function setLastResult(summary: WorkoutResultSummary) {
+    lastResult.value = summary
+  }
+
   function isComplete() {
     return active.value !== null && active.value.completed.length === active.value.planned.length
   }
 
-  return { active, restRunning, start, completeSet, clear, isComplete }
+  return { active, restRunning, lastResult, start, completeSet, clear, setLastResult, isComplete }
 })

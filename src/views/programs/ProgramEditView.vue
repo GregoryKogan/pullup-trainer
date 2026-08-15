@@ -41,6 +41,22 @@ function addSet(stepIndex: number) {
     planned: 5,
   })
 }
+
+function deleteSet(stepIndex: number, setIndex: number) {
+  if (!program.value) return
+  const step = program.value.steps[stepIndex]
+  if (step.sets.length <= 1) return
+  step.sets.splice(setIndex, 1)
+  step.sets.forEach((s, i) => {
+    s.position = i + 1
+  })
+}
+
+function deleteStep(stepIndex: number) {
+  if (!program.value) return
+  if (program.value.steps.length <= 1) return
+  program.value.steps.splice(stepIndex, 1)
+}
 </script>
 
 <template>
@@ -48,7 +64,7 @@ function addSet(stepIndex: number) {
     <header class="head">
       <div>
         <p class="kicker">{{ t('programs.kicker') }}</p>
-        <h2>{{ program.name }}</h2>
+        <h1>{{ program.name }}</h1>
       </div>
     </header>
     <label class="field">
@@ -56,20 +72,47 @@ function addSet(stepIndex: number) {
       <input v-model="program.name" />
     </label>
     <section v-for="(step, si) in program.steps" :key="si" class="sec">
-      <h4>{{ t('programs.stepN', { n: si + 1 }) }}</h4>
+      <div class="step-head">
+        <h4>{{ t('programs.stepN', { n: si + 1 }) }}</h4>
+        <button
+          v-if="program.steps.length > 1"
+          type="button"
+          class="mini-delete"
+          @click="deleteStep(si)"
+        >
+          {{ t('programs.deleteStep') }}
+        </button>
+      </div>
       <div v-for="(set, seti) in step.sets" :key="seti" class="set-edit-row">
-        <select v-model="set.type">
-          <option value="reps">{{ t('programs.setTypes.reps') }}</option>
-          <option value="max">{{ t('programs.setTypes.max') }}</option>
-          <option value="hold">{{ t('programs.setTypes.hold') }}</option>
-          <option value="negative">{{ t('programs.setTypes.negative') }}</option>
-          <option value="assisted">{{ t('programs.setTypes.assisted') }}</option>
-        </select>
-        <input v-model.number="set.planned" type="number" min="1" />
-        <select v-model="set.unit">
-          <option value="reps">{{ t('workout.reps') }}</option>
-          <option value="seconds">{{ t('workout.seconds') }}</option>
-        </select>
+        <label class="set-field">
+          <span>{{ t('programs.fieldType') }}</span>
+          <select v-model="set.type">
+            <option value="reps">{{ t('programs.setTypes.reps') }}</option>
+            <option value="max">{{ t('programs.setTypes.max') }}</option>
+            <option value="hold">{{ t('programs.setTypes.hold') }}</option>
+            <option value="negative">{{ t('programs.setTypes.negative') }}</option>
+            <option value="assisted">{{ t('programs.setTypes.assisted') }}</option>
+          </select>
+        </label>
+        <label class="set-field">
+          <span>{{ t('programs.fieldPlanned') }}</span>
+          <input v-model.number="set.planned" type="number" min="1" />
+        </label>
+        <label class="set-field">
+          <span>{{ t('programs.fieldUnit') }}</span>
+          <select v-model="set.unit">
+            <option value="reps">{{ t('workout.reps') }}</option>
+            <option value="seconds">{{ t('workout.seconds') }}</option>
+          </select>
+        </label>
+        <button
+          v-if="step.sets.length > 1"
+          type="button"
+          class="mini-delete"
+          @click="deleteSet(si, seti)"
+        >
+          {{ t('programs.deleteSet') }}
+        </button>
       </div>
       <button type="button" class="btn ghost" @click="addSet(si)">{{ t('programs.addSet') }}</button>
       <label class="rest-field">
@@ -100,18 +143,50 @@ function addSet(stepIndex: number) {
   border: 2px solid var(--line);
   padding: 8px;
 }
+.step-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.step-head h4 {
+  margin: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
 .set-edit-row {
   display: flex;
   gap: 8px;
   margin-bottom: 8px;
   flex-wrap: wrap;
+  align-items: flex-end;
 }
-.set-edit-row input,
-.set-edit-row select {
+.set-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  flex: 1;
+  min-width: 88px;
+}
+.set-field input,
+.set-field select {
   min-height: 44px;
   border: 2px solid var(--line);
   background: var(--bg);
   color: var(--ink);
+}
+.mini-delete {
+  appearance: none;
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--bad);
+  text-transform: uppercase;
 }
 .rest-field {
   display: block;

@@ -69,6 +69,7 @@ a {
   padding: 6px 0 16px;
 }
 
+.head h1,
 .head h2 {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.8rem;
@@ -77,6 +78,18 @@ a {
   line-height: 0.95;
   letter-spacing: -0.02em;
   margin: 0.15rem 0 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .panel {
@@ -165,8 +178,8 @@ a {
 .tabbar a {
   appearance: none;
   cursor: pointer;
-  background: none;
-  border: 0;
+  background: color-mix(in srgb, var(--accent-ink) 8%, transparent);
+  border: 2px solid color-mix(in srgb, var(--accent-ink) 35%, transparent);
   flex: 1;
   min-height: 52px;
   display: flex;
@@ -178,16 +191,28 @@ a {
   font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.72;
+  opacity: 0.9;
   text-decoration: none;
+  margin: 0 2px;
+  border-radius: 2px;
 }
 
 .tabbar a.on {
   background: var(--bg);
   color: var(--accent);
+  border-color: var(--line);
   opacity: 1;
   margin: 2px 2px 4px;
   border-radius: 2px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .grid2 {

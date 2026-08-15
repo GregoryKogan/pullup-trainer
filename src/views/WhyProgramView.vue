@@ -24,7 +24,7 @@ const sources = computed(() => {
     <header class="head">
       <div>
         <p class="kicker">{{ t('why.kicker') }}</p>
-        <h2>{{ t('science.title') }}</h2>
+        <h1>{{ t('science.title') }}</h1>
       </div>
     </header>
     <section class="panel">

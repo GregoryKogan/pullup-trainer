@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { ref, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '@/stores/settings'
 import { setLocale } from '@/i18n'
+import { useModalA11y } from '@/composables/use-modal-a11y'
 import type { InstallPlatform } from '@/utils/platform'
 
 const props = defineProps<{
@@ -17,8 +18,10 @@ const { t, tm } = useI18n()
 const settingsStore = useSettingsStore()
 const tabs: InstallPlatform[] = ['ios', 'android', 'desktop', 'other']
 const activeTab = ref<InstallPlatform>(props.platform)
-const dialogRef = ref<HTMLElement | null>(null)
-let escapeHandler: ((e: KeyboardEvent) => void) | null = null
+
+const { panelRef: dialogRef } = useModalA11y(toRef(props, 'visible'), {
+  onEscape: () => emit('dismiss'),
+})
 
 async function setLang(lang: 'en' | 'ru') {
   if (settingsStore.settings) {
@@ -33,27 +36,6 @@ watch(
     activeTab.value = p
   },
 )
-
-watch(
-  () => props.visible,
-  async (visible) => {
-    if (visible) {
-      await nextTick()
-      dialogRef.value?.focus()
-      escapeHandler = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') emit('dismiss')
-      }
-      window.addEventListener('keydown', escapeHandler)
-    } else if (escapeHandler) {
-      window.removeEventListener('keydown', escapeHandler)
-      escapeHandler = null
-    }
-  },
-)
-
-onBeforeUnmount(() => {
-  if (escapeHandler) window.removeEventListener('keydown', escapeHandler)
-})
 
 const steps = () => {
   const key = `pwa.${activeTab.value}.steps`
@@ -71,15 +53,18 @@ const steps = () => {
       aria-modal="true"
       tabindex="-1"
       :aria-labelledby="'pwa-dialog-title'"
+      :aria-describedby="'pwa-dialog-desc'"
     >
       <p class="kicker">{{ t('pwa.title') }}</p>
       <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
+      <p id="pwa-dialog-desc" class="sr-only">{{ t('pwa.title') }}</p>
       <div class="langrow" role="group" :aria-label="t('settings.language')">
         <span class="lang-label">{{ t('settings.language') }}</span>
         <span class="seg">
           <button
             type="button"
             :class="{ on: settingsStore.settings?.language === 'en' }"
+            :aria-pressed="settingsStore.settings?.language === 'en'"
             @click="setLang('en')"
           >
             EN
@@ -87,6 +72,7 @@ const steps = () => {
           <button
             type="button"
             :class="{ on: settingsStore.settings?.language === 'ru' }"
+            :aria-pressed="settingsStore.settings?.language === 'ru'"
             @click="setLang('ru')"
           >
             RU

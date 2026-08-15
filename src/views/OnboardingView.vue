@@ -11,6 +11,7 @@ import { todayLocal, toIsoOffset } from '@/utils/dates'
 
 const step = ref<'intro' | 'test' | 'recommend'>('intro')
 const reps = ref(0)
+const repsError = ref('')
 const recommendation = computed(() => recommendStart(reps.value))
 
 const stepNumber = computed(() => {
@@ -37,7 +38,17 @@ function goTest() {
   step.value = 'test'
 }
 
+function goBack() {
+  if (step.value === 'recommend') step.value = 'test'
+  else if (step.value === 'test') step.value = 'intro'
+}
+
 function submitTest() {
+  if (reps.value < 0 || Number.isNaN(reps.value)) {
+    repsError.value = t('onboarding.repsInvalid')
+    return
+  }
+  repsError.value = ''
   step.value = 'recommend'
 }
 
@@ -69,11 +80,13 @@ async function accept() {
 
 <template>
   <div class="onboarding">
+    <h1 class="sr-only">{{ t('onboarding.introTitle') }}</h1>
     <div class="langrow">
       <button
         type="button"
         class="lang"
         :class="{ on: settingsStore.settings?.language === 'en' }"
+        :aria-pressed="settingsStore.settings?.language === 'en'"
         @click="setLang('en')"
       >
         EN
@@ -82,6 +95,7 @@ async function accept() {
         type="button"
         class="lang"
         :class="{ on: settingsStore.settings?.language === 'ru' }"
+        :aria-pressed="settingsStore.settings?.language === 'ru'"
         @click="setLang('ru')"
       >
         RU
@@ -99,6 +113,7 @@ async function accept() {
       <label class="field">
         <span>{{ t('onboarding.repsLabel') }}</span>
         <input
+          id="onboarding-reps"
           v-model.number="reps"
           type="number"
           min="0"
@@ -106,18 +121,25 @@ async function accept() {
           :placeholder="t('onboarding.repsPlaceholder')"
         />
       </label>
+      <p v-if="repsError" class="sub error">{{ repsError }}</p>
       <p class="sub">{{ t('onboarding.testHint') }}</p>
-      <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
+      <div class="btnrow">
+        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
+        <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
+      </div>
     </section>
     <section v-else class="panel">
       <p class="kicker">{{ t('onboarding.recommendTitle') }}</p>
       <p>{{ recommendText }}</p>
       <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
-      <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
+      <div class="btnrow">
+        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
+        <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
+      </div>
     </section>
     <div class="links">
-      <RouterLink to="/about">{{ t('home.aboutLink') }}</RouterLink>
-      <RouterLink to="/why">{{ t('home.whyLink') }}</RouterLink>
+      <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
+      <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
     </div>
   </div>
 </template>
@@ -169,5 +191,8 @@ async function accept() {
 }
 .links a {
   color: var(--ink);
+}
+.sub.error {
+  color: var(--bad);
 }
 </style>

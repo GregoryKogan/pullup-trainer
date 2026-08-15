@@ -308,17 +308,15 @@ async function finishWorkout() {
   }
 
   await progressStore.updateProgress(updated)
-  workoutStore.clear()
-  router.push({
-    name: 'result',
-    query: {
-      result,
-      volume: String(totals.volumeReps),
-      planned: String(plannedTotal),
-      done: String(totals.volumeReps),
-      next: nextStep !== undefined ? String(nextStep) : undefined,
-    },
+  workoutStore.setLastResult({
+    result,
+    volume: totals.volumeReps,
+    planned: plannedTotal,
+    done: totals.volumeReps,
+    nextStep,
   })
+  workoutStore.clear()
+  router.push({ name: 'result' })
 }
 
 function exitWorkout() {
@@ -333,6 +331,7 @@ function confirmExit() {
 
 <template>
   <div v-if="workoutStore.active" class="workout">
+    <h1 class="sr-only">{{ t('common.programName') }}</h1>
     <div class="top">
       <button type="button" class="iconbtn" :aria-label="t('common.close')" @click="exitWorkout">
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -348,8 +347,8 @@ function confirmExit() {
     <div v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning" class="focus">
       <p class="kicker">{{ t('workout.doNow') }}</p>
       <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
-      <div class="rep">{{ currentSet.planned }}</div>
-      <p class="sub">
+      <div class="rep" aria-live="polite" aria-atomic="true">{{ currentSet.planned }}</div>
+      <p class="sub" aria-live="polite">
         {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
       </p>
     </div>
@@ -388,8 +387,19 @@ function confirmExit() {
       <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logFewer') }}</button>
     </div>
     <div v-if="showFewer" class="fewer panel">
-      <input v-model.number="fewerValue" type="number" min="0" :max="maxDoneValue" />
-      <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
+      <label class="fewer-label" :for="'fewer-input'">{{ t('workout.fewerLabel') }}</label>
+      <input
+        id="fewer-input"
+        v-model.number="fewerValue"
+        type="number"
+        min="0"
+        :max="maxDoneValue"
+        :aria-label="t('workout.fewerLabel')"
+      />
+      <div class="btnrow">
+        <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
+        <button type="button" class="btn ghost" @click="showFewer = false">{{ t('common.cancel') }}</button>
+      </div>
     </div>
     <ConfirmPanel
       :visible="showExitConfirm"
@@ -448,12 +458,18 @@ function confirmExit() {
 }
 .fewer input {
   width: 100%;
-  min-height: 44px;
-  margin-bottom: 8px;
-  font-size: 1.2rem;
+  min-height: 50px;
+  font-size: 1.5rem;
   border: 2px solid var(--line);
+  padding: 8px 12px;
   background: var(--bg);
   color: var(--ink);
+  margin-bottom: 12px;
+}
+.fewer-label {
+  display: block;
+  font: 800 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  margin-bottom: 8px;
 }
 .load-error {
   margin-top: 24px;

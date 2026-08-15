@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import { useProgressStore } from '@/stores/progress'
 import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domain/schedule'
 import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
@@ -13,6 +14,9 @@ const progressStore = useProgressStore()
 const viewMonth = ref(new Date())
 const selectedIndex = ref<number | null>(null)
 const selectedMoveDate = ref<string | null>(null)
+const sheetRef = ref<HTMLElement | null>(null)
+const autoshiftBanner = ref(false)
+const showStartConfirm = ref(false)
 
 const today = todayLocal()
 const dowKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
@@ -60,11 +64,20 @@ function dayStatus(date: string) {
   return 'rest'
 }
 
-function selectDay(date: string) {
+function dismissSheet() {
+  selectedIndex.value = null
+  selectedMoveDate.value = null
+}
+
+async function selectDay(date: string) {
   const idx = schedule.value.findIndex((s) => s.date === date)
   if (idx >= 0) {
     selectedIndex.value = idx
     selectedMoveDate.value = date
+    await nextTick()
+    sheetRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  } else {
+    dismissSheet()
   }
 }
 
@@ -80,6 +93,13 @@ const isMissedSelected = computed(() => {
 const moveOptions = computed(() =>
   selectedIndex.value !== null ? getRescheduleOptions(schedule.value, selectedIndex.value) : [],
 )
+
+const startTargetDate = computed(() => selectedMoveDate.value ?? selectedSlot.value?.date ?? null)
+
+const isFutureStart = computed(() => {
+  const date = startTargetDate.value
+  return date ? date > today : false
+})
 
 function prevMonth() {
   viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() - 1, 1)
@@ -110,11 +130,20 @@ async function applyMove() {
   const moved = rescheduleWorkout(schedule.value, selectedIndex.value, selectedMoveDate.value)
   if (!moved) return
   await progressStore.updateProgress({ ...progressStore.progress, schedule: moved })
-  selectedIndex.value = null
+  dismissSheet()
 }
 
 function startSelected() {
-  const date = selectedMoveDate.value ?? selectedSlot.value?.date
+  if (isFutureStart.value) {
+    showStartConfirm.value = true
+    return
+  }
+  goStartWorkout()
+}
+
+function goStartWorkout() {
+  showStartConfirm.value = false
+  const date = startTargetDate.value
   router.push(date ? `/workout/${date}` : '/workout')
 }
 
@@ -133,6 +162,7 @@ async function handleMissedAutoshift() {
   if (missedIdx < 0) return
   const shifted = autoskipMissed(schedule.value, missedIdx, today)
   await progressStore.updateProgress({ ...p, schedule: shifted })
+  autoshiftBanner.value = true
 }
 
 handleMissedAutoshift()
@@ -143,7 +173,7 @@ handleMissedAutoshift()
     <header class="head">
       <div>
         <p class="kicker">{{ t('calendar.title') }}</p>
-        <h2>{{ monthLabel }}</h2>
+        <h1>{{ monthLabel }}</h1>
       </div>
       <div class="nav">
         <button type="button" class="iconbtn" :aria-label="t('calendar.prevMonth')" @click="prevMonth">‹</button>
@@ -151,6 +181,7 @@ handleMissedAutoshift()
         <button type="button" class="today" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </header>
+    <div v-if="autoshiftBanner" class="banner">{{ t('calendar.autoshiftApplied') }}</div>
     <div class="calgrid">
       <div v-for="d in dowKeys" :key="d" class="dow">{{ t(`calendar.dow.${d}`) }}</div>
       <button
@@ -171,8 +202,11 @@ handleMissedAutoshift()
       <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
       <span><i class="dot today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
     </div>
-    <div v-if="selectedIndex !== null" class="sheetcard panel">
-      <h4>{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
+    <div v-if="selectedIndex !== null" ref="sheetRef" class="sheetcard panel">
+      <div class="sheet-head">
+        <h4>{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
+        <button type="button" class="sheet-close" @click="dismissSheet">{{ t('calendar.closeSheet') }}</button>
+      </div>
       <div class="optrow">
         <button
           v-for="opt in moveOptions"
@@ -180,6 +214,7 @@ handleMissedAutoshift()
           type="button"
           class="opt"
           :class="{ on: selectedMoveDate === opt }"
+          :aria-pressed="selectedMoveDate === opt"
           @click="selectedMoveDate = opt"
         >
           {{ formatDisplayDate(opt, locale) }}
@@ -194,6 +229,12 @@ handleMissedAutoshift()
         </button>
       </div>
     </div>
+    <ConfirmPanel
+      :visible="showStartConfirm"
+      :message="t('calendar.earlyStartConfirm')"
+      @confirm="goStartWorkout"
+      @cancel="showStartConfirm = false"
+    />
   </div>
 </template>
 
@@ -201,8 +242,16 @@ handleMissedAutoshift()
 .head {
   align-items: center;
 }
-.head h2 {
-  font-size: 1.25rem;
+.head h1 {
+  font-size: 1.5rem;
+}
+.banner {
+  background: var(--card);
+  border: 2px solid var(--line);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
 }
 .nav {
   display: flex;
@@ -225,7 +274,7 @@ handleMissedAutoshift()
 }
 .dow {
   text-align: center;
-  font: 700 0.58rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 700 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
 .day {
@@ -336,9 +385,28 @@ handleMissedAutoshift()
   margin: 0 auto 12px;
   border-radius: 2px;
 }
-.sheetcard h4 {
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.sheet-head h4 {
   font-family: 'Arial Black', system-ui, sans-serif;
   text-transform: uppercase;
-  margin: 0 0 8px;
+  margin: 0;
+}
+.sheet-close {
+  appearance: none;
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 2px solid var(--line);
+  background: var(--bg);
+  font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
 }
 </style>
