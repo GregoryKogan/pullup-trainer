@@ -10,3 +10,7 @@ export function scrollToHash(hash: string, behavior: ScrollBehavior = 'smooth') 
   if (!id) return
   document.getElementById(id)?.scrollIntoView({ behavior, block: 'start' })
 }
+
+export function scrollAppMainToTop(behavior: ScrollBehavior = 'smooth') {
+  document.querySelector('.app-main')?.scrollTo({ top: 0, behavior })
+}

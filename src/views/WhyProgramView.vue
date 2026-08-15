@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import ScrollToTopFab from '@/components/ScrollToTopFab.vue'
 import { safeBack, scrollToHash } from '@/utils/navigation'
 
 const { t, tm } = useI18n()
@@ -64,6 +65,7 @@ const sources = computed(() => {
         </li>
       </ul>
     </section>
+    <ScrollToTopFab />
   </div>
 </template>
 

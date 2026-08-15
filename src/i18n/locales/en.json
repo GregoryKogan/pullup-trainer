@@ -17,6 +17,7 @@
     "move": "Move",
     "delete": "Delete",
     "back": "Back",
+    "scrollToTop": "Back to top",
     "next": "Next",
     "install": "Install app",
     "dismiss": "Continue in browser",
