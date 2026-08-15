@@ -96,6 +96,15 @@ const offset = computed(() => {
   padding: 12px 14px;
   margin-bottom: 14px;
 }
+@media (max-width: 380px) {
+  .restcard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ring {
+    align-self: center;
+  }
+}
 .ring .bg {
   stroke: var(--line);
   fill: none;

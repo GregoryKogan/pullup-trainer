@@ -199,10 +199,10 @@ async function reduceAnchor() {
         {{ t('common.start') }}
       </button>
       <template v-else>
+        <RouterLink to="/calendar" class="btn ghost">{{ t('home.openCalendar') }}</RouterLink>
         <button type="button" class="btn ghost" @click="requestEarlyStart">
           {{ t('home.startEarly') }}
         </button>
-        <RouterLink to="/calendar" class="btn ghost">{{ t('home.openCalendar') }}</RouterLink>
         <p class="sub early-hint">{{ t('home.earlyStartHint') }}</p>
       </template>
       <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
@@ -256,6 +256,8 @@ async function reduceAnchor() {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   margin: 8px 0 12px;
 }
 .next h3 {
@@ -265,8 +267,10 @@ async function reduceAnchor() {
   text-transform: uppercase;
 }
 .sets {
-  font: 800 0.85rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 800 0.85rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--accent);
+  text-align: right;
+  flex: 1 1 140px;
 }
 .meter {
   height: 10px;

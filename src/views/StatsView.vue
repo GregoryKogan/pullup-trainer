@@ -238,8 +238,16 @@ function exportHistoryJson() {
   font-size: 1.7rem;
 }
 .kpi span {
-  font: 700 0.65rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 700 0.68rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+}
+@media (max-width: 360px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+  .kpi b {
+    font-size: 2rem;
+  }
 }
 .chart-empty {
   margin: 12px 0 4px;

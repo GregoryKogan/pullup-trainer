@@ -41,18 +41,25 @@ export const useWorkoutSessionStore = defineStore('workoutSession', () => {
 
   function completeSet(done: number) {
     if (!active.value) return
-    const p = active.value.planned[active.value.currentIndex]
-    active.value.completed.push({
-      position: p.position,
-      type: p.type,
-      unit: p.unit,
-      planned: p.planned,
-      done,
-    })
-    if (active.value.currentIndex < active.value.planned.length - 1) {
-      active.value.currentIndex++
-      restRunning.value = true
+    const idx = active.value.currentIndex
+    const p = active.value.planned[idx]
+    const completed: CompletedSet[] = [
+      ...active.value.completed,
+      {
+        position: p.position,
+        type: p.type,
+        unit: p.unit,
+        planned: p.planned,
+        done,
+      },
+    ]
+    const hasMore = idx < active.value.planned.length - 1
+    active.value = {
+      ...active.value,
+      completed,
+      currentIndex: hasMore ? idx + 1 : idx,
     }
+    if (hasMore) restRunning.value = true
   }
 
   function clear() {

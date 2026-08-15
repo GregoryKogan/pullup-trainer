@@ -71,10 +71,11 @@ const { t } = useI18n()
   font: 800 1.2rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .setsrow span {
-  font: 700 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  letter-spacing: 0.14em;
+  font: 700 0.68rem/1.2 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: center;
 }
 .setsrow .s.done {
   border-color: var(--ok);
@@ -102,8 +103,8 @@ const { t } = useI18n()
     font-size: 1rem;
   }
   .setsrow span {
-    font-size: 0.55rem;
-    letter-spacing: 0.1em;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
   }
 }
 </style>

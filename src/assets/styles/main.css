@@ -11,6 +11,7 @@ body,
 #app {
   margin: 0;
   min-height: 100%;
+  width: 100%;
 }
 
 body {
@@ -66,6 +67,8 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
   padding: 6px 0 16px;
 }
 
@@ -248,6 +251,11 @@ a {
   padding-bottom: 6px;
 }
 
+.setrow .v {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .setrow {
   display: flex;
   align-items: center;
@@ -360,7 +368,15 @@ select:focus-visible,
 
 .modal-full {
   align-items: stretch;
+  justify-content: center;
   background: var(--bg);
+}
+
+.modal-full .modal-card {
+  margin: 0 auto;
+  min-height: 100dvh;
+  max-height: none;
+  box-shadow: none;
 }
 
 .modal-card {

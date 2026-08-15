@@ -241,10 +241,10 @@ handleMissedAutoshift()
 
 <style scoped>
 .head {
-  align-items: center;
+  align-items: flex-start;
 }
 .head h1 {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 5vw, 1.5rem);
 }
 .banner {
   background: var(--card);
@@ -257,6 +257,8 @@ handleMissedAutoshift()
 .nav {
   display: flex;
   gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .today {
   min-height: 44px;
