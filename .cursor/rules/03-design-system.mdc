@@ -1,0 +1,28 @@
+---
+description: Дизайн-система Poster / Swiss: темы, токены, компоненты, ограничения (ТЗ §5.1)
+alwaysApply: true
+---
+# Дизайн-система Poster / Swiss (ТЗ §5.1)
+
+## Где брать
+- Спека: `spec/design/poster-design.md` — прочитать целиком.
+- Токены: `spec/design/theme-tokens.css` (CSS custom properties, подключить в приложение).
+- Мокапы (по ним сверять UI): `spec/design/mockups/poster-p*.html`, галерея `spec/design/mockups/index.html`.
+- Пересборка активов: `python3 spec/design/build-assets.py` (регенерирует мокапы, theme-tokens.css, README; пути в скрипте относительные от его папки — запускать можно откуда угодно).
+
+## Характер
+Постерная типографика в швейцарской традиции: плоские заливки, рамки 2px, радиус 2px везде, офсетные тени (4–5px сплошным цветом), гигантские контурные цифры, капс-заголовки, цветные плашки-лейблы. БЕЗ градиентов, блюра, свечений, скруглений, эмодзи. Иконки — inline SVG.
+
+## Темы
+- 14 палитр P01–P14, в каждой тёмный и светлый режим.
+- Механика: `data-theme="<slug>-<mode>"` на `<html>`; режим `system` резолвится через `prefers-color-scheme`.
+- Дефолт: **P01 Volt + system**.
+- Слаги: p01-volt, p02-signal-orange, p03-cobalt, p04-magenta-pop, p05-taxi, p06-paper-red, p07-mint-terminal, p08-amber, p09-cyan-future, p10-crimson, p11-spring-green, p12-ultraviolet, p13-coral-sunrise, p14-mono-ink.
+
+## Правила стилей
+- Все цвета ТОЛЬКО из переменных: `--bg`, `--bg2`, `--card`, `--ink`, `--muted`, `--line`, `--accent`, `--accent-ink`, `--accent2`, `--ok`, `--warn`, `--bad`, `--shadow`.
+- Голый CSS + токены. Без CSS-фреймворков и компонентных библиотек. Компоненты — Vue SFC со scoped-стилями; общие паттерны: `.kicker`, `.panel`, `.btn`, `.tabbar`.
+- Точечные headless-инструменты (Reka UI, выбор дат и т.п.) допустимы, только если реально нужны и темизируются токенами.
+- Типографика: числа и подписи — mono (`ui-monospace, "SF Mono", Menlo`), заголовки — display (`"Arial Black", system-ui`), текст — sans.
+- Семантические цвета (ok/warn/bad) не пересекаются с акцентом палитры.
+- Тач-цели ≥44px (кнопки 50px), контраст ≥4.5:1 (включая текст на плашках), `prefers-reduced-motion` отключает transform-анимации нажатий.
