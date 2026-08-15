@@ -21,12 +21,15 @@ const sources = computed(() => {
 
 <template>
   <div class="science">
-    <header class="head">
-      <div>
-        <p class="kicker">{{ t('why.kicker') }}</p>
-        <h1>{{ t('science.title') }}</h1>
-      </div>
-    </header>
+    <div class="subpage-head">
+      <button type="button" class="btn ghost" @click="router.back()">{{ t('common.back') }}</button>
+      <header class="head">
+        <div>
+          <p class="kicker">{{ t('why.kicker') }}</p>
+          <h1>{{ t('science.title') }}</h1>
+        </div>
+      </header>
+    </div>
     <section class="panel">
       <p>{{ t('science.headline') }}</p>
     </section>
@@ -51,7 +54,6 @@ const sources = computed(() => {
         </li>
       </ul>
     </section>
-    <button type="button" class="btn ghost" @click="router.back()">{{ t('common.back') }}</button>
   </div>
 </template>
 

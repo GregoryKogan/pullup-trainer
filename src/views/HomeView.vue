@@ -152,7 +152,8 @@ async function reduceAnchor() {
     <header class="head">
       <div>
         <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
-        <h1>{{ t('home.title') }}</h1>
+        <h1 v-if="nextSlot">{{ isWorkoutToday ? t('home.nextWorkout') : t('home.restToday') }}</h1>
+        <h1 v-else>{{ t('home.title') }}</h1>
       </div>
       <span v-if="streakWeeks > 0" class="chip streak">{{ t('home.streakWeeks', { n: streakWeeks }) }}</span>
     </header>
@@ -172,16 +173,23 @@ async function reduceAnchor() {
       <p class="kicker">{{ t('onboarding.testTitle') }}</p>
       <label class="field">
         <span>{{ t('onboarding.repsLabel') }}</span>
-        <input id="retest-reps" v-model.number="retestReps" type="number" min="0" max="100" />
+        <input
+          id="retest-reps"
+          v-model.number="retestReps"
+          type="number"
+          min="0"
+          max="100"
+          :placeholder="t('onboarding.repsPlaceholder')"
+        />
       </label>
+      <p class="sub hint">{{ t('onboarding.testHint') }}</p>
       <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
       <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
     </section>
 
     <section v-if="nextSlot" class="panel next">
-      <p class="kicker">{{ isWorkoutToday ? t('home.nextWorkout') : t('home.restToday') }}</p>
       <div class="row">
-        <h3>{{ formatDisplayDate(nextSlot.date, locale) }}</h3>
+        <h2 class="workout-date">{{ formatDisplayDate(nextSlot.date, locale) }}</h2>
         <span v-if="setsPreview" class="sets">{{ setsPreview }}</span>
       </div>
       <div class="meter"><i :style="{ width: `${progressPercent}%` }" /></div>
@@ -228,6 +236,7 @@ async function reduceAnchor() {
     </div>
     <ConfirmPanel
       :visible="showStartConfirm"
+      :title="t('common.earlyStartTitle')"
       :message="t('common.earlyStartConfirm')"
       @confirm="confirmEarlyStart"
       @cancel="showStartConfirm = false"
@@ -252,6 +261,12 @@ async function reduceAnchor() {
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
+.next h2.workout-date {
+  font-family: 'Arial Black', system-ui, sans-serif;
+  font-size: 1.3rem;
+  margin: 0;
+  text-transform: uppercase;
+}
 .next .row {
   display: flex;
   justify-content: space-between;
@@ -259,12 +274,6 @@ async function reduceAnchor() {
   flex-wrap: wrap;
   gap: 8px 12px;
   margin: 8px 0 12px;
-}
-.next h3 {
-  font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: 1.3rem;
-  margin: 0;
-  text-transform: uppercase;
 }
 .sets {
   font: 800 0.85rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
@@ -289,6 +298,9 @@ async function reduceAnchor() {
   gap: 8px;
   margin: 12px 0;
   font: 800 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.hint {
+  margin: 0 0 12px;
 }
 .field input {
   min-height: 50px;

@@ -155,6 +155,10 @@ const offset = computed(() => {
   color: var(--ink);
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
+.mini:focus-visible {
+  outline: 3px solid var(--accent2);
+  outline-offset: 2px;
+}
 .resthint {
   font: 700 0.68rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);

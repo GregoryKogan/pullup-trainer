@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
@@ -156,7 +156,10 @@ function goToday() {
   viewMonth.value = new Date()
 }
 
+const AUTOSHIFT_SESSION_KEY = 'pullup-trainer-autoshift-shown'
+
 async function handleMissedAutoshift() {
+  if (sessionStorage.getItem(AUTOSHIFT_SESSION_KEY)) return
   const p = progressStore.progress
   if (!p) return
   const missedIdx = schedule.value.findIndex((s) => s.date < today && !completedDates.value.has(s.date))
@@ -164,9 +167,12 @@ async function handleMissedAutoshift() {
   const shifted = autoskipMissed(schedule.value, missedIdx, today)
   await progressStore.updateProgress({ ...p, schedule: shifted })
   autoshiftBanner.value = true
+  sessionStorage.setItem(AUTOSHIFT_SESSION_KEY, '1')
 }
 
-handleMissedAutoshift()
+onMounted(() => {
+  void handleMissedAutoshift()
+})
 </script>
 
 <template>
@@ -232,6 +238,7 @@ handleMissedAutoshift()
     </div>
     <ConfirmPanel
       :visible="showStartConfirm"
+      :title="t('common.earlyStartTitle')"
       :message="t('common.earlyStartConfirm')"
       @confirm="goStartWorkout"
       @cancel="showStartConfirm = false"
@@ -277,7 +284,7 @@ handleMissedAutoshift()
 }
 .dow {
   text-align: center;
-  font: 700 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
 .day {
@@ -327,7 +334,7 @@ handleMissedAutoshift()
   justify-content: center;
   flex-wrap: wrap;
   padding: 12px 0;
-  font: 700 0.64rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
 .legend span {

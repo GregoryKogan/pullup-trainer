@@ -54,12 +54,15 @@ async function activate(id: number) {
 
 <template>
   <div>
-    <header class="head">
-      <div>
-        <p class="kicker">{{ t('programs.kicker') }}</p>
-        <h1>{{ t('programs.title') }}</h1>
-      </div>
-    </header>
+    <div class="subpage-head">
+      <button type="button" class="btn ghost" @click="router.push('/settings')">{{ t('common.back') }}</button>
+      <header class="head">
+        <div>
+          <p class="kicker">{{ t('programs.kicker') }}</p>
+          <h1>{{ t('programs.title') }}</h1>
+        </div>
+      </header>
+    </div>
     <button type="button" class="btn accent" @click="createProgram">{{ t('programs.new') }}</button>
     <button
       v-if="progressStore.progress?.source === 'custom'"
@@ -84,9 +87,9 @@ async function activate(id: number) {
         <button type="button" class="btn ghost danger" @click="remove(p.id!)">{{ t('common.delete') }}</button>
       </div>
     </section>
-    <button type="button" class="btn ghost" @click="router.push('/settings')">{{ t('common.back') }}</button>
     <ConfirmPanel
       :visible="deleteTarget !== null"
+      :title="t('programs.deleteTitle')"
       :message="t('programs.deleteConfirm')"
       @confirm="confirmDelete"
       @cancel="deleteTarget = null"

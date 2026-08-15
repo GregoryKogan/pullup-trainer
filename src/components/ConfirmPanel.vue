@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { toRef } from 'vue'
+import { computed, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useModalA11y } from '@/composables/use-modal-a11y'
 
 const props = defineProps<{
   visible: boolean
   message: string
+  title?: string
 }>()
 
 const emit = defineEmits<{ confirm: []; cancel: [] }>()
 const { t } = useI18n()
+
+const dialogTitle = computed(() => props.title ?? t('common.confirm'))
 
 const { panelRef } = useModalA11y(toRef(props, 'visible'), {
   onEscape: () => emit('cancel'),
@@ -29,7 +32,7 @@ const { panelRef } = useModalA11y(toRef(props, 'visible'), {
         :aria-labelledby="'confirm-title'"
         :aria-describedby="'confirm-desc'"
       >
-        <p id="confirm-title" class="confirm-title">{{ t('common.confirm') }}</p>
+        <p id="confirm-title" class="confirm-title">{{ dialogTitle }}</p>
         <p id="confirm-desc" class="confirm-msg">{{ message }}</p>
         <div class="btnrow">
           <button type="button" class="btn accent" data-modal-primary @click="emit('confirm')">

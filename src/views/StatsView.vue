@@ -241,7 +241,7 @@ function exportHistoryJson() {
   font: 700 0.68rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
-@media (max-width: 360px) {
+@media (max-width: 420px) {
   .kpis {
     grid-template-columns: 1fr;
   }
@@ -258,12 +258,12 @@ function exportHistoryJson() {
 .chart-tick,
 .chart-label,
 .chart-val {
-  font: 700 9px/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 700 11px/1 ui-monospace, 'SF Mono', Menlo, monospace;
   fill: var(--muted);
 }
 .chart-val {
   fill: var(--ink);
-  font-size: 10px;
+  font-size: 12px;
 }
 .hist {
   list-style: none;
@@ -285,7 +285,7 @@ function exportHistoryJson() {
   color: var(--muted);
 }
 .pill {
-  font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   padding: 4px 8px;
   border: 2px solid var(--line);
   text-transform: uppercase;

@@ -61,12 +61,15 @@ function deleteStep(stepIndex: number) {
 
 <template>
   <div v-if="program">
-    <header class="head">
-      <div>
-        <p class="kicker">{{ t('programs.kicker') }}</p>
-        <h1>{{ program.name }}</h1>
-      </div>
-    </header>
+    <div class="subpage-head">
+      <RouterLink to="/programs" class="btn ghost">{{ t('common.back') }}</RouterLink>
+      <header class="head">
+        <div>
+          <p class="kicker">{{ t('programs.kicker') }}</p>
+          <h1>{{ program.name }}</h1>
+        </div>
+      </header>
+    </div>
     <label class="field">
       {{ t('programs.name') }}
       <input v-model="program.name" />
@@ -122,7 +125,6 @@ function deleteStep(stepIndex: number) {
     </section>
     <button type="button" class="btn" @click="addStep">{{ t('programs.addStep') }}</button>
     <button type="button" class="btn accent" @click="save">{{ t('common.save') }}</button>
-    <RouterLink to="/programs" class="btn ghost back">{{ t('common.back') }}</RouterLink>
   </div>
   <div v-else-if="loaded" class="panel not-found">
     <p class="sub">{{ t('programs.notFound') }}</p>
@@ -157,8 +159,8 @@ function deleteStep(stepIndex: number) {
 }
 .set-edit-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 12px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
   align-items: flex-end;
 }
@@ -166,7 +168,7 @@ function deleteStep(stepIndex: number) {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   flex: 1;
   min-width: 88px;
 }

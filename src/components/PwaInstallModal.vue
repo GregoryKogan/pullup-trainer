@@ -58,7 +58,7 @@ const steps = () => {
       >
         <p class="kicker">{{ t('pwa.title') }}</p>
         <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
-        <p id="pwa-dialog-desc" class="sr-only">{{ t('pwa.title') }}</p>
+        <p id="pwa-dialog-desc" class="sub pwa-lead">{{ t('pwa.title') }}</p>
         <div class="langrow" role="group" :aria-label="t('settings.language')">
           <span class="lang-label">{{ t('settings.language') }}</span>
           <span class="seg">
@@ -158,6 +158,9 @@ const steps = () => {
   font-family: 'Arial Black', system-ui, sans-serif;
   text-transform: uppercase;
   font-size: 1.2rem;
+  margin: 0 0 8px;
+}
+.pwa-lead {
   margin: 0 0 12px;
 }
 .tabs {

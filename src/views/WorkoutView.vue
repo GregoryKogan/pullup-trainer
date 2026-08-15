@@ -403,6 +403,7 @@ function confirmExit() {
     </div>
     <ConfirmPanel
       :visible="showExitConfirm"
+      :title="t('workout.exitTitle')"
       :message="t('workout.exitWarn')"
       @confirm="confirmExit"
       @cancel="showExitConfirm = false"

@@ -417,12 +417,14 @@ async function confirmReset() {
     </section>
     <ConfirmPanel
       :visible="showResetConfirm"
+      :title="t('settings.resetTitle')"
       :message="t('settings.resetConfirm')"
       @confirm="confirmReset"
       @cancel="showResetConfirm = false"
     />
     <ConfirmPanel
       :visible="showImportConfirm"
+      :title="t('settings.importTitle')"
       :message="t('settings.importConfirm')"
       @confirm="confirmImport"
       @cancel="showImportConfirm = false"
