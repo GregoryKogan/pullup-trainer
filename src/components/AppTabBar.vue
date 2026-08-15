@@ -20,7 +20,7 @@ function isActive(tab: (typeof tabs)[0]) {
 </script>
 
 <template>
-  <nav class="tabbar" aria-label="Main">
+  <nav class="tabbar" :aria-label="t('nav.main')">
     <RouterLink v-for="tab in tabs" :key="tab.name" :to="tab.to" :class="{ on: isActive(tab) }">
       <AppIcon :name="tab.icon" />
       {{ t(tab.label) }}

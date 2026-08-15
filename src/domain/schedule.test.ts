@@ -5,6 +5,7 @@ import {
   autoskipMissed,
   detectReturnPolicy,
   getMissedSlots,
+  findScheduleSlotIndex,
 } from './schedule'
 import { addDays, formatLocalDate, parseLocalDate } from '@/utils/dates'
 
@@ -27,6 +28,15 @@ describe('schedule', () => {
     const slots = buildInitialSchedule('2024-02-28', [1, 1], 3, [...WEEKDAYS])
     expect(slots[0].date).toMatch(/2024-02-/)
     expect(slots[1].date).toMatch(/2024-03-/)
+  })
+
+  it('findScheduleSlotIndex matches date or falls back to 0', () => {
+    const schedule = [
+      { date: '2026-08-17', stepRef: 1 },
+      { date: '2026-08-20', stepRef: 2 },
+    ]
+    expect(findScheduleSlotIndex(schedule, '2026-08-20')).toBe(1)
+    expect(findScheduleSlotIndex(schedule, '2026-08-99')).toBe(0)
   })
 
   it('reschedule cascades following slots', () => {

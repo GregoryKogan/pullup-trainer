@@ -249,10 +249,19 @@ a {
   box-shadow: 2px 2px 0 var(--shadow);
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
 .seg button {
   appearance: none;
   cursor: pointer;
-  min-height: 38px;
+  min-height: 44px;
   padding: 0 12px;
   border: 0;
   background: transparent;
@@ -269,6 +278,7 @@ a {
   appearance: none;
   cursor: pointer;
   width: 46px;
+  min-height: 44px;
   height: 26px;
   border-radius: 0;
   border: 2px solid var(--line);
@@ -303,7 +313,7 @@ a {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: color-mix(in srgb, var(--ink) 65%, transparent);
   z-index: 100;
   display: flex;
   align-items: flex-end;

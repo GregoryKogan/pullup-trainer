@@ -18,6 +18,7 @@ const router = useRouter()
       <p>{{ t('about.body') }}</p>
       <p class="sub">{{ t('about.version', { v: '1.0.0' }) }}</p>
       <button type="button" class="btn accent" @click="router.push('/why')">{{ t('about.whyLink') }}</button>
+      <button type="button" class="btn" @click="router.push('/why#sources')">{{ t('about.sourcesLink') }}</button>
       <button type="button" class="btn ghost" @click="router.back()">{{ t('common.back') }}</button>
     </section>
   </div>

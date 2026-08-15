@@ -6,7 +6,7 @@ import SetCardsRow from '@/components/workout/SetCardsRow.vue'
 const i18n = createI18n({
   legacy: false,
   locale: 'en',
-  messages: { en: { workout: { setLabel: 'Set {n}', setNow: 'Now' } } },
+  messages: { en: { workout: { setLabel: 'Set {n}', setNow: 'Now', setsRow: 'Sets' } } },
 })
 
 describe('SetCardsRow', () => {
@@ -23,6 +23,7 @@ describe('SetCardsRow', () => {
     })
     expect(wrapper.findAll('.s')).toHaveLength(3)
     expect(wrapper.find('.s.done').exists()).toBe(true)
+    expect(wrapper.find('.s.done .check').exists()).toBe(true)
     expect(wrapper.find('.s.now').exists()).toBe(true)
   })
 })

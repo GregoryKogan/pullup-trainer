@@ -12,26 +12,27 @@ defineProps<{
   }[]
 }>()
 
-const emit = defineEmits<{ select: [index: number] }>()
 const { t } = useI18n()
 </script>
 
 <template>
-  <div class="setsrow" aria-label="Sets">
-    <button
+  <div class="setsrow" :aria-label="t('workout.setsRow')">
+    <div
       v-for="(s, i) in sets"
       :key="i"
-      type="button"
       class="s"
       :class="{ done: s.doneFlag, now: s.current }"
       :aria-label="t('workout.setLabel', { n: i + 1 })"
-      @click="emit('select', i)"
+      :aria-current="s.current ? 'step' : undefined"
     >
+      <svg v-if="s.doneFlag" class="check" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path d="M2 8.5 6 12.5 14 3.5" fill="none" stroke="currentColor" stroke-width="2.2" />
+      </svg>
       <b>{{ s.done ?? s.planned }}</b>
       <span>{{
         s.doneFlag ? t('workout.setLabel', { n: i + 1 }) : s.current ? t('workout.setNow') : t('workout.setLabel', { n: i + 1 })
       }}</span>
-    </button>
+    </div>
   </div>
 </template>
 
@@ -53,9 +54,14 @@ const { t } = useI18n()
   align-items: center;
   justify-content: center;
   gap: 3px;
-  cursor: pointer;
-  appearance: none;
   color: inherit;
+  position: relative;
+}
+.setsrow .check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: var(--ok);
 }
 .setsrow b {
   font: 800 1.2rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
@@ -79,6 +85,9 @@ const { t } = useI18n()
 }
 .setsrow .s.now b,
 .setsrow .s.now span {
+  color: var(--accent-ink);
+}
+.setsrow .s.now .check {
   color: var(--accent-ink);
 }
 </style>

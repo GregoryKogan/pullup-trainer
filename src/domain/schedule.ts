@@ -129,6 +129,11 @@ export function getMissedSlots(
   return schedule.filter((s) => s.date < today && !completedDates.has(s.date))
 }
 
+export function findScheduleSlotIndex(schedule: ScheduleSlot[], date: string): number {
+  const idx = schedule.findIndex((s) => s.date === date)
+  return idx >= 0 ? idx : 0
+}
+
 export function detectReturnPolicy(lastWorkoutDate: string | null, today: string): ReturnPolicy {
   if (!lastWorkoutDate) return 'continue'
   return daysBetween(lastWorkoutDate, today) > 14 ? 'retest' : 'continue'

@@ -150,7 +150,7 @@ async function resetAll() {
   <div v-if="settings">
     <header class="head">
       <div>
-        <p class="kicker">Poster · Swiss</p>
+        <p class="kicker">{{ t('settings.designKicker') }}</p>
         <h2>{{ t('settings.title') }}</h2>
       </div>
     </header>
@@ -160,33 +160,54 @@ async function resetAll() {
         <span class="k">{{ t('settings.restDuration') }}</span>
         <span class="v">
           <b>{{ Math.floor(settings.restDurationSeconds / 60) }}:{{ String(settings.restDurationSeconds % 60).padStart(2, '0') }}</b>
-          <button type="button" class="iconbtn" style="width: 40px; height: 40px" @click="changeRest(-15)">−</button>
-          <button type="button" class="iconbtn" style="width: 40px; height: 40px" @click="changeRest(15)">+</button>
+          <button type="button" class="iconbtn" style="width: 44px; height: 44px" @click="changeRest(-15)">−</button>
+          <button type="button" class="iconbtn" style="width: 44px; height: 44px" @click="changeRest(15)">+</button>
         </span>
       </div>
       <div class="setrow">
-        <span class="k">{{ t('settings.restPreset90') }}</span>
+        <span class="k">{{ t('settings.restPresets') }}</span>
         <span class="seg">
-          <button type="button" @click="setRestPreset(90)">90s</button>
-          <button type="button" @click="setRestPreset(180)">3:00</button>
-          <button type="button" @click="setRestPreset(300)">5:00</button>
+          <button type="button" @click="setRestPreset(90)">{{ t('workout.restPreset90') }}</button>
+          <button type="button" @click="setRestPreset(180)">{{ t('workout.restPreset180') }}</button>
+          <button type="button" @click="setRestPreset(300)">{{ t('workout.restPreset300') }}</button>
         </span>
       </div>
       <div class="setrow">
         <span class="k">{{ t('settings.autoStart') }}</span>
-        <button type="button" class="sw" :class="{ on: settings.restAutoStart }" @click="toggleAutoStart">
+        <button
+          type="button"
+          class="sw"
+          :class="{ on: settings.restAutoStart }"
+          :aria-label="t('settings.autoStart')"
+          :aria-pressed="settings.restAutoStart"
+          @click="toggleAutoStart"
+        >
           <i />
         </button>
       </div>
       <div class="setrow">
         <span class="k">{{ t('settings.vibrate') }}</span>
-        <button type="button" class="sw" :class="{ on: settings.restVibrate }" @click="toggleVibrate">
+        <button
+          type="button"
+          class="sw"
+          :class="{ on: settings.restVibrate }"
+          :aria-label="t('settings.vibrate')"
+          :aria-pressed="settings.restVibrate"
+          @click="toggleVibrate"
+        >
           <i />
         </button>
       </div>
       <div class="setrow">
         <span class="k">{{ t('settings.notify') }}</span>
-        <button type="button" class="sw" :class="{ on: settings.restNotify }" @click="toggleNotify">
+        <button
+          type="button"
+          class="sw"
+          :class="{ on: settings.restNotify }"
+          :aria-label="t('settings.notify')"
+          :aria-pressed="settings.restNotify"
+          @click="toggleNotify"
+        >
           <i />
         </button>
       </div>
@@ -279,7 +300,7 @@ async function resetAll() {
 
 <style scoped>
 select {
-  min-height: 38px;
+  min-height: 44px;
   border: 2px solid var(--line);
   background: var(--bg);
   color: var(--ink);
@@ -292,8 +313,8 @@ select {
   justify-content: flex-end;
 }
 .wd {
-  min-height: 36px;
-  min-width: 36px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 6px;
   border: 2px solid var(--line);
   background: var(--card);

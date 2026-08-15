@@ -167,12 +167,19 @@ export const useProgressStore = defineStore('progress', () => {
     return { ...progress.value.schedule[idx], index: idx }
   }
 
+  async function activateBuiltin() {
+    const testRec = records.value.find((r) => r.kind === 'test')
+    const m = testRec?.sets[0]?.done ?? 7
+    await applyRetest(m)
+  }
+
   return {
     progress,
     records,
     hydrate,
     initFromTest,
     setCustomActive,
+    activateBuiltin,
     saveRecord,
     getNextSlot,
     updateProgress,

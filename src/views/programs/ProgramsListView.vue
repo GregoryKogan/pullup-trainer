@@ -27,6 +27,11 @@ async function createProgram() {
   router.push(`/programs/${id}/edit`)
 }
 
+async function activateBuiltin() {
+  await progressStore.activateBuiltin()
+  router.push('/')
+}
+
 async function remove(id: number) {
   if (!confirm(t('programs.deleteConfirm'))) return
   await deleteCustomProgram(id)
@@ -49,6 +54,14 @@ async function activate(id: number) {
       </div>
     </header>
     <button type="button" class="btn accent" @click="createProgram">{{ t('programs.new') }}</button>
+    <button
+      v-if="progressStore.progress?.source === 'custom'"
+      type="button"
+      class="btn ghost"
+      @click="activateBuiltin"
+    >
+      {{ t('programs.useBuiltin') }}
+    </button>
     <section v-for="p in programs" :key="p.id" class="panel">
       <h3>{{ p.name }}</h3>
       <p class="sub">{{ p.steps.length }} {{ t('programs.steps') }}</p>

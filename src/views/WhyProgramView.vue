@@ -42,7 +42,7 @@ const sources = computed(() => {
         <span class="sub">{{ f.example }}</span>
       </div>
     </section>
-    <section class="sec">
+    <section id="sources" class="sec">
       <h4>{{ t('science.sourcesTitle') }}</h4>
       <ul class="sources">
         <li v-for="s in sources" :key="s.id">

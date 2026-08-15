@@ -3,7 +3,25 @@ import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import RestTimerRing from '@/components/workout/RestTimerRing.vue'
 
-const i18n = createI18n({ legacy: false, locale: 'en', messages: { en: { workout: { reset: 'Reset', skipRest: 'Skip', restHint: 'hint', pause: 'Pause' } } } })
+const i18n = createI18n({
+  legacy: false,
+  locale: 'en',
+  messages: {
+    en: {
+      workout: {
+        reset: 'Reset',
+        skipRest: 'Skip',
+        restHint: 'hint',
+        pause: 'Pause',
+        restPreset90: '90s',
+        restPreset180: '3:00',
+        restPreset300: '5:00',
+        adjustMinus: '−15 sec',
+        adjustPlus: '+15 sec',
+      },
+    },
+  },
+})
 
 describe('RestTimerRing', () => {
   it('emits adjust events', async () => {
@@ -11,7 +29,7 @@ describe('RestTimerRing', () => {
       global: { plugins: [i18n] },
       props: { remaining: 90, total: 180, label: 'REST' },
     })
-    await wrapper.findAll('.mini')[0].trigger('click')
+    await wrapper.findAll('.mini')[3].trigger('click')
     expect(wrapper.emitted('minus')).toBeTruthy()
   })
 })

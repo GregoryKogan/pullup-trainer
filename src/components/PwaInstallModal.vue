@@ -30,11 +30,18 @@ const steps = () => {
 </script>
 
 <template>
-  <div v-if="visible" class="modal-overlay modal-full" role="dialog" aria-modal="true" :aria-label="t('pwa.title')">
+  <div
+    v-if="visible"
+    class="modal-overlay modal-full"
+    role="dialog"
+    aria-modal="true"
+    :aria-labelledby="'pwa-dialog-title'"
+    @keydown.escape="emit('dismiss')"
+  >
     <div class="modal-card pwa-modal">
       <p class="kicker">{{ t('pwa.title') }}</p>
-      <h2>{{ t('pwa.subtitle') }}</h2>
-      <div class="tabs" role="tablist">
+      <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
+      <div class="tabs" role="tablist" :aria-label="t('pwa.title')">
         <button
           v-for="tab in tabs"
           :key="tab"
@@ -43,13 +50,15 @@ const steps = () => {
           class="tab"
           :class="{ on: tab === activeTab }"
           :aria-selected="tab === activeTab"
+          :aria-controls="`pwa-panel-${tab}`"
+          :tabindex="tab === activeTab ? 0 : -1"
           @click="activeTab = tab"
         >
           {{ t(`pwa.tabs.${tab}`) }}
         </button>
       </div>
       <p v-if="activeTab === 'ios'" class="note">{{ t('pwa.ios.note') }}</p>
-      <ol class="steps">
+      <ol :id="`pwa-panel-${activeTab}`" class="steps" role="tabpanel">
         <li v-for="(step, i) in steps()" :key="i">
           <span class="step-num">{{ i + 1 }}</span>
           <span>{{ step }}</span>

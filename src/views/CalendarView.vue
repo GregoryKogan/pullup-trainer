@@ -90,8 +90,20 @@ function nextMonth() {
   viewMonth.value = new Date(viewMonth.value.getFullYear(), viewMonth.value.getMonth() + 1, 1)
 }
 
-function goToday() {
-  viewMonth.value = new Date()
+function dayAriaLabel(date: string, day: number) {
+  const status = dayStatus(date)
+  const statusKey =
+    status === 'done'
+      ? 'calendar.done'
+      : status === 'missed'
+        ? 'calendar.missed'
+        : status === 'planned'
+          ? 'calendar.planned'
+          : status === 'today'
+            ? 'calendar.todayLegend'
+            : ''
+  const statusText = statusKey ? t(statusKey) : ''
+  return statusText ? `${day}, ${statusText}` : String(day)
 }
 
 async function applyMove() {
@@ -111,6 +123,10 @@ function repeatMissed() {
   if (selectedSlot.value) router.push(`/workout/${selectedSlot.value.date}`)
 }
 
+function goToday() {
+  viewMonth.value = new Date()
+}
+
 async function handleMissedAutoshift() {
   const p = progressStore.progress
   if (!p) return
@@ -128,8 +144,8 @@ handleMissedAutoshift()
     <div class="calhead">
       <h3>{{ monthLabel }}</h3>
       <div class="nav">
-        <button type="button" class="iconbtn" :aria-label="t('common.back')" @click="prevMonth">‹</button>
-        <button type="button" class="iconbtn" aria-label="Next month" @click="nextMonth">›</button>
+        <button type="button" class="iconbtn" :aria-label="t('calendar.prevMonth')" @click="prevMonth">‹</button>
+        <button type="button" class="iconbtn" :aria-label="t('calendar.nextMonth')" @click="nextMonth">›</button>
         <button type="button" class="today" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </div>
@@ -141,6 +157,7 @@ handleMissedAutoshift()
         type="button"
         class="day"
         :class="[dayStatus(cell.date), { out: !cell.inMonth, sel: selectedMoveDate === cell.date }]"
+        :aria-label="dayAriaLabel(cell.date, cell.day)"
         @click="selectDay(cell.date)"
       >
         {{ cell.day }}
@@ -284,6 +301,18 @@ handleMissedAutoshift()
 .opt.on {
   background: var(--accent);
   color: var(--accent-ink);
+}
+.sheetcard {
+  position: relative;
+}
+.sheetcard::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 4px;
+  background: var(--muted);
+  margin: 0 auto 12px;
+  border-radius: 2px;
 }
 .sheetcard h4 {
   font-family: 'Arial Black', system-ui, sans-serif;

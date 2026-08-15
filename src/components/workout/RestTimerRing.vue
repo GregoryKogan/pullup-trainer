@@ -17,7 +17,10 @@ const emit = defineEmits<{
   pause: []
   reset: []
   skip: []
+  preset: [seconds: number]
 }>()
+
+const ringLabel = computed(() => `${props.label}: ${formatTime(props.remaining)}`)
 
 const offset = computed(() => {
   const c = 2 * Math.PI * 52
@@ -28,7 +31,7 @@ const offset = computed(() => {
 
 <template>
   <section class="restcard">
-    <svg class="ring" viewBox="0 0 120 120" width="100" height="100" role="img">
+    <svg class="ring" viewBox="0 0 120 120" width="100" height="100" role="img" :aria-label="ringLabel">
       <circle class="bg" cx="60" cy="60" r="52" />
       <circle
         class="fg"
@@ -43,15 +46,20 @@ const offset = computed(() => {
       <text class="ring-lab" x="60" y="73" text-anchor="middle">{{ label }}</text>
     </svg>
     <div class="restbody">
+      <div class="presets">
+        <button type="button" class="mini" @click="emit('preset', 90)">{{ t('workout.restPreset90') }}</button>
+        <button type="button" class="mini" @click="emit('preset', 180)">{{ t('workout.restPreset180') }}</button>
+        <button type="button" class="mini" @click="emit('preset', 300)">{{ t('workout.restPreset300') }}</button>
+      </div>
       <div class="restrow">
-        <button type="button" class="mini" @click="emit('minus')">−15s</button>
+        <button type="button" class="mini" @click="emit('minus')">{{ t('workout.adjustMinus') }}</button>
         <button type="button" class="mini" :aria-label="t('workout.pause')" @click="emit('pause')">
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
             <rect x="6" y="5" width="4" height="14" fill="currentColor" />
             <rect x="14" y="5" width="4" height="14" fill="currentColor" />
           </svg>
         </button>
-        <button type="button" class="mini" @click="emit('plus')">+15s</button>
+        <button type="button" class="mini" @click="emit('plus')">{{ t('workout.adjustPlus') }}</button>
       </div>
       <div class="restrow">
         <button type="button" class="mini" @click="emit('reset')">{{ $t('workout.reset') }}</button>
@@ -96,6 +104,15 @@ const offset = computed(() => {
 }
 .restbody {
   flex: 1;
+}
+.presets {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.presets .mini {
+  flex: 1;
+  font-size: 0.62rem;
 }
 .restrow {
   display: flex;

@@ -16,7 +16,7 @@ import {
   computeTotals,
   evaluateWorkout,
 } from '@/domain/progression'
-import { advanceScheduleAfterWorkout } from '@/domain/schedule'
+import { advanceScheduleAfterWorkout, findScheduleSlotIndex } from '@/domain/schedule'
 import { useRestTimer } from '@/composables/use-rest-timer'
 import { requestNotificationPermission, signalRestEnd } from '@/composables/use-rest-signals'
 import { getCustomProgram } from '@/db/repositories/custom-programs'
@@ -85,12 +85,21 @@ const setCards = computed(() =>
   })),
 )
 
+function resolveSlotIndex(): number {
+  const p = progressStore.progress
+  if (!p) return 0
+  return findScheduleSlotIndex(p.schedule, workoutDate())
+}
+
 function resolvePlanned(): PlannedSet[] {
   const p = progressStore.progress
   if (!p) return []
   if (p.source === 'custom') return []
-  const slot = p.schedule[0]
-  if (p.state.path === 'P0') return path0Session(p.state.path0Step).sets
+  const slot = p.schedule[resolveSlotIndex()]
+  if (p.state.path === 'P0') {
+    const step = slot?.stepRef ?? p.state.path0Step
+    return path0Session(step).sets
+  }
   const k = slot?.stepRef ?? (p.state.path === 'L' ? p.state.stepInCycle : 1)
   if (p.state.path === 'L') return session(p.state.anchor, k).sets
   return []
@@ -122,7 +131,7 @@ async function loadSession() {
   workoutStore.start({
     date,
     planned: resolvePlanned(),
-    programName: 'Pull-up Trainer',
+    programName: t('common.programName'),
     program: 'builtin',
     startedAt: toIsoOffset(new Date()),
   })
@@ -223,6 +232,7 @@ async function finishWorkout() {
     totals,
   })
 
+  const slotIndex = findScheduleSlotIndex(p.schedule, active.date)
   let updated: ActiveProgress = { ...p }
   if (p.source === 'builtin') {
     if (p.state.path === 'L') {
@@ -233,7 +243,7 @@ async function finishWorkout() {
         lastWorkoutDate: active.date,
         schedule: advanceScheduleAfterWorkout(
           p.schedule,
-          0,
+          slotIndex,
           result === 'success',
           newState.stepInCycle,
           p.frequencyDays,
@@ -249,7 +259,7 @@ async function finishWorkout() {
         lastWorkoutDate: active.date,
         schedule: advanceScheduleAfterWorkout(
           p.schedule,
-          0,
+          slotIndex,
           result === 'success',
           newState.path0Step,
           p.frequencyDays,
@@ -268,7 +278,7 @@ async function finishWorkout() {
       lastWorkoutDate: active.date,
       schedule: advanceScheduleAfterWorkout(
         p.schedule,
-        0,
+        slotIndex,
         result === 'success',
         p.currentStepIndex,
         3,
@@ -314,11 +324,6 @@ function exitWorkout() {
         {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
       </p>
     </div>
-    <div v-if="!workoutStore.restRunning && !workoutStore.isComplete()" class="presets">
-      <button type="button" class="mini" @click="applyRestPreset(90)">{{ t('workout.restPreset90') }}</button>
-      <button type="button" class="mini" @click="applyRestPreset(180)">{{ t('workout.restPreset180') }}</button>
-      <button type="button" class="mini" @click="applyRestPreset(300)">{{ t('workout.restPreset300') }}</button>
-    </div>
     <RestTimerRing
       v-if="workoutStore.restRunning"
       :remaining="restTimer.remaining.value"
@@ -329,6 +334,7 @@ function exitWorkout() {
       @pause="restTimer.togglePause()"
       @reset="restTimer.reset()"
       @skip="workoutStore.restRunning = false"
+      @preset="applyRestPreset"
     />
     <div v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning" class="btnrow">
       <button
@@ -392,23 +398,13 @@ function exitWorkout() {
   font-size: 7.2rem;
   font-weight: 900;
   line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 2.5px var(--accent);
+  color: var(--accent);
 }
-.presets {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.presets .mini {
-  flex: 1;
-  min-height: 44px;
-  background: var(--card);
-  border: 2px solid var(--line);
-  box-shadow: 3px 3px 0 var(--shadow);
-  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  cursor: pointer;
-  color: var(--ink);
+@supports (-webkit-text-stroke: 2.5px var(--accent)) {
+  .rep {
+    color: transparent;
+    -webkit-text-stroke: 2.5px var(--accent);
+  }
 }
 .fewer input {
   width: 100%;

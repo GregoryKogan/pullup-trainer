@@ -33,7 +33,7 @@ async function accept() {
     durationSeconds: 0,
     kind: 'test',
     program: 'builtin',
-    programName: 'Pull-up Trainer',
+    programName: t('common.programName'),
     result: 'success',
     sets: [{ position: 1, type: 'max', unit: 'reps', planned: 0, done: reps.value }],
     totals,

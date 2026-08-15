@@ -84,6 +84,18 @@ function exportHistoryJson() {
       <h4>{{ t('stats.maxChart') }}</h4>
       <p class="sub">{{ t('stats.maxChartSub') }}</p>
       <svg class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
+        <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
+        <line
+          v-for="i in 4"
+          :key="`grid-${i}`"
+          x1="30"
+          :y1="130 - i * 25"
+          x2="330"
+          :y2="130 - i * 25"
+          stroke="var(--line)"
+          stroke-width="1"
+          opacity="0.35"
+        />
         <polyline
           v-if="maxReps.length"
           class="line"
@@ -97,6 +109,18 @@ function exportHistoryJson() {
     <section class="sec">
       <h4>{{ t('stats.weeklyVolume') }}</h4>
       <svg class="chart" viewBox="0 0 354 140" role="img" :aria-label="t('stats.weeklyVolume')">
+        <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
+        <line
+          v-for="i in 4"
+          :key="`vgrid-${i}`"
+          x1="30"
+          :y1="130 - i * 25"
+          x2="330"
+          :y2="130 - i * 25"
+          stroke="var(--line)"
+          stroke-width="1"
+          opacity="0.35"
+        />
         <rect
           v-for="(b, i) in weeklyBars"
           :key="b.week"

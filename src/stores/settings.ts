@@ -34,7 +34,8 @@ export const useSettingsStore = defineStore('settings', () => {
     document.documentElement.dataset.theme = `${palette}-${mode}`
     const meta = document.querySelector('meta[name="theme-color"]')
     if (meta) {
-      meta.setAttribute('content', mode === 'dark' ? '#0E0E0B' : '#F4F2EA')
+      const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()
+      if (bg) meta.setAttribute('content', bg)
     }
   }
 
