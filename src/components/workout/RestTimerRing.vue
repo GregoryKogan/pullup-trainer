@@ -38,23 +38,27 @@ const offset = computed(() => {
 </script>
 
 <template>
-  <section class="restcard">
-    <p class="sr-only" aria-live="polite" aria-atomic="true">{{ ringLabel }}</p>
-    <svg class="ring" viewBox="0 0 120 120" width="100" height="100" role="img" :aria-label="ringLabel" aria-hidden="true">
-      <circle class="bg" cx="60" cy="60" r="52" />
-      <circle
-        class="fg"
-        cx="60"
-        cy="60"
-        r="52"
-        :stroke-dasharray="326.7"
-        :stroke-dashoffset="offset"
-        transform="rotate(-90 60 60)"
-      />
-      <text class="ring-num" x="60" y="57" text-anchor="middle">{{ displayTime }}</text>
-      <text class="ring-lab" x="60" y="73" text-anchor="middle">{{ total > 0 ? label : t('workout.chooseRest') }}</text>
-    </svg>
-    <div class="restbody">
+  <div class="rest-layout">
+    <section class="rest-hero">
+      <p class="sr-only" aria-live="polite" aria-atomic="true">{{ ringLabel }}</p>
+      <div class="ring-stack">
+        <svg class="ring" viewBox="0 0 120 120" role="img" :aria-label="ringLabel" aria-hidden="true">
+          <circle class="bg" cx="60" cy="60" r="52" />
+          <circle
+            class="fg"
+            cx="60"
+            cy="60"
+            r="52"
+            :stroke-dasharray="326.7"
+            :stroke-dashoffset="offset"
+            transform="rotate(-90 60 60)"
+          />
+          <text class="ring-num" x="60" y="60" text-anchor="middle" dominant-baseline="central">{{ displayTime }}</text>
+        </svg>
+        <p class="ring-lab">{{ total > 0 ? label : t('workout.chooseRest') }}</p>
+      </div>
+    </section>
+    <section class="rest-dock panel">
       <div class="presets">
         <button
           v-for="sec in REST_PRESET_SECONDS"
@@ -65,9 +69,6 @@ const offset = computed(() => {
         >
           {{ formatTime(sec) }}
         </button>
-      </div>
-      <div class="restrow">
-        <button type="button" class="mini skip-btn" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>
       </div>
       <div v-if="total > 0" class="restrow">
         <button type="button" class="mini icon-mini" :aria-label="t('workout.adjustMinus')" @click="emit('minus')">
@@ -86,8 +87,9 @@ const offset = computed(() => {
           <AppIcon name="plus" :size="16" />
         </button>
       </div>
-      <div v-if="total > 0" class="restrow">
-        <button type="button" class="mini reset-btn" @click="emit('reset')">
+      <div class="restrow">
+        <button type="button" class="mini skip-btn" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>
+        <button v-if="total > 0" type="button" class="mini reset-btn" @click="emit('reset')">
           <AppIcon name="reset" :size="15" />
           {{ $t('workout.reset') }}
         </button>
@@ -96,30 +98,36 @@ const offset = computed(() => {
         <AppIcon name="vibrate" />
         {{ $t('workout.restHint') }}
       </p>
-    </div>
-  </section>
+    </section>
+  </div>
 </template>
 
 <style scoped>
-.restcard {
+.rest-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.rest-hero {
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: var(--card);
-  border: 2px solid var(--line);
-  border-radius: 2px;
-  box-shadow: 5px 5px 0 var(--shadow);
-  padding: 12px 14px;
-  margin-bottom: 14px;
+  justify-content: center;
+  padding: 8px 0 12px;
 }
-@media (max-width: 380px) {
-  .restcard {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .ring {
-    align-self: center;
-  }
+.ring-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.ring {
+  width: clamp(168px, min(52vw, 34vh), 240px);
+  height: clamp(168px, min(52vw, 34vh), 240px);
+  flex-shrink: 0;
+  display: block;
 }
 .ring .bg {
   stroke: var(--line);
@@ -133,21 +141,25 @@ const offset = computed(() => {
   stroke-linecap: round;
 }
 .ring-num {
-  font: 800 24px/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 800 clamp(32px, 9vw, 44px) / 1 ui-monospace, 'SF Mono', Menlo, monospace;
   fill: var(--ink);
 }
 .ring-lab {
-  font: 700 10px/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  letter-spacing: 0.18em;
-  fill: var(--muted);
+  margin: 0;
+  font: 700 0.68rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
 }
-.restbody {
-  flex: 1;
+.rest-dock {
+  flex-shrink: 0;
+  padding: 14px 16px max(16px, env(safe-area-inset-bottom, 0px));
 }
 .presets {
   display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 .presets .mini {
   flex: 1;
@@ -155,8 +167,11 @@ const offset = computed(() => {
 }
 .restrow {
   display: flex;
-  gap: 7px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.restrow:last-of-type {
+  margin-bottom: 0;
 }
 .mini {
   appearance: none;
@@ -164,7 +179,7 @@ const offset = computed(() => {
   min-height: 44px;
   min-width: 44px;
   flex: 1;
-  background: var(--card);
+  background: var(--bg);
   border: 2px solid var(--line);
   border-radius: 2px;
   box-shadow: 3px 3px 0 var(--shadow);
@@ -179,17 +194,12 @@ const offset = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 44px;
 }
 .reset-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 100%;
-}
-.skip-btn {
-  flex: 1;
 }
 .resthint {
   display: flex;
@@ -197,7 +207,7 @@ const offset = computed(() => {
   gap: 6px;
   font: 700 0.68rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
-  margin: 0;
+  margin: 10px 0 0;
 }
 .resthint svg {
   flex: 0 0 auto;

@@ -390,66 +390,73 @@ function confirmExit() {
     </div>
     <p id="workout-exit-hint" class="sr-only">{{ t('workout.exitWarn') }}</p>
     <SetCardsRow :sets="setCards" />
-    <div v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning" class="focus">
-      <p class="kicker">{{ t('workout.doNow') }}</p>
-      <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
-      <div class="rep" aria-live="polite" aria-atomic="true">{{ currentSet.planned }}</div>
-      <p class="sub" aria-live="polite">
-        {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
-      </p>
-      <p v-if="currentSet.type === 'max'" class="sub hint">{{ t('workout.maxDoneHint', { min: currentSet.planned }) }}</p>
-    </div>
-    <RestTimerRing
-      v-if="workoutStore.restRunning"
-      :remaining="restTimer.remaining.value"
-      :total="restTimer.total.value"
-      :paused="restTimer.paused.value"
-      :label="t('workout.rest')"
-      @minus="restTimer.adjust(-15)"
-      @plus="restTimer.adjust(15)"
-      @pause="restTimer.togglePause()"
-      @reset="restTimer.reset()"
-      @skip="workoutStore.restRunning = false"
-      @preset="applyRestPreset"
-    />
-    <div
-      v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning && !showFewer"
-      class="actions"
-    >
-      <div v-if="currentSet.type === 'max'" class="max-done panel">
-        <label class="fewer-label" for="max-done-input">{{ t('workout.maxDoneLabel') }}</label>
-        <input
-          id="max-done-input"
-          v-model.number="maxDoneInput"
-          type="number"
-          min="0"
-          :max="maxDoneLimit"
-          :aria-label="t('workout.maxDoneLabel')"
-        />
-        <button type="button" class="btn accent" @click="finishSet(maxDoneInput)">
-          {{ t('workout.doneMax') }}
-        </button>
+    <div class="workout-stage">
+      <div
+        v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning"
+        class="workout-hero"
+      >
+        <p class="kicker">{{ t('workout.doNow') }}</p>
+        <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
+        <div class="rep" aria-live="polite" aria-atomic="true">{{ currentSet.planned }}</div>
+        <p class="sub" aria-live="polite">
+          {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
+        </p>
+        <p v-if="currentSet.type === 'max'" class="sub hint">{{ t('workout.maxDoneHint', { min: currentSet.planned }) }}</p>
       </div>
-      <div v-else class="btnrow">
-        <button type="button" class="btn accent" style="flex: 1.6" @click="finishSet(currentSet.planned)">
-          {{ t('workout.doneMax') }}
-        </button>
-        <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logDifferent') }}</button>
-      </div>
-    </div>
-    <div v-if="showFewer" class="fewer panel">
-      <label class="fewer-label" :for="'fewer-input'">{{ t(fewerLabelKey) }}</label>
-      <input
-        id="fewer-input"
-        v-model.number="fewerValue"
-        type="number"
-        min="0"
-        :max="maxDoneValue"
-        :aria-label="t(fewerLabelKey)"
+      <RestTimerRing
+        v-if="workoutStore.restRunning"
+        :remaining="restTimer.remaining.value"
+        :total="restTimer.total.value"
+        :paused="restTimer.paused.value"
+        :label="t('workout.rest')"
+        @minus="restTimer.adjust(-15)"
+        @plus="restTimer.adjust(15)"
+        @pause="restTimer.togglePause()"
+        @reset="restTimer.reset()"
+        @skip="workoutStore.restRunning = false"
+        @preset="applyRestPreset"
       />
-      <div class="btnrow">
-        <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
-        <button type="button" class="btn ghost" @click="showFewer = false">{{ t('common.cancel') }}</button>
+      <div
+        v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning && !showFewer"
+        class="workout-dock"
+      >
+        <div v-if="currentSet.type === 'max'" class="max-done panel">
+          <label class="fewer-label" for="max-done-input">{{ t('workout.maxDoneLabel') }}</label>
+          <input
+            id="max-done-input"
+            v-model.number="maxDoneInput"
+            type="number"
+            min="0"
+            :max="maxDoneLimit"
+            :aria-label="t('workout.maxDoneLabel')"
+          />
+          <button type="button" class="btn accent" @click="finishSet(maxDoneInput)">
+            {{ t('workout.doneMax') }}
+          </button>
+        </div>
+        <div v-else class="btnrow">
+          <button type="button" class="btn accent" style="flex: 1.6" @click="finishSet(currentSet.planned)">
+            {{ t('workout.doneMax') }}
+          </button>
+          <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logDifferent') }}</button>
+        </div>
+      </div>
+      <div v-if="showFewer" class="workout-dock">
+        <div class="fewer panel">
+          <label class="fewer-label" :for="'fewer-input'">{{ t(fewerLabelKey) }}</label>
+          <input
+            id="fewer-input"
+            v-model.number="fewerValue"
+            type="number"
+            min="0"
+            :max="maxDoneValue"
+            :aria-label="t(fewerLabelKey)"
+          />
+          <div class="btnrow">
+            <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
+            <button type="button" class="btn ghost" @click="showFewer = false">{{ t('common.cancel') }}</button>
+          </div>
+        </div>
       </div>
     </div>
     <ConfirmPanel
@@ -467,7 +474,44 @@ function confirmExit() {
 </template>
 
 <style scoped>
+.workout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.workout-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.workout-hero {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px 0 16px;
+}
+.workout-dock {
+  flex-shrink: 0;
+  padding-top: 4px;
+  padding-bottom: max(4px, env(safe-area-inset-bottom, 0px));
+}
+.workout-dock .btnrow .btn,
+.workout-dock .max-done .btn,
+.workout-dock .fewer .btnrow .btn {
+  margin-top: 0;
+}
+.workout-dock .max-done,
+.workout-dock .fewer {
+  margin-bottom: 0;
+}
 .top {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -488,14 +532,14 @@ function confirmExit() {
 .clock {
   font: 800 0.8rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
-.focus {
-  background: var(--card);
-  border: 2px solid var(--line);
-  border-radius: 2px;
-  box-shadow: 5px 5px 0 var(--shadow);
-  text-align: center;
-  padding: 18px 12px 14px;
+.workout-hero .kicker {
   margin-bottom: 14px;
+}
+.workout-hero .sub {
+  margin-top: 10px;
+  font: 800 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .type-tag {
   font: 800 0.65rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
@@ -505,7 +549,7 @@ function confirmExit() {
 }
 .rep {
   font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: clamp(4rem, 22vw, 7.4rem);
+  font-size: clamp(5rem, min(28vw, 26vh), 9rem);
   font-weight: 900;
   line-height: 1;
   color: var(--accent);
