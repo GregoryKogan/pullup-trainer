@@ -448,6 +448,9 @@ select {
 .setrow select {
   flex: 1;
   min-width: 0;
+  text-align: right;
+  text-align-last: right;
+  padding: 0 28px 0 12px;
 }
 .weekdays {
   display: flex;
