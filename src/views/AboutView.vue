@@ -9,7 +9,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div>
+  <div class="page">
     <div class="subpage-head">
       <button type="button" class="btn ghost" @click="safeBack(router)">{{ t('common.back') }}</button>
       <header class="head">

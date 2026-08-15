@@ -187,8 +187,7 @@ function onTabKeydown(e: KeyboardEvent) {
   min-height: 100dvh;
 }
 .pwa-scroll {
-  flex: 1;
-  min-height: 0;
+  flex: 0 1 auto;
   overflow-y: auto;
   padding: max(16px, env(safe-area-inset-top, 0px)) 16px 12px;
 }

@@ -110,7 +110,7 @@ function exportHistoryJson() {
 </script>
 
 <template>
-  <div>
+  <div class="page">
     <header class="head">
       <div>
         <p class="kicker">{{ t('stats.kicker') }}</p>
@@ -123,7 +123,7 @@ function exportHistoryJson() {
         <span>{{ t('stats.maxReps') }}</span>
       </div>
       <div class="kpi">
-        <b class="streak-num">{{ streakWeeks > 0 ? streakWeeks : '—' }}</b>
+        <b class="streak-num">{{ streakWeeks }}</b>
         <span>{{ streakWeeks > 0 ? t('stats.streakWeeks', { n: streakWeeks }) : t('stats.noStreak') }}</span>
       </div>
       <div class="kpi">
@@ -241,7 +241,7 @@ function exportHistoryJson() {
         </li>
       </ul>
     </section>
-    <section class="sec">
+    <section class="sec page-bottom">
       <h4>{{ t('stats.history') }}</h4>
       <ul class="hist">
         <li v-for="r in history" :key="r.id ?? r.startedAt">

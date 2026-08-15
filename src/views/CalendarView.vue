@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="calendar-wrap">
+  <div class="calendar-wrap page">
     <header class="head">
       <div>
         <p class="kicker">{{ t('calendar.title') }}</p>
@@ -220,7 +220,7 @@ onBeforeUnmount(() => {
       <div class="nav">
         <button type="button" class="iconbtn" :aria-label="t('calendar.prevMonth')" @click="prevMonth">‹</button>
         <button type="button" class="iconbtn" :aria-label="t('calendar.nextMonth')" @click="nextMonth">›</button>
-        <button type="button" class="today" @click="goToday">{{ t('common.today') }}</button>
+        <button type="button" class="today-btn" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </header>
     <div v-if="autoshiftBanner" class="banner">{{ t('calendar.autoshiftApplied') }}</div>
@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
         {{ cell.day }}
       </button>
     </div>
-    <div class="legend">
+    <div class="legend page-bottom">
       <span><i class="dot done" aria-hidden="true" />{{ t('calendar.done') }}</span>
       <span><i class="dot missed" aria-hidden="true" />{{ t('calendar.missed') }}</span>
       <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
@@ -339,7 +339,7 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   justify-content: flex-end;
 }
-.today {
+.today-btn {
   min-height: 44px;
   padding: 0 13px;
   background: var(--card);
@@ -408,7 +408,7 @@ onBeforeUnmount(() => {
   gap: 14px;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 12px 0;
+  padding-bottom: 12px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }

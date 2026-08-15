@@ -41,18 +41,7 @@ const { t } = useI18n()
 
 <style scoped>
 .sets-wrap {
-  position: relative;
   margin-bottom: 16px;
-}
-.sets-wrap::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 28px;
-  height: 62px;
-  background: linear-gradient(to right, transparent, var(--bg));
-  pointer-events: none;
 }
 .setsrow {
   display: flex;

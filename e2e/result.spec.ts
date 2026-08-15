@@ -38,4 +38,25 @@ test.describe('Result', () => {
     await page.getByRole('button', { name: /home|главная/i }).click()
     await expect(page.getByRole('navigation', { name: /main navigation|основная навигация/i })).toBeVisible()
   })
+
+  test('fail shows try again', async ({ page }) => {
+    await page.getByRole('button', { name: 'Start' }).click()
+    await clearRestGate(page)
+
+    await page.getByRole('button', { name: /different number|другое число/i }).click()
+    await page.locator('#fewer-input').fill('2')
+    await page.getByRole('button', { name: 'Confirm' }).click()
+    await clearRestGate(page)
+
+    for (let i = 0; i < 3; i++) {
+      await page.getByRole('button', { name: /done — \d+ reps/i }).click()
+      await clearRestGate(page)
+    }
+
+    await page.locator('#max-done-input').fill('4')
+    await page.getByRole('button', { name: 'Done' }).click()
+
+    await expect(page.locator('.status-kicker')).toContainText(/incomplete|не выполнена/i)
+    await expect(page.getByRole('button', { name: /try again|ещё раз/i })).toBeVisible()
+  })
 })

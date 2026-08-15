@@ -53,7 +53,7 @@ async function activate(id: number) {
 </script>
 
 <template>
-  <div>
+  <div class="page">
     <div class="subpage-head">
       <button type="button" class="btn ghost" @click="router.push('/settings')">{{ t('common.back') }}</button>
       <header class="head">
@@ -105,6 +105,7 @@ h3 {
   font-family: 'Arial Black', system-ui, sans-serif;
   text-transform: uppercase;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 400px) {
   .btnrow {

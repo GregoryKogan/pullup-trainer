@@ -459,13 +459,14 @@ function confirmExit() {
 .step {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   text-align: center;
   padding: 0 8px;
-  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 700 0.72rem/1.25 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .clock {
   font: 800 0.8rem/1 ui-monospace, 'SF Mono', Menlo, monospace;

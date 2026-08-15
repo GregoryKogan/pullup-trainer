@@ -154,7 +154,7 @@ async function reduceAnchor() {
 </script>
 
 <template>
-  <div>
+  <div class="page">
     <header class="head">
       <div>
         <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
@@ -236,7 +236,7 @@ async function reduceAnchor() {
       </section>
     </div>
 
-    <div class="links">
+    <div class="links page-bottom">
       <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
       <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
     </div>
@@ -322,7 +322,7 @@ async function reduceAnchor() {
 .links {
   display: flex;
   gap: 16px;
-  margin: 16px 0 8px;
+  margin-bottom: 8px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   text-transform: uppercase;
 }

@@ -179,7 +179,7 @@ async function confirmReset() {
 </script>
 
 <template>
-  <div v-if="settings">
+  <div v-if="settings" class="page">
     <header class="head">
       <div>
         <p class="kicker">{{ t('settings.designKicker') }}</p>
@@ -411,7 +411,7 @@ async function confirmReset() {
       </p>
       <button type="button" class="btn ghost danger" @click="resetAll">{{ t('settings.resetAll') }}</button>
     </section>
-    <section class="sec">
+    <section class="sec page-bottom">
       <h4>{{ t('settings.about') }}</h4>
       <RouterLink to="/about" class="btn ghost">{{ t('settings.about') }}</RouterLink>
       <RouterLink to="/why" class="btn ghost">{{ t('settings.whyProgram') }}</RouterLink>
@@ -436,11 +436,17 @@ async function confirmReset() {
 
 <style scoped>
 select {
+  width: 100%;
+  max-width: 100%;
   min-height: 44px;
   border: 2px solid var(--line);
   background: var(--bg);
   color: var(--ink);
   font: 800 0.7rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.setrow select {
+  flex: 1;
+  min-width: 0;
 }
 .weekdays {
   display: flex;

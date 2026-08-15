@@ -44,36 +44,41 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="result panel" :class="success ? 'ok' : 'fail'" role="status" aria-live="polite" aria-atomic="true">
-    <h1 class="sr-only">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</h1>
-    <div class="icon" aria-hidden="true">
-      <svg v-if="success" width="48" height="48" viewBox="0 0 24 24">
-        <path d="M4 12.5 9.5 18 20 6" fill="none" stroke="currentColor" stroke-width="2.5" />
-      </svg>
-      <svg v-else width="48" height="48" viewBox="0 0 24 24">
-        <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" />
-      </svg>
-    </div>
-    <p ref="statusRef" tabindex="-1" class="kicker status-kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
-    <p v-if="planned > 0" class="summary">{{ t('workout.resultVolume', { done, planned }) }}</p>
-    <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', { n: volume }) }}</p>
-    <p v-if="success && nextStep" class="sub">{{ t('workout.resultNext', { step: nextStep }) }}</p>
-    <p v-else-if="!success" class="sub">{{ t('workout.resultRetry') }}</p>
-    <div class="btnrow">
-      <button type="button" class="btn accent" @click="router.push('/')">{{ t('nav.home') }}</button>
-      <button v-if="!success && retryDate" type="button" class="btn accent" @click="retryWorkout">
-        {{ t('result.tryAgain') }}
-      </button>
-      <button v-if="!success" type="button" class="btn ghost" @click="router.push('/calendar')">
-        {{ t('nav.calendar') }}
-      </button>
+  <div class="page result-page">
+    <div class="result panel" :class="success ? 'ok' : 'fail'" role="status" aria-live="polite" aria-atomic="true">
+      <h1 class="sr-only">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</h1>
+      <div class="icon" aria-hidden="true">
+        <svg v-if="success" width="48" height="48" viewBox="0 0 24 24">
+          <path d="M4 12.5 9.5 18 20 6" fill="none" stroke="currentColor" stroke-width="2.5" />
+        </svg>
+        <svg v-else width="48" height="48" viewBox="0 0 24 24">
+          <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" />
+        </svg>
+      </div>
+      <p ref="statusRef" tabindex="-1" class="kicker status-kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
+      <p v-if="planned > 0" class="summary">{{ t('workout.resultVolume', { done, planned }) }}</p>
+      <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', { n: volume }) }}</p>
+      <p v-if="success && nextStep" class="sub">{{ t('workout.resultNext', { step: nextStep }) }}</p>
+      <p v-else-if="!success" class="sub">{{ t('workout.resultRetry') }}</p>
+      <div class="btnrow">
+        <button type="button" class="btn accent" @click="router.push('/')">{{ t('nav.home') }}</button>
+        <button v-if="!success && retryDate" type="button" class="btn accent" @click="retryWorkout">
+          {{ t('result.tryAgain') }}
+        </button>
+        <button v-if="!success" type="button" class="btn ghost" @click="router.push('/calendar')">
+          {{ t('nav.calendar') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.result-page {
+  justify-content: center;
+}
 .result {
-  margin-top: 24px;
+  margin-top: 0;
   text-align: center;
 }
 .result.ok {

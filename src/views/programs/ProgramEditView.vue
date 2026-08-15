@@ -71,7 +71,7 @@ function onSetTypeChange(stepIndex: number, setIndex: number) {
 </script>
 
 <template>
-  <div v-if="program">
+  <div v-if="program" class="page">
     <div class="subpage-head">
       <RouterLink to="/programs" class="btn ghost">{{ t('common.back') }}</RouterLink>
       <header class="head">

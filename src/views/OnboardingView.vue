@@ -79,7 +79,7 @@ async function accept() {
 </script>
 
 <template>
-  <div class="onboarding">
+  <div class="onboarding page">
     <h1 class="sr-only">{{ t('onboarding.introTitle') }}</h1>
     <div class="langrow" role="group" :aria-label="t('settings.language')">
       <button
@@ -142,7 +142,7 @@ async function accept() {
         <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
       </div>
     </section>
-    <div class="links">
+    <div class="links page-bottom">
       <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
       <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
     </div>
@@ -210,7 +210,7 @@ async function accept() {
 .links {
   display: flex;
   gap: 16px;
-  margin: 16px 0 8px;
+  margin-bottom: 8px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   text-transform: uppercase;
 }

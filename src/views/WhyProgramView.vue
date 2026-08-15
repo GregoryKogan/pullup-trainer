@@ -21,7 +21,7 @@ const sources = computed(() => {
 </script>
 
 <template>
-  <div class="science">
+  <div class="science page">
     <div class="subpage-head">
       <button type="button" class="btn ghost" @click="safeBack(router)">{{ t('common.back') }}</button>
       <header class="head">
@@ -67,6 +67,8 @@ const sources = computed(() => {
   display: block;
   font: 700 0.75rem/1.4 ui-monospace, 'SF Mono', Menlo, monospace;
   margin: 6px 0;
+  overflow-x: auto;
+  word-break: break-word;
 }
 .sources {
   list-style: none;
