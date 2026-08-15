@@ -1,4 +1,10 @@
 import type { PlannedSet, SetType } from '@/domain/types'
+import {
+  REST_MAX_SECONDS,
+  REST_MIN_SECONDS,
+  REST_P0_MAX_SECONDS,
+  REST_P0_MIN_SECONDS,
+} from '@/constants/app'
 
 export function setTypeLabelKey(type: SetType): string {
   const map: Record<SetType, string> = {
@@ -29,6 +35,8 @@ export function focusSubtitleKey(set: PlannedSet): string {
 }
 
 export function clampRestSeconds(seconds: number, pathP0: boolean): number {
-  if (!pathP0) return seconds
-  return Math.min(180, Math.max(90, seconds))
+  if (pathP0) {
+    return Math.min(REST_P0_MAX_SECONDS, Math.max(REST_P0_MIN_SECONDS, seconds))
+  }
+  return Math.min(REST_MAX_SECONDS, Math.max(REST_MIN_SECONDS, seconds))
 }

@@ -7,8 +7,9 @@ import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
 import { PALETTE_SLUGS } from '@/utils/theme'
 import { exportBackup, validateBackup, defaultSettings, type BackupExport } from '@/domain/export'
-import { APP_VERSION, REST_PRESET_SECONDS } from '@/constants/app'
+import { APP_VERSION, REST_MAX_SECONDS, REST_MIN_SECONDS, REST_PRESET_SECONDS } from '@/constants/app'
 import { formatTime } from '@/utils/dates'
+import { clampRestSeconds } from '@/utils/workout-display'
 import { downloadJson } from '@/utils/platform'
 import { db } from '@/db/database'
 import { loadCustomPrograms } from '@/db/repositories/custom-programs'
@@ -30,6 +31,13 @@ const weekdayOptions: Weekday[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'su
 
 const settings = computed(() => settingsStore.settings)
 
+const restAtMin = computed(
+  () => (settings.value?.restDurationSeconds ?? REST_MIN_SECONDS) <= REST_MIN_SECONDS,
+)
+const restAtMax = computed(
+  () => (settings.value?.restDurationSeconds ?? REST_MAX_SECONDS) >= REST_MAX_SECONDS,
+)
+
 const builtinProgress = computed(() =>
   progressStore.progress?.source === 'builtin' ? progressStore.progress : null,
 )
@@ -41,7 +49,9 @@ function paletteLabel(slug: string) {
 async function changeRest(delta: number) {
   const s = settings.value
   if (!s) return
-  await settingsStore.update({ restDurationSeconds: Math.max(30, s.restDurationSeconds + delta) })
+  await settingsStore.update({
+    restDurationSeconds: clampRestSeconds(s.restDurationSeconds + delta, false),
+  })
 }
 
 async function setRestPreset(seconds: number) {
@@ -196,8 +206,10 @@ async function confirmReset() {
           <button
             type="button"
             class="iconbtn"
+            :class="{ inactive: restAtMin }"
             style="width: 44px; height: 44px"
             :aria-label="t('settings.restDecrease')"
+            :disabled="restAtMin"
             @click="changeRest(-15)"
           >
             −
@@ -205,8 +217,10 @@ async function confirmReset() {
           <button
             type="button"
             class="iconbtn"
+            :class="{ inactive: restAtMax }"
             style="width: 44px; height: 44px"
             :aria-label="t('settings.restIncrease')"
+            :disabled="restAtMax"
             @click="changeRest(15)"
           >
             +

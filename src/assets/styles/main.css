@@ -207,6 +207,13 @@ a {
   justify-content: center;
 }
 
+.iconbtn.inactive,
+.iconbtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .tabbar {
   flex-shrink: 0;
   margin: 0 -18px 0;
