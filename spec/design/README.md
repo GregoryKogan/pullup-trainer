@@ -11,7 +11,7 @@
 | `theme-tokens.css` | Все палитры как CSS custom properties — подключается в приложение |
 | `build-assets.py` | Генератор мокапов, токенов и этого README |
 | `mockups/index.html` | Галерея мокапов |
-| `mockups/poster-*.html` | 14 мокапов: 5 экранов × тёмная + светлая темы |
+| `mockups/poster-*.html` | 14 референсов стиля: 5 экранов × тёмная + светлая темы (не pixel-perfect карта UI — ТЗ §5.1.2) |
 
 ## Темы
 

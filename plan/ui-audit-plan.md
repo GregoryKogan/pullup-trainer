@@ -111,6 +111,8 @@
 
 ## Mockup comparison (P01 Volt)
 
+> **Не pixel-perfect.** Мокапы — референс стиля (ТЗ §5.1.2). Сверка — sanity-check «ощущения» Poster/Swiss; приоритет аудита — UX, логика, a11y, затем дизайн-язык.
+
 | Screen | App route | Dark | Light |
 |---|---|---|---|
 | Home | `/` | [ ] | [ ] |

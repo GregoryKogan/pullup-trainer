@@ -18,7 +18,7 @@ Vue 3 (Composition API) + TypeScript, Vite, Vue Router, Pinia, vue-i18n (**EN �
 - Имена: файлы kebab-case, компоненты PascalCase, функции camelCase, константы UPPER_SNAKE.
 - Логика программы — чистые функции без побочных эффектов (генератор `session(M*, k)` — эталон).
 - Не добавлять библиотеки без необходимости (PWA-бюджет: старт ≤2 с).
-- UI-экраны сверять с мокапами `spec/design/mockups/` (rule 03-design-system).
+- UI-экраны сверять с дизайн-языком Poster/Swiss (`poster-design.md`, токены); мокапы — референс «ощущения», не чеклист (ТЗ §5.1.2, rule 03-design-system).
 
 ## Проверка
 После скаффолдинга в package.json должны быть скрипты: `dev`, `build`, `preview`, `typecheck` (vue-tsc), `lint`, `test` (vitest run). После изменений прогонять typecheck + lint + test. Если скрипты ещё не созданы — создать.
