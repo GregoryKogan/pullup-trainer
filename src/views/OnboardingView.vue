@@ -286,4 +286,7 @@ async function accept() {
 .hint {
   margin: 0 0 12px;
 }
+.panel > .btn + .btnrow {
+  margin-top: 14px;
+}
 </style>
