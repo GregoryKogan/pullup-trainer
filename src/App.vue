@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
+import AppTabBar from '@/components/AppTabBar.vue'
 import PwaInstallModal from '@/components/PwaInstallModal.vue'
 import { usePwaInstall } from '@/composables/use-pwa-install'
 
+const route = useRoute()
 const pwa = usePwaInstall()
+
+const showTabBar = computed(() =>
+  ['home', 'calendar', 'stats', 'settings'].includes(String(route.name)),
+)
 </script>
 
 <template>
@@ -19,6 +26,7 @@ const pwa = usePwaInstall()
     <main class="app-main">
       <RouterView />
     </main>
+    <AppTabBar v-if="showTabBar" />
     <PwaInstallModal
       :visible="pwa.visible.value"
       :platform="pwa.platform.value"

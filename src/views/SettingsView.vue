@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import AppTabBar from '@/components/AppTabBar.vue'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
@@ -322,7 +321,6 @@ async function confirmReset() {
       <RouterLink to="/why" class="btn ghost">{{ t('settings.whyProgram') }}</RouterLink>
       <RouterLink to="/programs" class="btn ghost">{{ t('settings.customPrograms') }}</RouterLink>
     </section>
-    <AppTabBar />
     <ConfirmPanel
       :visible="showResetConfirm"
       :message="t('settings.resetConfirm')"

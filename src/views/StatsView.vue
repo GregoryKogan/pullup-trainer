@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AppTabBar from '@/components/AppTabBar.vue'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
 import { exportHistory } from '@/domain/export'
@@ -168,7 +167,6 @@ function exportHistoryJson() {
       </ul>
       <button type="button" class="btn accent" @click="exportHistoryJson">{{ t('stats.export') }}</button>
     </section>
-    <AppTabBar />
   </div>
 </template>
 

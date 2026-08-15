@@ -25,17 +25,22 @@ a {
 
 .app-shell {
   min-height: 100dvh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   max-width: 480px;
   margin: 0 auto;
-  padding: 0 18px 10px;
+  padding: 0 18px;
+  overflow: hidden;
 }
 
 .app-main {
   flex: 1;
-  overflow: auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .kicker {
@@ -149,10 +154,11 @@ a {
 }
 
 .tabbar {
-  margin: auto -18px -10px;
+  flex-shrink: 0;
+  margin: 0 -18px 0;
   background: var(--accent);
   border-top: 3px solid var(--line);
-  padding: 8px 18px 4px;
+  padding: 8px 18px calc(4px + env(safe-area-inset-bottom, 0px));
   display: flex;
 }
 

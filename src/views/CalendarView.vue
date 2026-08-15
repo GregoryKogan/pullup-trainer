@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import AppTabBar from '@/components/AppTabBar.vue'
 import { useProgressStore } from '@/stores/progress'
 import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domain/schedule'
 import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
@@ -195,7 +194,6 @@ handleMissedAutoshift()
         </button>
       </div>
     </div>
-    <AppTabBar />
   </div>
 </template>
 

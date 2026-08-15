@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import AppTabBar from '@/components/AppTabBar.vue'
 import { useProgressStore } from '@/stores/progress'
 import { session } from '@/domain/session'
 import { detectReturnPolicy } from '@/domain/schedule'
@@ -190,8 +189,6 @@ async function reduceAnchor() {
       <RouterLink to="/about">{{ t('home.aboutLink') }}</RouterLink>
       <RouterLink to="/why">{{ t('home.whyLink') }}</RouterLink>
     </div>
-
-    <AppTabBar />
   </div>
 </template>
 
