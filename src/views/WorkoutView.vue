@@ -28,6 +28,10 @@ import {
   focusSubtitleKey,
   setTypeLabelKey,
 } from '@/utils/workout-display'
+import {
+  REST_MAX_SECONDS,
+  REST_P0_MAX_SECONDS,
+} from '@/constants/app'
 import type { PlannedSet, ActiveProgress } from '@/domain/types'
 
 const route = useRoute()
@@ -56,6 +60,9 @@ const restDuration = computed(() => {
   return clampRestSeconds(base, isPathP0.value)
 })
 
+const restMin = 0
+const restMax = computed(() => (isPathP0.value ? REST_P0_MAX_SECONDS : REST_MAX_SECONDS))
+
 const restTimer = useRestTimer(async () => {
   const s = settingsStore.settings
   await signalRestEnd(
@@ -66,6 +73,14 @@ const restTimer = useRestTimer(async () => {
   )
   workoutStore.restRunning = false
 })
+
+watch(
+  restMax,
+  (max) => {
+    restTimer.setBounds(restMin, max)
+  },
+  { immediate: true },
+)
 
 const planned = computed(() => workoutStore.active?.planned ?? [])
 const current = computed(() => workoutStore.active?.currentIndex ?? 0)
@@ -408,6 +423,8 @@ function confirmExit() {
         :remaining="restTimer.remaining.value"
         :total="restTimer.total.value"
         :paused="restTimer.paused.value"
+        :min-seconds="restMin"
+        :max-seconds="restMax"
         :label="t('workout.rest')"
         @minus="restTimer.adjust(-15)"
         @plus="restTimer.adjust(15)"

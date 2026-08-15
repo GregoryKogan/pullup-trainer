@@ -4,6 +4,8 @@ export function useRestTimer(onFinish: () => void) {
   const remaining = shallowRef(0)
   const total = shallowRef(0)
   const paused = shallowRef(false)
+  const minSeconds = shallowRef(0)
+  const maxSeconds = shallowRef(Number.MAX_SAFE_INTEGER)
   let timer: ReturnType<typeof setInterval> | null = null
 
   function clear() {
@@ -11,10 +13,23 @@ export function useRestTimer(onFinish: () => void) {
     timer = null
   }
 
+  function clampSeconds(seconds: number) {
+    return Math.min(maxSeconds.value, Math.max(minSeconds.value, seconds))
+  }
+
+  function setBounds(min: number, max: number) {
+    minSeconds.value = min
+    maxSeconds.value = max
+    if (remaining.value > 0) {
+      remaining.value = clampSeconds(remaining.value)
+    }
+  }
+
   function start(seconds: number) {
     clear()
-    total.value = seconds
-    remaining.value = seconds
+    const clamped = clampSeconds(seconds)
+    total.value = clamped
+    remaining.value = clamped
     paused.value = false
     timer = setInterval(() => {
       if (paused.value) return
@@ -28,7 +43,7 @@ export function useRestTimer(onFinish: () => void) {
   }
 
   function adjust(delta: number) {
-    remaining.value = Math.max(0, remaining.value + delta)
+    remaining.value = clampSeconds(remaining.value + delta)
   }
 
   function togglePause() {
@@ -46,5 +61,5 @@ export function useRestTimer(onFinish: () => void) {
 
   onUnmounted(clear)
 
-  return { remaining, total, paused, start, adjust, togglePause, reset, skip, clear }
+  return { remaining, total, paused, start, adjust, togglePause, reset, skip, clear, setBounds }
 }

@@ -2,17 +2,25 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppIcon from '@/components/icons/AppIcon.vue'
-import { REST_PRESET_SECONDS } from '@/constants/app'
+import { REST_PRESET_SECONDS, REST_MAX_SECONDS, REST_MIN_SECONDS } from '@/constants/app'
 import { formatTime } from '@/utils/dates'
 
 const { t } = useI18n()
 
-const props = defineProps<{
-  remaining: number
-  total: number
-  paused: boolean
-  label: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    remaining: number
+    total: number
+    paused: boolean
+    label: string
+    minSeconds?: number
+    maxSeconds?: number
+  }>(),
+  {
+    minSeconds: REST_MIN_SECONDS,
+    maxSeconds: REST_MAX_SECONDS,
+  },
+)
 
 const emit = defineEmits<{
   minus: []
@@ -35,6 +43,9 @@ const offset = computed(() => {
   const p = props.total > 0 ? props.remaining / props.total : 0
   return c * (1 - p)
 })
+
+const atMin = computed(() => props.remaining <= props.minSeconds)
+const atMax = computed(() => props.remaining >= props.maxSeconds)
 </script>
 
 <template>
@@ -71,7 +82,14 @@ const offset = computed(() => {
         </button>
       </div>
       <div v-if="total > 0" class="restrow">
-        <button type="button" class="mini icon-mini" :aria-label="t('workout.adjustMinus')" @click="emit('minus')">
+        <button
+          type="button"
+          class="mini icon-mini"
+          :class="{ inactive: atMin }"
+          :disabled="atMin"
+          :aria-label="t('workout.adjustMinus')"
+          @click="emit('minus')"
+        >
           <AppIcon name="minus" :size="16" />
         </button>
         <button
@@ -83,7 +101,14 @@ const offset = computed(() => {
           <AppIcon v-if="!paused" name="pause" :size="16" />
           <AppIcon v-else name="play" :size="16" />
         </button>
-        <button type="button" class="mini icon-mini" :aria-label="t('workout.adjustPlus')" @click="emit('plus')">
+        <button
+          type="button"
+          class="mini icon-mini"
+          :class="{ inactive: atMax }"
+          :disabled="atMax"
+          :aria-label="t('workout.adjustPlus')"
+          @click="emit('plus')"
+        >
           <AppIcon name="plus" :size="16" />
         </button>
       </div>
@@ -189,6 +214,12 @@ const offset = computed(() => {
 .mini:focus-visible {
   outline: 3px solid var(--accent2);
   outline-offset: 2px;
+}
+.mini:disabled,
+.mini.inactive {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 .icon-mini {
   display: flex;

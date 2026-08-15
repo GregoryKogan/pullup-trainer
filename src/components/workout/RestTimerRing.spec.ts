@@ -39,4 +39,17 @@ describe('RestTimerRing', () => {
     await wrapper.findAll('.mini')[3].trigger('click')
     expect(wrapper.emitted('minus')).toBeTruthy()
   })
+
+  it('disables minus at minimum and plus at maximum', () => {
+    const atMin = mount(RestTimerRing, {
+      global: { plugins: [i18n] },
+      props: { remaining: 0, total: 180, paused: false, label: 'REST', minSeconds: 0, maxSeconds: 300 },
+    })
+    const atMax = mount(RestTimerRing, {
+      global: { plugins: [i18n] },
+      props: { remaining: 300, total: 300, paused: false, label: 'REST', minSeconds: 0, maxSeconds: 300 },
+    })
+    expect(atMin.findAll('.mini')[3].attributes('disabled')).toBeDefined()
+    expect(atMax.findAll('.mini')[5].attributes('disabled')).toBeDefined()
+  })
 })
