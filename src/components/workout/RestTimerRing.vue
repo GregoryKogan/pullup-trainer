@@ -126,7 +126,7 @@ const offset = computed(() => {
 }
 .presets .mini {
   flex: 1;
-  font-size: 0.62rem;
+  font-size: 0.72rem;
 }
 .restrow {
   display: flex;

@@ -215,13 +215,28 @@ async function confirmReset() {
       <div class="setrow">
         <span class="k">{{ t('settings.restPresets') }}</span>
         <span class="seg">
-          <button type="button" :class="{ on: settings.restDurationSeconds === 90 }" @click="setRestPreset(90)">
+          <button
+            type="button"
+            :class="{ on: settings.restDurationSeconds === 90 }"
+            :aria-pressed="settings.restDurationSeconds === 90"
+            @click="setRestPreset(90)"
+          >
             {{ t('workout.restPreset90') }}
           </button>
-          <button type="button" :class="{ on: settings.restDurationSeconds === 180 }" @click="setRestPreset(180)">
+          <button
+            type="button"
+            :class="{ on: settings.restDurationSeconds === 180 }"
+            :aria-pressed="settings.restDurationSeconds === 180"
+            @click="setRestPreset(180)"
+          >
             {{ t('workout.restPreset180') }}
           </button>
-          <button type="button" :class="{ on: settings.restDurationSeconds === 300 }" @click="setRestPreset(300)">
+          <button
+            type="button"
+            :class="{ on: settings.restDurationSeconds === 300 }"
+            :aria-pressed="settings.restDurationSeconds === 300"
+            @click="setRestPreset(300)"
+          >
             {{ t('workout.restPreset300') }}
           </button>
         </span>
@@ -345,8 +360,12 @@ async function confirmReset() {
         </span>
       </div>
       <div class="setrow">
-        <span class="k">{{ t('settings.palette') }}</span>
-        <select :value="settings.palette" @change="setPalette(($event.target as HTMLSelectElement).value)">
+        <label class="k" for="palette-select">{{ t('settings.palette') }}</label>
+        <select
+          id="palette-select"
+          :value="settings.palette"
+          @change="setPalette(($event.target as HTMLSelectElement).value)"
+        >
           <option v-for="slug in PALETTE_SLUGS" :key="slug" :value="slug">{{ paletteLabel(slug) }}</option>
         </select>
       </div>
@@ -377,7 +396,13 @@ async function confirmReset() {
       <button type="button" class="btn" @click="exportBackupFile">{{ t('settings.exportBackup') }}</button>
       <label class="btn">
         {{ t('settings.importBackup') }}
-        <input type="file" accept="application/json" hidden @change="importBackupFile" />
+        <input
+          type="file"
+          accept="application/json"
+          hidden
+          :aria-label="t('settings.importBackup')"
+          @change="importBackupFile"
+        />
       </label>
       <p v-if="importMessage" class="sub" :class="{ ok: importMessage === t('settings.importSuccess') }">
         {{ importMessage }}

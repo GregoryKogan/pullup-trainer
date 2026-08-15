@@ -19,16 +19,16 @@ const { panelRef } = useModalA11y(toRef(props, 'visible'), {
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="visible"
-      class="modal-overlay"
-      role="alertdialog"
-      aria-modal="true"
-      :aria-labelledby="'confirm-title'"
-      :aria-describedby="'confirm-desc'"
-      @click.self="emit('cancel')"
-    >
-      <div ref="panelRef" class="modal-card panel confirm-panel" tabindex="-1">
+    <div v-if="visible" class="modal-overlay" @click.self="emit('cancel')">
+      <div
+        ref="panelRef"
+        class="modal-card panel confirm-panel"
+        role="alertdialog"
+        aria-modal="true"
+        tabindex="-1"
+        :aria-labelledby="'confirm-title'"
+        :aria-describedby="'confirm-desc'"
+      >
         <p id="confirm-title" class="confirm-title">{{ t('common.confirm') }}</p>
         <p id="confirm-desc" class="confirm-msg">{{ message }}</p>
         <div class="btnrow">

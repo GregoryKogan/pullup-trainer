@@ -81,7 +81,7 @@ async function accept() {
 <template>
   <div class="onboarding">
     <h1 class="sr-only">{{ t('onboarding.introTitle') }}</h1>
-    <div class="langrow">
+    <div class="langrow" role="group" :aria-label="t('settings.language')">
       <button
         type="button"
         class="lang"
@@ -151,7 +151,8 @@ async function accept() {
   margin-bottom: 12px;
 }
 .step-indicator {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  padding: 6px 0;
 }
 .lang {
   min-height: 44px;

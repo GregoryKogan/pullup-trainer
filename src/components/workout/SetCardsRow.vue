@@ -41,9 +41,13 @@ const { t } = useI18n()
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 .setsrow .s {
-  flex: 1;
+  flex: 1 0 56px;
+  min-width: 0;
   min-height: 62px;
   border-radius: 2px;
   background: var(--card);
@@ -89,5 +93,17 @@ const { t } = useI18n()
 }
 .setsrow .s.now .check {
   color: var(--accent-ink);
+}
+@media (max-width: 360px) {
+  .setsrow {
+    gap: 6px;
+  }
+  .setsrow b {
+    font-size: 1rem;
+  }
+  .setsrow span {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+  }
 }
 </style>

@@ -9,12 +9,14 @@ import { detectReturnPolicy } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatDisplayDate, startOfWeek, todayLocal } from '@/utils/dates'
+import ConfirmPanel from '@/components/ConfirmPanel.vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
 const progressStore = useProgressStore()
 
 const showRetest = ref(false)
+const showStartConfirm = ref(false)
 const retestReps = ref(0)
 const customPlanPreview = ref('')
 const today = todayLocal()
@@ -121,6 +123,15 @@ function startWorkout(date?: string) {
   router.push(date ? `/workout/${date}` : '/workout')
 }
 
+function requestEarlyStart() {
+  showStartConfirm.value = true
+}
+
+function confirmEarlyStart() {
+  showStartConfirm.value = false
+  if (nextSlot.value) startWorkout(nextSlot.value.date)
+}
+
 function repeatMissed() {
   if (missedSlot.value) startWorkout(missedSlot.value.date)
 }
@@ -188,7 +199,7 @@ async function reduceAnchor() {
         {{ t('common.start') }}
       </button>
       <template v-else>
-        <button type="button" class="btn accent" @click="startWorkout(nextSlot.date)">
+        <button type="button" class="btn ghost" @click="requestEarlyStart">
           {{ t('home.startEarly') }}
         </button>
         <RouterLink to="/calendar" class="btn ghost">{{ t('home.openCalendar') }}</RouterLink>
@@ -215,6 +226,12 @@ async function reduceAnchor() {
       <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
       <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
     </div>
+    <ConfirmPanel
+      :visible="showStartConfirm"
+      :message="t('common.earlyStartConfirm')"
+      @confirm="confirmEarlyStart"
+      @cancel="showStartConfirm = false"
+    />
   </div>
 </template>
 

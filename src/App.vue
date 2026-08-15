@@ -10,8 +10,10 @@ const route = useRoute()
 const { t } = useI18n()
 const pwa = usePwaInstall()
 
-const showTabBar = computed(() =>
-  ['home', 'calendar', 'stats', 'settings'].includes(String(route.name)),
+const showTabBar = computed(
+  () =>
+    ['home', 'calendar', 'stats', 'settings'].includes(String(route.name)) &&
+    !pwa.visible.value,
 )
 </script>
 

@@ -3,6 +3,26 @@ import { nextTick, onBeforeUnmount, ref, watch, type Ref } from 'vue'
 const FOCUSABLE =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
+let scrollLockCount = 0
+let previousBodyOverflow = ''
+
+function lockBodyScroll() {
+  if (scrollLockCount === 0) {
+    previousBodyOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+  }
+  scrollLockCount++
+}
+
+function unlockBodyScroll() {
+  if (scrollLockCount <= 0) return
+  scrollLockCount--
+  if (scrollLockCount === 0) {
+    document.body.style.overflow = previousBodyOverflow
+    previousBodyOverflow = ''
+  }
+}
+
 export function useModalA11y(
   visible: Ref<boolean>,
   options?: {
@@ -42,6 +62,7 @@ export function useModalA11y(
 
   watch(visible, async (open) => {
     if (open) {
+      lockBodyScroll()
       previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
       await nextTick()
       const selector = options?.initialFocusSelector
@@ -51,6 +72,7 @@ export function useModalA11y(
       keyHandler = handleKeydown
       window.addEventListener('keydown', keyHandler)
     } else {
+      unlockBodyScroll()
       if (keyHandler) {
         window.removeEventListener('keydown', keyHandler)
         keyHandler = null
@@ -61,6 +83,7 @@ export function useModalA11y(
   })
 
   onBeforeUnmount(() => {
+    if (visible.value) unlockBodyScroll()
     if (keyHandler) window.removeEventListener('keydown', keyHandler)
   })
 

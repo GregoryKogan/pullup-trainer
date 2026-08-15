@@ -21,7 +21,8 @@
     "install": "Установить",
     "dismiss": "Продолжить в браузере",
     "programName": "Pull-up Trainer",
-    "appTitle": "Pull-up Trainer"
+    "appTitle": "Pull-up Trainer",
+    "earlyStartConfirm": "Начать эту тренировку раньше запланированного дня?"
   },
   "home": {
     "title": "Вперёд.",
@@ -29,7 +30,7 @@
     "restToday": "Сегодня отдых",
     "opensOn": "Следующая тренировка: {date}",
     "openCalendar": "Открыть календарь",
-    "startEarly": "Начать сейчас",
+    "startEarly": "Начать раньше",
     "earlyStartHint": "Или открой календарь, чтобы перенести.",
     "maxReps": "Максимум",
     "volumeWeek": "Повторов за неделю",

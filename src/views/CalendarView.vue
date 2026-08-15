@@ -75,6 +75,7 @@ async function selectDay(date: string) {
     selectedIndex.value = idx
     selectedMoveDate.value = date
     await nextTick()
+    sheetRef.value?.focus()
     sheetRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   } else {
     dismissSheet()
@@ -202,7 +203,7 @@ handleMissedAutoshift()
       <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
       <span><i class="dot today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
     </div>
-    <div v-if="selectedIndex !== null" ref="sheetRef" class="sheetcard panel">
+    <div v-if="selectedIndex !== null" ref="sheetRef" class="sheetcard panel" tabindex="-1">
       <div class="sheet-head">
         <h4>{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
         <button type="button" class="sheet-close" @click="dismissSheet">{{ t('calendar.closeSheet') }}</button>
@@ -231,7 +232,7 @@ handleMissedAutoshift()
     </div>
     <ConfirmPanel
       :visible="showStartConfirm"
-      :message="t('calendar.earlyStartConfirm')"
+      :message="t('common.earlyStartConfirm')"
       @confirm="goStartWorkout"
       @cancel="showStartConfirm = false"
     />

@@ -21,7 +21,8 @@
     "install": "Install app",
     "dismiss": "Continue in browser",
     "programName": "Pull-up Trainer",
-    "appTitle": "Pull-up Trainer"
+    "appTitle": "Pull-up Trainer",
+    "earlyStartConfirm": "Start this workout before its scheduled day?"
   },
   "home": {
     "title": "Get after it.",
@@ -29,7 +30,7 @@
     "restToday": "Rest today",
     "opensOn": "Next workout: {date}",
     "openCalendar": "Open calendar",
-    "startEarly": "Start now",
+    "startEarly": "Start early",
     "earlyStartHint": "Or open the calendar to reschedule.",
     "maxReps": "Max reps",
     "volumeWeek": "Reps this week",

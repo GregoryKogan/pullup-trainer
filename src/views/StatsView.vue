@@ -98,6 +98,7 @@ function exportHistoryJson() {
       <p class="sub">{{ t('stats.maxChartSub') }}</p>
       <p v-if="maxReps.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
       <svg v-else class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
+        <title>{{ t('stats.maxChart') }}</title>
         <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
         <text class="chart-tick" x="24" :y="chartY(maxChartMax, maxChartMax) + 4" text-anchor="end">
           {{ maxChartMax }}
@@ -142,11 +143,17 @@ function exportHistoryJson() {
           </text>
         </g>
       </svg>
+      <ul v-if="maxReps.length > 0" class="sr-only">
+        <li v-for="p in maxReps" :key="p.date">
+          {{ chartDateLabel(p.date) }}: {{ p.value }} {{ t('stats.maxReps') }}
+        </li>
+      </ul>
     </section>
     <section class="sec">
       <h4>{{ t('stats.weeklyVolume') }}</h4>
       <p v-if="weeklyBars.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
       <svg v-else class="chart" viewBox="0 0 354 148" role="img" :aria-label="t('stats.weeklyVolume')">
+        <title>{{ t('stats.weeklyVolume') }}</title>
         <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
         <text class="chart-tick" x="24" :y="chartY(weeklyChartMax, weeklyChartMax) + 4" text-anchor="end">
           {{ weeklyChartMax }}
@@ -186,6 +193,11 @@ function exportHistoryJson() {
           </text>
         </g>
       </svg>
+      <ul v-if="weeklyBars.length > 0" class="sr-only">
+        <li v-for="b in weeklyBars" :key="b.week">
+          {{ chartDateLabel(b.week) }}: {{ b.vol }} {{ t('stats.volume') }}
+        </li>
+      </ul>
     </section>
     <section class="sec">
       <h4>{{ t('stats.history') }}</h4>

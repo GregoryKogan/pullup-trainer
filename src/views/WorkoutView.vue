@@ -445,10 +445,11 @@ function confirmExit() {
 }
 .rep {
   font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: 7.4rem;
+  font-size: clamp(4rem, 22vw, 7.4rem);
   font-weight: 900;
   line-height: 1;
   color: var(--accent);
+  overflow-wrap: anywhere;
 }
 @supports (-webkit-text-stroke: 2.5px var(--accent)) {
   .rep {
