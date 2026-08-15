@@ -193,7 +193,7 @@ async function confirmReset() {
   <div v-if="settings" class="page">
     <header class="head">
       <div>
-        <p class="kicker">{{ t('settings.designKicker') }}</p>
+        <p class="kicker">{{ t('settings.kicker') }}</p>
         <h1>{{ t('settings.title') }}</h1>
       </div>
     </header>

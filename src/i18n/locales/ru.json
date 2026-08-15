@@ -179,7 +179,7 @@
   },
   "settings": {
     "title": "Настройки",
-    "designKicker": "Poster · Swiss",
+    "kicker": "Приложение",
     "restTimer": "Таймер отдыха",
     "restDuration": "Длительность",
     "autoStart": "Автостарт",
