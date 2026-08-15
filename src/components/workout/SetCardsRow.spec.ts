@@ -25,5 +25,6 @@ describe('SetCardsRow', () => {
     expect(wrapper.find('.s.done').exists()).toBe(true)
     expect(wrapper.find('.s.done .check').exists()).toBe(true)
     expect(wrapper.find('.s.now').exists()).toBe(true)
+    expect(wrapper.find('.scroll-hint').exists()).toBe(false)
   })
 })

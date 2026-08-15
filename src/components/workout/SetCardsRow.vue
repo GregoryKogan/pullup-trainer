@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppIcon from '@/components/icons/AppIcon.vue'
+import { rowNeedsScroll } from '@/utils/set-cards-row'
 
-defineProps<{
+const props = defineProps<{
   sets: {
     planned: number
     type?: string
@@ -14,11 +16,35 @@ defineProps<{
 }>()
 
 const { t } = useI18n()
+const setsRow = ref<HTMLElement | null>(null)
+const showScrollHint = ref(false)
+let resizeObserver: ResizeObserver | null = null
+
+function updateScrollHint() {
+  showScrollHint.value = rowNeedsScroll(setsRow.value)
+}
+
+watch(
+  () => props.sets,
+  () => nextTick(updateScrollHint),
+  { deep: true },
+)
+
+onMounted(() => {
+  nextTick(updateScrollHint)
+  if (typeof ResizeObserver === 'undefined') return
+  resizeObserver = new ResizeObserver(() => updateScrollHint())
+  if (setsRow.value) resizeObserver.observe(setsRow.value)
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+})
 </script>
 
 <template>
   <div class="sets-wrap">
-    <div class="setsrow" :aria-label="t('workout.setsRow')">
+    <div ref="setsRow" class="setsrow" :aria-label="t('workout.setsRow')">
       <div
         v-for="(s, i) in sets"
         :key="i"
@@ -31,7 +57,7 @@ const { t } = useI18n()
         <b>{{ s.done ?? s.planned }}</b>
       </div>
     </div>
-    <p v-if="sets.length > 4" class="scroll-hint">{{ t('workout.setsScrollHint') }}</p>
+    <p v-if="showScrollHint" class="scroll-hint">{{ t('workout.setsScrollHint') }}</p>
   </div>
 </template>
 
