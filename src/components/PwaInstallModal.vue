@@ -58,7 +58,7 @@ const steps = () => {
       >
         <p class="kicker">{{ t('pwa.title') }}</p>
         <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
-        <p id="pwa-dialog-desc" class="sub pwa-lead">{{ t('pwa.title') }}</p>
+        <p id="pwa-dialog-desc" class="sub pwa-lead">{{ t('pwa.lead') }}</p>
         <div class="langrow" role="group" :aria-label="t('settings.language')">
           <span class="lang-label">{{ t('settings.language') }}</span>
           <span class="seg">

@@ -97,14 +97,14 @@ const { t } = useI18n()
 }
 @media (max-width: 360px) {
   .setsrow {
-    gap: 6px;
+    gap: 5px;
   }
   .setsrow b {
     font-size: 1rem;
   }
   .setsrow span {
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
   }
 }
 </style>

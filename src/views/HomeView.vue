@@ -18,6 +18,7 @@ const progressStore = useProgressStore()
 const showRetest = ref(false)
 const showStartConfirm = ref(false)
 const retestReps = ref(0)
+const retestError = ref('')
 const customPlanPreview = ref('')
 const today = todayLocal()
 
@@ -137,6 +138,11 @@ function repeatMissed() {
 }
 
 async function submitRetest() {
+  if (retestReps.value < 0 || Number.isNaN(retestReps.value)) {
+    retestError.value = t('onboarding.repsInvalid')
+    return
+  }
+  retestError.value = ''
   await progressStore.applyRetest(retestReps.value)
   showRetest.value = false
 }
@@ -182,6 +188,7 @@ async function reduceAnchor() {
           :placeholder="t('onboarding.repsPlaceholder')"
         />
       </label>
+      <p v-if="retestError" class="sub error">{{ retestError }}</p>
       <p class="sub hint">{{ t('onboarding.testHint') }}</p>
       <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
       <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
@@ -197,7 +204,6 @@ async function reduceAnchor() {
         {{ t('home.stepProgress', { step: cycleInfo.step, cycle: cycleInfo.cycle }) }}
       </p>
       <p v-if="levelInfo" class="sub">{{ levelInfo }}</p>
-      <p v-if="!isWorkoutToday" class="sub">{{ t('home.opensOn', { date: formatDisplayDate(nextSlot.date, locale) }) }}</p>
       <button
         v-if="isWorkoutToday"
         type="button"
@@ -302,6 +308,9 @@ async function reduceAnchor() {
 .hint {
   margin: 0 0 12px;
 }
+.sub.error {
+  color: var(--bad);
+}
 .field input {
   min-height: 50px;
   font-size: 1.5rem;
@@ -319,6 +328,10 @@ async function reduceAnchor() {
 }
 .links a {
   color: var(--ink);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 4px;
 }
 .early-hint {
   margin-top: 8px;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
@@ -43,7 +43,14 @@ const streakWeeks = computed(() => {
   return computeWeeklyStreak(progressStore.records, freq, todayLocal())
 })
 
-const history = computed(() => progressStore.records.slice(0, 10))
+const historyLimit = 10
+const showAllHistory = ref(false)
+
+const history = computed(() =>
+  showAllHistory.value ? progressStore.records : progressStore.records.slice(0, historyLimit),
+)
+
+const hasMoreHistory = computed(() => progressStore.records.length > historyLimit)
 
 function chartY(value: number, max: number) {
   if (max <= 0) return 130
@@ -213,6 +220,14 @@ function exportHistoryJson() {
           }}</span>
         </li>
       </ul>
+      <button
+        v-if="hasMoreHistory"
+        type="button"
+        class="btn ghost history-toggle"
+        @click="showAllHistory = !showAllHistory"
+      >
+        {{ showAllHistory ? t('stats.showLess') : t('stats.showAll') }}
+      </button>
       <button type="button" class="btn accent" @click="exportHistoryJson">{{ t('stats.export') }}</button>
     </section>
   </div>
@@ -296,5 +311,8 @@ function exportHistoryJson() {
 }
 .pill.part {
   color: var(--warn);
+}
+.history-toggle {
+  margin-bottom: 8px;
 }
 </style>

@@ -333,7 +333,13 @@ function confirmExit() {
   <div v-if="workoutStore.active" class="workout">
     <h1 class="sr-only">{{ t('common.programName') }}</h1>
     <div class="top">
-      <button type="button" class="iconbtn" :aria-label="t('common.close')" @click="exitWorkout">
+      <button
+        type="button"
+        class="iconbtn"
+        :aria-label="t('workout.exitLabel')"
+        :aria-describedby="'workout-exit-hint'"
+        @click="exitWorkout"
+      >
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" />
         </svg>
@@ -343,6 +349,7 @@ function confirmExit() {
       </span>
       <span class="clock">{{ formatTime(elapsed) }}</span>
     </div>
+    <p id="workout-exit-hint" class="sr-only">{{ t('workout.exitWarn') }}</p>
     <SetCardsRow :sets="setCards" />
     <div v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning" class="focus">
       <p class="kicker">{{ t('workout.doNow') }}</p>

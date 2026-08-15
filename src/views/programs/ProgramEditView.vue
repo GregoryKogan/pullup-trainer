@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { getCustomProgram, saveCustomProgram } from '@/db/repositories/custom-programs'
-import type { CustomProgram } from '@/domain/types'
+import type { CustomProgram, SetType, SetUnit } from '@/domain/types'
 
 const route = useRoute()
 const router = useRouter()
@@ -57,6 +57,17 @@ function deleteStep(stepIndex: number) {
   if (program.value.steps.length <= 1) return
   program.value.steps.splice(stepIndex, 1)
 }
+
+function unitForType(type: SetType): SetUnit {
+  return type === 'hold' || type === 'negative' ? 'seconds' : 'reps'
+}
+
+function onSetTypeChange(stepIndex: number, setIndex: number) {
+  if (!program.value) return
+  const set = program.value.steps[stepIndex]?.sets[setIndex]
+  if (!set) return
+  set.unit = unitForType(set.type)
+}
 </script>
 
 <template>
@@ -89,7 +100,7 @@ function deleteStep(stepIndex: number) {
       <div v-for="(set, seti) in step.sets" :key="seti" class="set-edit-row">
         <label class="set-field">
           <span>{{ t('programs.fieldType') }}</span>
-          <select v-model="set.type">
+          <select v-model="set.type" @change="onSetTypeChange(si, seti)">
             <option value="reps">{{ t('programs.setTypes.reps') }}</option>
             <option value="max">{{ t('programs.setTypes.max') }}</option>
             <option value="hold">{{ t('programs.setTypes.hold') }}</option>
@@ -178,6 +189,20 @@ function deleteStep(stepIndex: number) {
   border: 2px solid var(--line);
   background: var(--bg);
   color: var(--ink);
+  width: 100%;
+}
+@media (max-width: 480px) {
+  .set-edit-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .set-field {
+    min-width: 0;
+    width: 100%;
+  }
+  .mini-delete {
+    width: 100%;
+  }
 }
 .mini-delete {
   appearance: none;

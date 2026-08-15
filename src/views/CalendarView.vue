@@ -3,6 +3,7 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
+import { useModalA11y } from '@/composables/use-modal-a11y'
 import { useProgressStore } from '@/stores/progress'
 import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domain/schedule'
 import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
@@ -14,7 +15,6 @@ const progressStore = useProgressStore()
 const viewMonth = ref(new Date())
 const selectedIndex = ref<number | null>(null)
 const selectedMoveDate = ref<string | null>(null)
-const sheetRef = ref<HTMLElement | null>(null)
 const autoshiftBanner = ref(false)
 const showStartConfirm = ref(false)
 
@@ -64,6 +64,16 @@ function dayStatus(date: string) {
   return 'rest'
 }
 
+function isToday(date: string) {
+  return date === today
+}
+
+const sheetOpen = computed(() => selectedIndex.value !== null)
+
+const { panelRef: sheetDialogRef } = useModalA11y(sheetOpen, {
+  onEscape: () => dismissSheet(),
+})
+
 function dismissSheet() {
   selectedIndex.value = null
   selectedMoveDate.value = null
@@ -75,8 +85,7 @@ async function selectDay(date: string) {
     selectedIndex.value = idx
     selectedMoveDate.value = date
     await nextTick()
-    sheetRef.value?.focus()
-    sheetRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    sheetDialogRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   } else {
     dismissSheet()
   }
@@ -196,7 +205,10 @@ onMounted(() => {
         :key="cell.date"
         type="button"
         class="day"
-        :class="[dayStatus(cell.date), { out: !cell.inMonth, sel: selectedMoveDate === cell.date }]"
+        :class="[
+          dayStatus(cell.date),
+          { out: !cell.inMonth, sel: selectedMoveDate === cell.date, today: isToday(cell.date) },
+        ]"
         :aria-label="dayAriaLabel(cell.date, cell.day)"
         @click="selectDay(cell.date)"
       >
@@ -209,33 +221,49 @@ onMounted(() => {
       <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
       <span><i class="dot today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
     </div>
-    <div v-if="selectedIndex !== null" ref="sheetRef" class="sheetcard panel" tabindex="-1">
-      <div class="sheet-head">
-        <h4>{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
-        <button type="button" class="sheet-close" @click="dismissSheet">{{ t('calendar.closeSheet') }}</button>
-      </div>
-      <div class="optrow">
-        <button
-          v-for="opt in moveOptions"
-          :key="opt"
-          type="button"
-          class="opt"
-          :class="{ on: selectedMoveDate === opt }"
-          :aria-pressed="selectedMoveDate === opt"
-          @click="selectedMoveDate = opt"
+    <Teleport to="body">
+      <div
+        v-if="selectedIndex !== null"
+        class="sheet-backdrop"
+        role="presentation"
+        @click.self="dismissSheet"
+      >
+        <div
+          ref="sheetDialogRef"
+          class="sheetcard panel"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          :aria-labelledby="'calendar-sheet-title'"
         >
-          {{ formatDisplayDate(opt, locale) }}
-        </button>
+          <div class="sheet-head">
+            <h4 id="calendar-sheet-title">{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
+            <button type="button" class="sheet-close" @click="dismissSheet">{{ t('calendar.closeSheet') }}</button>
+          </div>
+          <div class="optrow">
+            <button
+              v-for="opt in moveOptions"
+              :key="opt"
+              type="button"
+              class="opt"
+              :class="{ on: selectedMoveDate === opt }"
+              :aria-pressed="selectedMoveDate === opt"
+              @click="selectedMoveDate = opt"
+            >
+              {{ formatDisplayDate(opt, locale) }}
+            </button>
+          </div>
+          <p class="sub">{{ t('calendar.shiftNote') }}</p>
+          <div class="btnrow">
+            <button type="button" class="btn accent" @click="applyMove">{{ t('common.move') }}</button>
+            <button type="button" class="btn ghost" @click="startSelected">{{ t('calendar.startNow') }}</button>
+            <button v-if="isMissedSelected" type="button" class="btn ghost" @click="repeatMissed">
+              {{ t('calendar.repeatMissed') }}
+            </button>
+          </div>
+        </div>
       </div>
-      <p class="sub">{{ t('calendar.shiftNote') }}</p>
-      <div class="btnrow">
-        <button type="button" class="btn accent" @click="applyMove">{{ t('common.move') }}</button>
-        <button type="button" class="btn ghost" @click="startSelected">{{ t('calendar.startNow') }}</button>
-        <button v-if="isMissedSelected" type="button" class="btn ghost" @click="repeatMissed">
-          {{ t('calendar.repeatMissed') }}
-        </button>
-      </div>
-    </div>
+    </Teleport>
     <ConfirmPanel
       :visible="showStartConfirm"
       :title="t('common.earlyStartTitle')"
@@ -324,6 +352,9 @@ onMounted(() => {
 .day.today {
   background: var(--accent);
   color: var(--accent-ink);
+}
+.day.planned.today::after {
+  background: var(--accent-ink);
 }
 .day.sel {
   outline: 3px solid var(--accent2);
@@ -418,5 +449,21 @@ onMounted(() => {
   text-transform: uppercase;
   color: var(--muted);
   flex-shrink: 0;
+}
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 18px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+.sheet-backdrop .sheetcard {
+  width: 100%;
+  max-width: 480px;
+  max-height: 70dvh;
+  overflow-y: auto;
 }
 </style>

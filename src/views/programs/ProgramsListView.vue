@@ -103,6 +103,11 @@ h3 {
   text-transform: uppercase;
   margin: 0;
 }
+@media (max-width: 400px) {
+  .btnrow {
+    flex-direction: column;
+  }
+}
 .step-pick {
   display: flex;
   align-items: center;

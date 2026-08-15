@@ -101,7 +101,12 @@ async function accept() {
         RU
       </button>
     </div>
-    <p class="step-indicator kicker">{{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}</p>
+    <p class="step-indicator kicker">
+      <span class="step-dots" aria-hidden="true">
+        <i v-for="n in 3" :key="n" :class="{ on: n === stepNumber }" />
+      </span>
+      {{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}
+    </p>
     <section v-if="step === 'intro'" class="panel">
       <p class="kicker">{{ t('onboarding.introTitle') }}</p>
       <p>{{ t('onboarding.introBody') }}</p>
@@ -153,6 +158,25 @@ async function accept() {
 .step-indicator {
   margin-bottom: 14px;
   padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.step-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.step-dots i {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  display: block;
+}
+.step-dots i.on {
+  background: var(--accent);
+  border-color: var(--line);
 }
 .lang {
   min-height: 44px;

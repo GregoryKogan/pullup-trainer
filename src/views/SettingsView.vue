@@ -320,7 +320,9 @@ async function confirmReset() {
             class="wd"
             :class="{ on: builtinProgress.weekdays.includes(day) }"
             :disabled="isWeekdayDisabled(day)"
+            :aria-disabled="isWeekdayDisabled(day)"
             :aria-pressed="builtinProgress.weekdays.includes(day)"
+            :title="isWeekdayDisabled(day) ? t('settings.weekdaysLimit', { n: builtinProgress.frequencyDays }) : undefined"
             @click="toggleWeekday(day)"
           >
             {{ t(`calendar.dow.${day}`) }}
@@ -452,7 +454,7 @@ select {
   padding: 0 6px;
   border: 2px solid var(--line);
   background: var(--card);
-  font: 800 0.6rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font: 800 0.68rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   cursor: pointer;
   color: var(--ink);
 }

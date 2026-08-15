@@ -72,6 +72,10 @@ const nextStep = computed(() => {
   margin-bottom: 12px;
   color: var(--ok);
 }
+.icon svg {
+  width: 64px;
+  height: 64px;
+}
 .result.fail .icon {
   color: var(--bad);
 }
