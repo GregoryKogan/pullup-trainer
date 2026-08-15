@@ -345,8 +345,8 @@ function confirmExit() {
       <span class="clock">{{ formatTime(elapsed) }}</span>
     </div>
     <SetCardsRow :sets="setCards" />
-    <div v-if="currentSet && !workoutStore.isComplete()" class="focus">
-      <p class="kicker">{{ t('workout.nextUp') }}</p>
+    <div v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning" class="focus">
+      <p class="kicker">{{ t('workout.doNow') }}</p>
       <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
       <div class="rep">{{ currentSet.planned }}</div>
       <p class="sub">
@@ -435,7 +435,7 @@ function confirmExit() {
 }
 .rep {
   font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: 7.2rem;
+  font-size: 7.4rem;
   font-weight: 900;
   line-height: 1;
   color: var(--accent);

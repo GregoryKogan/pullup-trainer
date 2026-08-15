@@ -57,7 +57,7 @@ function addSet(stepIndex: number) {
     </label>
     <section v-for="(step, si) in program.steps" :key="si" class="sec">
       <h4>{{ t('programs.stepN', { n: si + 1 }) }}</h4>
-      <div v-for="(set, seti) in step.sets" :key="seti" class="setrow">
+      <div v-for="(set, seti) in step.sets" :key="seti" class="set-edit-row">
         <select v-model="set.type">
           <option value="reps">{{ t('programs.setTypes.reps') }}</option>
           <option value="max">{{ t('programs.setTypes.max') }}</option>
@@ -100,13 +100,14 @@ function addSet(stepIndex: number) {
   border: 2px solid var(--line);
   padding: 8px;
 }
-.setrow {
+.set-edit-row {
   display: flex;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
-.setrow input,
-.setrow select {
+.set-edit-row input,
+.set-edit-row select {
   min-height: 44px;
   border: 2px solid var(--line);
   background: var(--bg);

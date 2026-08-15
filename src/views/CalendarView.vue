@@ -141,14 +141,17 @@ handleMissedAutoshift()
 
 <template>
   <div class="calendar-wrap">
-    <div class="calhead">
-      <h3>{{ monthLabel }}</h3>
+    <header class="head">
+      <div>
+        <p class="kicker">{{ t('calendar.title') }}</p>
+        <h2>{{ monthLabel }}</h2>
+      </div>
       <div class="nav">
         <button type="button" class="iconbtn" :aria-label="t('calendar.prevMonth')" @click="prevMonth">‹</button>
         <button type="button" class="iconbtn" :aria-label="t('calendar.nextMonth')" @click="nextMonth">›</button>
         <button type="button" class="today" @click="goToday">{{ t('common.today') }}</button>
       </div>
-    </div>
+    </header>
     <div class="calgrid">
       <div v-for="d in dowKeys" :key="d" class="dow">{{ t(`calendar.dow.${d}`) }}</div>
       <button
@@ -197,17 +200,11 @@ handleMissedAutoshift()
 </template>
 
 <style scoped>
-.calhead {
-  display: flex;
+.head {
   align-items: center;
-  justify-content: space-between;
-  padding: 6px 0 14px;
 }
-.calhead h3 {
-  font-family: 'Arial Black', system-ui, sans-serif;
+.head h2 {
   font-size: 1.25rem;
-  margin: 0;
-  text-transform: uppercase;
 }
 .nav {
   display: flex;

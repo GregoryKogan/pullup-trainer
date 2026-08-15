@@ -20,13 +20,17 @@ const today = todayLocal()
 
 const nextSlot = computed(() => progressStore.getNextSlot())
 const missedSlot = computed(() => progressStore.getMissedSlot())
+const isWorkoutToday = computed(() => nextSlot.value?.date === today)
 
 const setsPreview = computed(() => {
   const p = progressStore.progress
   if (!p || !nextSlot.value) return ''
   if (p.source === 'builtin' && p.state.path === 'L') {
     const s = session(p.state.anchor, nextSlot.value.stepRef)
-    return s.sets.map((x) => x.planned).join('·')
+    const parts = s.sets.map((x) =>
+      x.type === 'max' ? t('home.planMax') : String(x.planned),
+    )
+    return t('home.planPreview', { sets: parts.join(' + ') })
   }
   if (p.source === 'builtin' && p.state.path === 'P0') {
     return t('home.path0Step', { step: nextSlot.value.stepRef })
@@ -69,7 +73,10 @@ const levelInfo = computed(() => {
   const p = progressStore.progress
   if (!p || p.source !== 'builtin') return null
   if (p.state.path === 'P0') return t('home.path0Step', { step: p.state.path0Step })
-  return t('home.levelAnchor', { level: p.state.level, anchor: p.state.anchor })
+  return t('home.levelAnchor', {
+    level: t(`levels.${p.state.level}`),
+    anchor: p.state.anchor,
+  })
 })
 
 const streakWeeks = computed(() => {
@@ -139,17 +146,29 @@ async function reduceAnchor() {
     </section>
 
     <section v-if="nextSlot" class="panel next">
-      <p class="kicker">{{ t('home.nextWorkout') }}</p>
+      <p class="kicker">{{ isWorkoutToday ? t('home.nextWorkout') : t('home.restToday') }}</p>
       <div class="row">
         <h3>{{ formatDisplayDate(nextSlot.date, locale) }}</h3>
-        <span class="sets">{{ setsPreview }}</span>
+        <span v-if="setsPreview" class="sets">{{ setsPreview }}</span>
       </div>
       <div class="meter"><i :style="{ width: `${progressPercent}%` }" /></div>
       <p v-if="cycleInfo" class="sub">
         {{ t('home.stepProgress', { step: cycleInfo.step, cycle: cycleInfo.cycle }) }}
       </p>
       <p v-if="levelInfo" class="sub">{{ levelInfo }}</p>
-      <button type="button" class="btn accent" @click="startWorkout(nextSlot.date)">{{ t('common.start') }}</button>
+      <p v-if="!isWorkoutToday" class="sub">{{ t('home.opensOn', { date: formatDisplayDate(nextSlot.date, locale) }) }}</p>
+      <button
+        v-if="isWorkoutToday"
+        type="button"
+        class="btn accent"
+        @click="startWorkout(nextSlot.date)"
+      >
+        {{ t('common.start') }}
+      </button>
+      <template v-else>
+        <RouterLink to="/calendar" class="btn">{{ t('home.openCalendar') }}</RouterLink>
+        <p class="sub early-hint">{{ t('home.earlyStartHint') }}</p>
+      </template>
       <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
         {{ t('home.repeatMissed') }}
       </button>
@@ -244,5 +263,12 @@ async function reduceAnchor() {
 }
 .links a {
   color: var(--ink);
+}
+.early-hint {
+  margin-top: 8px;
+  text-align: center;
+}
+.next .btn {
+  text-decoration: none;
 }
 </style>

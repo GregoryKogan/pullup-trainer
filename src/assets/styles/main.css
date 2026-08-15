@@ -119,6 +119,11 @@ a {
   color: var(--muted);
 }
 
+.btn.outline {
+  background: var(--card);
+  color: var(--ink);
+}
+
 .btnrow {
   display: flex;
   gap: 10px;
@@ -219,6 +224,7 @@ a {
   gap: 10px;
   min-height: 50px;
   border-bottom: 2px solid var(--line);
+  flex-wrap: wrap;
 }
 
 .setrow.last {
@@ -243,6 +249,7 @@ a {
 
 .seg {
   display: inline-flex;
+  flex-wrap: wrap;
   border: 2px solid var(--line);
   border-radius: 2px;
   background: var(--bg2);

@@ -20,8 +20,16 @@ const nextStep = computed(() => route.query.next)
 </script>
 
 <template>
-  <div class="result panel">
-    <p class="kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
+  <div class="result panel" :class="success ? 'ok' : 'fail'">
+    <div class="icon" aria-hidden="true">
+      <svg v-if="success" width="48" height="48" viewBox="0 0 24 24">
+        <path d="M4 12.5 9.5 18 20 6" fill="none" stroke="currentColor" stroke-width="2.5" />
+      </svg>
+      <svg v-else width="48" height="48" viewBox="0 0 24 24">
+        <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" />
+      </svg>
+    </div>
+    <p class="kicker status-kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
     <p v-if="planned > 0" class="summary">{{ t('workout.resultVolume', { done, planned }) }}</p>
     <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', { n: volume }) }}</p>
     <p v-if="success && nextStep" class="sub">{{ t('workout.resultNext', { step: nextStep }) }}</p>
@@ -39,6 +47,24 @@ const nextStep = computed(() => route.query.next)
 .result {
   margin-top: 24px;
   text-align: center;
+}
+.result.ok {
+  border-color: var(--ok);
+}
+.result.fail {
+  border-color: var(--bad);
+}
+.icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: var(--ok);
+}
+.result.fail .icon {
+  color: var(--bad);
+}
+.status-kicker {
+  margin-bottom: 12px;
 }
 .summary {
   font-family: 'Arial Black', system-ui, sans-serif;

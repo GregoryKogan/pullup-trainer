@@ -189,9 +189,15 @@ async function confirmReset() {
       <div class="setrow">
         <span class="k">{{ t('settings.restPresets') }}</span>
         <span class="seg">
-          <button type="button" @click="setRestPreset(90)">{{ t('workout.restPreset90') }}</button>
-          <button type="button" @click="setRestPreset(180)">{{ t('workout.restPreset180') }}</button>
-          <button type="button" @click="setRestPreset(300)">{{ t('workout.restPreset300') }}</button>
+          <button type="button" :class="{ on: settings.restDurationSeconds === 90 }" @click="setRestPreset(90)">
+            {{ t('workout.restPreset90') }}
+          </button>
+          <button type="button" :class="{ on: settings.restDurationSeconds === 180 }" @click="setRestPreset(180)">
+            {{ t('workout.restPreset180') }}
+          </button>
+          <button type="button" :class="{ on: settings.restDurationSeconds === 300 }" @click="setRestPreset(300)">
+            {{ t('workout.restPreset300') }}
+          </button>
         </span>
       </div>
       <div class="setrow">

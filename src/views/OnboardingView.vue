@@ -13,6 +13,21 @@ const step = ref<'intro' | 'test' | 'recommend'>('intro')
 const reps = ref(0)
 const recommendation = computed(() => recommendStart(reps.value))
 
+const stepNumber = computed(() => {
+  if (step.value === 'intro') return 1
+  if (step.value === 'test') return 2
+  return 3
+})
+
+const recommendText = computed(() => {
+  const rec = recommendation.value
+  const params = { ...rec.explanationParams }
+  if ('level' in params && params.level) {
+    params.level = t(`levels.${params.level}`)
+  }
+  return t(rec.explanationKey, params)
+})
+
 const router = useRouter()
 const { t } = useI18n()
 const progressStore = useProgressStore()
@@ -72,6 +87,7 @@ async function accept() {
         RU
       </button>
     </div>
+    <p class="step-indicator kicker">{{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}</p>
     <section v-if="step === 'intro'" class="panel">
       <p class="kicker">{{ t('onboarding.introTitle') }}</p>
       <p>{{ t('onboarding.introBody') }}</p>
@@ -82,13 +98,20 @@ async function accept() {
       <p>{{ t('onboarding.testBody') }}</p>
       <label class="field">
         <span>{{ t('onboarding.repsLabel') }}</span>
-        <input v-model.number="reps" type="number" min="0" max="100" />
+        <input
+          v-model.number="reps"
+          type="number"
+          min="0"
+          max="100"
+          :placeholder="t('onboarding.repsPlaceholder')"
+        />
       </label>
+      <p class="sub">{{ t('onboarding.testHint') }}</p>
       <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
     </section>
     <section v-else class="panel">
       <p class="kicker">{{ t('onboarding.recommendTitle') }}</p>
-      <p>{{ t(recommendation.explanationKey, recommendation.explanationParams) }}</p>
+      <p>{{ recommendText }}</p>
       <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
       <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
     </section>
@@ -103,6 +126,9 @@ async function accept() {
 .langrow {
   display: flex;
   gap: 8px;
+  margin-bottom: 12px;
+}
+.step-indicator {
   margin-bottom: 12px;
 }
 .lang {

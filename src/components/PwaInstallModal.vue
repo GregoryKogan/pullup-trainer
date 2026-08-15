@@ -111,7 +111,7 @@ const steps = () => {
       <button v-if="canInstall" type="button" class="btn accent" @click="emit('install')">
         {{ t('common.install') }}
       </button>
-      <button type="button" class="btn ghost" @click="emit('dismiss')">{{ t('common.dismiss') }}</button>
+      <button type="button" class="btn outline" @click="emit('dismiss')">{{ t('common.dismiss') }}</button>
     </div>
   </div>
 </template>
