@@ -313,6 +313,7 @@ a {
   justify-content: space-between;
   gap: 10px;
   min-height: 50px;
+  padding: 3px 0 8px;
   border-bottom: 2px solid var(--line);
   flex-wrap: wrap;
 }
