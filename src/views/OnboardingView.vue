@@ -138,7 +138,7 @@ async function accept() {
         />
       </label>
       <p v-if="repsError" class="sub error">{{ repsError }}</p>
-      <p class="sub">{{ t('onboarding.testHint') }}</p>
+      <p class="sub hint">{{ t('onboarding.testHint') }}</p>
       <div class="btnrow">
         <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
         <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
@@ -234,5 +234,8 @@ async function accept() {
 }
 .sub.error {
   color: var(--bad);
+}
+.hint {
+  margin: 0 0 12px;
 }
 </style>
