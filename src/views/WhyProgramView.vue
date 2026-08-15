@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
-import { safeBack } from '@/utils/navigation'
+import { useRoute, useRouter } from 'vue-router'
+import { safeBack, scrollToHash } from '@/utils/navigation'
 
 const { t, tm } = useI18n()
+const route = useRoute()
 const router = useRouter()
+
+function scrollIfHash() {
+  if (!route.hash) return
+  nextTick(() => scrollToHash(route.hash))
+}
+
+onMounted(scrollIfHash)
+watch(() => route.hash, scrollIfHash)
 
 const sections = ['frequency', 'volume', 'workingSets', 'finalMax', 'rest', 'autoreg', 'retest', 'path0', 'skips'] as const
 

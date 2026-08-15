@@ -22,8 +22,8 @@ const router = useRouter()
     <section class="panel">
       <p>{{ t('about.body') }}</p>
       <p class="sub">{{ t('about.version', { v: APP_VERSION }) }}</p>
-      <button type="button" class="btn accent" @click="router.push('/why')">{{ t('about.whyLink') }}</button>
-      <button type="button" class="btn" @click="router.push('/why#sources')">{{ t('about.sourcesLink') }}</button>
+      <RouterLink to="/why" class="btn accent">{{ t('about.whyLink') }}</RouterLink>
+      <RouterLink to="/why#sources" class="btn">{{ t('about.sourcesLink') }}</RouterLink>
     </section>
   </div>
 </template>
