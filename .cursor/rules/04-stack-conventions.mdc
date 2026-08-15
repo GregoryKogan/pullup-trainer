@@ -4,6 +4,11 @@ alwaysApply: true
 ---
 # Стек, конвенции, проверка, ограничения
 
+## Доступные Cursor skills (.cursor/skills/)
+- `vue-core` — загружать при работе с любым `.vue`-файлом / Vue-логикой (reactivity, `<script setup>`, производительность).
+- `vue-testing` — загружать при написании/починке тестов (Vitest + Vue Test Utils).
+- `code-review-and-quality` — прогонять перед каждым коммитом: 5-осевое ревью (correctness, readability, architecture, security, performance). Правило «approve if it improves overall code health».
+
 ## Стек (зафиксирован в ТЗ §5)
 Vue 3 (Composition API) + TypeScript, Vite, Vue Router, Pinia, vue-i18n (**EN — язык по умолчанию**, RU — вторичный), Dexie (IndexedDB), vite-plugin-pwa, Vitest + Vue Test Utils, ESLint + Prettier.
 
