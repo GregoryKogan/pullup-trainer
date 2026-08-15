@@ -1,0 +1,146 @@
+{
+  "nav": {
+    "home": "Home",
+    "calendar": "Calendar",
+    "stats": "Stats",
+    "settings": "Settings"
+  },
+  "common": {
+    "start": "Start workout",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "done": "Done",
+    "today": "Today",
+    "move": "Move",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "install": "Install app",
+    "dismiss": "Continue in browser"
+  },
+  "home": {
+    "title": "Get after it.",
+    "nextWorkout": "Next workout",
+    "maxReps": "Max reps",
+    "volumeWeek": "Volume · week",
+    "stepProgress": "Step {step} · Cycle {cycle}",
+    "shiftBanner": "Plan shifted — missed workout moved forward",
+    "noProgress": "Complete onboarding to start"
+  },
+  "onboarding": {
+    "introTitle": "Pull-up Trainer",
+    "introBody": "A science-based progressive program. Test your max, follow the plan, track progress offline.",
+    "testTitle": "Max rep test",
+    "testBody": "Strict pull-ups to failure. Enter your result.",
+    "repsLabel": "Reps completed",
+    "recommendTitle": "Your starting point",
+    "recommend": {
+      "p0": "Path 0: build strength with scap pulls, hangs, negatives, and assisted reps.",
+      "l": "Level {level} with anchor M* = {m}. Cycle starts at step 1."
+    },
+    "accept": "Start program",
+    "override": "Change max"
+  },
+  "workout": {
+    "setOf": "Set {current} of {total}",
+    "nextUp": "Next up",
+    "reps": "reps",
+    "seconds": "sec",
+    "doneReps": "Done — {n} reps",
+    "logFewer": "Log fewer",
+    "rest": "REST",
+    "restHint": "Vibrate + notify on finish · no sound",
+    "skipRest": "Skip",
+    "reset": "Reset",
+    "exitWarn": "Leave workout? Progress will count as fail.",
+    "resultSuccess": "Workout complete",
+    "resultFail": "Workout incomplete",
+    "volume": "{n} reps total"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "done": "Done",
+    "missed": "Missed",
+    "planned": "Planned",
+    "todayLegend": "Today",
+    "shiftNote": "All following workouts shift by the same offset.",
+    "startNow": "Start now",
+    "repeatMissed": "Repeat missed"
+  },
+  "stats": {
+    "title": "Stats",
+    "maxReps": "Max reps",
+    "streak": "Streak",
+    "volume": "Volume",
+    "maxChart": "Max reps by date",
+    "maxChartSub": "tests + best sets",
+    "weeklyVolume": "Weekly volume",
+    "history": "History",
+    "export": "Export history JSON",
+    "partial": "Partial",
+    "success": "Done"
+  },
+  "settings": {
+    "title": "Settings",
+    "restTimer": "Rest timer",
+    "restDuration": "rest_duration",
+    "autoStart": "auto_start",
+    "signal": "signal",
+    "signalValue": "vibrate + notify",
+    "noSound": "No sound — by design",
+    "theme": "Theme",
+    "themeMode": "theme",
+    "palette": "palette",
+    "language": "language",
+    "data": "Data",
+    "exportBackup": "export_backup",
+    "importBackup": "import_backup",
+    "resetAll": "reset_all_data",
+    "resetConfirm": "Delete all local data? This cannot be undone.",
+    "about": "About",
+    "version": "version",
+    "programSources": "program_sources",
+    "whyProgram": "Why this program",
+    "customPrograms": "Custom programs"
+  },
+  "programs": {
+    "title": "Custom programs",
+    "new": "New program",
+    "name": "Program name",
+    "steps": "Steps",
+    "addStep": "Add step",
+    "addSet": "Add set",
+    "setActive": "Set active",
+    "restDays": "Rest days after step"
+  },
+  "about": {
+    "title": "About",
+    "body": "Pull-up Trainer is a free local-first PWA. No accounts, no ads, no cloud.",
+    "whyLink": "Why this program"
+  },
+  "pwa": {
+    "title": "Install Pull-up Trainer",
+    "subtitle": "Works offline like a native app",
+    "tabs": {
+      "ios": "iOS",
+      "android": "Android",
+      "desktop": "Desktop",
+      "other": "Other"
+    },
+    "ios": {
+      "note": "Safari only — other iOS browsers cannot install PWAs",
+      "steps": ["Tap Share", "Choose Add to Home Screen", "Tap Add"]
+    },
+    "android": {
+      "steps": ["Open menu ⋮", "Tap Install app or Add to Home screen", "Confirm install"]
+    },
+    "desktop": {
+      "steps": ["Look for install icon in address bar", "Or open menu → Install Pull-up Trainer", "Confirm"]
+    },
+    "other": {
+      "steps": ["Open browser menu", "Find Add to Home Screen or Install", "Confirm"]
+    }
+  }
+}

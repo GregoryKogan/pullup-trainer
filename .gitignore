@@ -3,3 +3,7 @@
 
 # macOS
 .DS_Store
+
+# Dependencies & build
+node_modules/
+dist/

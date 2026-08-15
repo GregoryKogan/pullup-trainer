@@ -1,0 +1,168 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import AppTabBar from '@/components/AppTabBar.vue'
+import { useProgressStore } from '@/stores/progress'
+import { useSettingsStore } from '@/stores/settings'
+import { exportHistory } from '@/domain/export'
+import { downloadJson } from '@/utils/platform'
+import { startOfWeek } from '@/utils/dates'
+
+const { t } = useI18n()
+const progressStore = useProgressStore()
+const settingsStore = useSettingsStore()
+
+const maxReps = computed(() => {
+  const points: { date: string; value: number }[] = []
+  for (const r of [...progressStore.records].reverse()) {
+    let v = r.totals.maxSetReps
+    if (r.kind === 'test') v = r.sets[0]?.done ?? 0
+    if (v > 0) points.push({ date: r.date, value: v })
+  }
+  return points.slice(-6)
+})
+
+const weeklyBars = computed(() => {
+  const map = new Map<string, number>()
+  for (const r of progressStore.records) {
+    if (r.kind !== 'workout') continue
+    const w = startOfWeek(r.date)
+    map.set(w, (map.get(w) ?? 0) + r.totals.volumeReps)
+  }
+  return [...map.entries()].slice(-7).map(([week, vol]) => ({ week, vol }))
+})
+
+const totalVolume = computed(() =>
+  progressStore.records.reduce((s, r) => s + r.totals.volumeReps, 0),
+)
+
+const history = computed(() => progressStore.records.slice(0, 10))
+
+function exportHistoryJson() {
+  const lang = settingsStore.settings?.language ?? 'en'
+  const data = exportHistory(progressStore.records, '1.0.0', lang)
+  downloadJson('pullup-trainer-history.json', data)
+}
+</script>
+
+<template>
+  <div>
+    <header class="head">
+      <div>
+        <p class="kicker">Progress</p>
+        <h2>{{ t('stats.title') }}</h2>
+      </div>
+    </header>
+    <div class="kpis">
+      <div class="kpi">
+        <b>{{ maxReps[maxReps.length - 1]?.value ?? 0 }}</b>
+        <span>{{ t('stats.maxReps') }}</span>
+      </div>
+      <div class="kpi">
+        <b>—</b>
+        <span>{{ t('stats.streak') }}</span>
+      </div>
+      <div class="kpi">
+        <b>{{ totalVolume }}</b>
+        <span>{{ t('stats.volume') }}</span>
+      </div>
+    </div>
+    <section class="sec">
+      <h4>{{ t('stats.maxChart') }}</h4>
+      <p class="sub">{{ t('stats.maxChartSub') }}</p>
+      <svg class="chart" viewBox="0 0 354 158" role="img">
+        <polyline
+          v-if="maxReps.length"
+          class="line"
+          :points="maxReps.map((p, i) => `${30 + i * 60},${130 - p.value * 8}`).join(' ')"
+          fill="none"
+          stroke="var(--accent)"
+          stroke-width="2.5"
+        />
+      </svg>
+    </section>
+    <section class="sec">
+      <h4>{{ t('stats.weeklyVolume') }}</h4>
+      <svg class="chart" viewBox="0 0 354 140" role="img">
+        <rect
+          v-for="(b, i) in weeklyBars"
+          :key="b.week"
+          class="bar"
+          :x="30 + i * 49"
+          :y="140 - b.vol"
+          width="26"
+          :height="Math.min(110, b.vol)"
+          fill="var(--accent)"
+        />
+      </svg>
+    </section>
+    <section class="sec">
+      <h4>{{ t('stats.history') }}</h4>
+      <ul class="hist">
+        <li v-for="r in history" :key="r.id ?? r.startedAt">
+          <div class="date"><b>{{ r.date.slice(5) }}</b></div>
+          <div class="info">
+            <b>{{ r.kind === 'test' ? `${r.sets[0]?.done} reps` : r.result }}</b>
+          </div>
+          <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
+            r.result === 'success' ? t('stats.success') : t('stats.partial')
+          }}</span>
+        </li>
+      </ul>
+      <button type="button" class="btn accent" @click="exportHistoryJson">{{ t('stats.export') }}</button>
+    </section>
+    <AppTabBar />
+  </div>
+</template>
+
+<style scoped>
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.kpi {
+  background: var(--card);
+  border: 2px solid var(--line);
+  box-shadow: 4px 4px 0 var(--shadow);
+  padding: 12px 8px;
+  text-align: center;
+}
+.kpi b {
+  display: block;
+  font-family: 'Arial Black', system-ui, sans-serif;
+  font-size: 1.7rem;
+}
+.kpi span {
+  font: 700 0.56rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
+}
+.chart {
+  width: 100%;
+}
+.hist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.hist li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 2px solid var(--line);
+}
+.pill {
+  font: 800 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  padding: 4px 8px;
+  border: 2px solid var(--line);
+  text-transform: uppercase;
+}
+.pill.ok {
+  color: var(--ok);
+}
+.pill.part {
+  color: var(--warn);
+}
+</style>

@@ -1,0 +1,68 @@
+{
+  "title": "Why this program",
+  "headline": "No direct RCTs exist for pull-up progression schemes. This program is a synthesis from indirect evidence on frequency, volume, rest, proximity to failure, autoregulation, and eccentric training.",
+  "sections": {
+    "frequency": {
+      "title": "Frequency: 3×/week, ≥48h rest",
+      "body": "Upper-body training benefits from ≥2 sessions/week. For latissimus and pulling muscles, 3×/week outperforms 1× when volume is matched. Recovery of strength within ~2 days supports a 48-hour minimum gap."
+    },
+    "volume": {
+      "title": "Volume: 5 sets × 3 workouts = 15/week",
+      "body": "Dose-response meta-analyses show ≥10 hard sets per week beats ≤5 for strength. Our 15 weekly sets sit in the 12–20 optimal hypertrophy band without excessive fatigue."
+    },
+    "workingSets": {
+      "title": "Working sets: submaximal ladder",
+      "body": "Four working sets at ~50–70% of anchor keep reps away from deep failure. Velocity-loss research on pull-ups supports stopping before excessive fatigue."
+    },
+    "finalMax": {
+      "title": "Final set: Maximum (minimum N)",
+      "body": "One approach near failure provides progression signal and hypertrophy stimulus. The N submax + final AMRAP protocol as a whole was not tested in RCTs — extrapolation from proximity-to-failure literature."
+    },
+    "rest": {
+      "title": "Rest: default 3 min",
+      "body": "3–5 minutes between heavy sets preserves repetition output. Presets 90s (hypertrophy) and 5min (heavy) are configurable."
+    },
+    "autoreg": {
+      "title": "Fail → repeat; 2 fails → deload",
+      "body": "Performance gating matches autoregulation literature. After two consecutive fails: M* := floor(0.9·M*), minimum 1."
+    },
+    "retest": {
+      "title": "Retest every 2 cycles (~4 weeks)",
+      "body": "Formal max tests every two 6-step cycles recalibrate anchor. Also suggested after breaks >2 weeks."
+    },
+    "path0": {
+      "title": "Path 0: negatives + assist",
+      "body": "Eccentric training has the strongest evidence for beginners who cannot pull concentrically. Scap pulls and hangs are coaching practice without direct RCTs — marked as extrapolation."
+    },
+    "skips": {
+      "title": "Missed workouts: auto-shift",
+      "body": "Skipped steps stay next to perform. Later dates shift forward preserving intervals. Strength is maintained up to ~3 weeks — flexible scheduling supports habit formation."
+    }
+  },
+  "formulas": {
+    "title": "Formulas with examples",
+    "items": [
+      { "name": "Levels", "formula": "M=0→P0; 1–4→L1; 5–9→L2; 10–19→L3; 20+→L4", "example": "M=7 → L2" },
+      { "name": "Working sets", "formula": "ceil(0.7·M*), ceil(0.6·M*), ceil(0.6·M*), ceil(0.5·M*), min 1", "example": "M*=7 → 5,5,5,4" },
+      { "name": "Final minimum", "formula": "N_k = min(ceil(0.6·M*) + k − 1, M* + 1)", "example": "M*=7, k=3 → N=7" },
+      { "name": "Deload", "formula": "M* := floor(0.9·M*), min 1", "example": "M*=7 → 6" },
+      { "name": "Cycle end", "formula": "M*' = max(best final set in cycle, M* − 1)", "example": "best=8, M*=7 → 8" }
+    ]
+  },
+  "badges": {
+    "confirmed": "Confirmed by multiple sources",
+    "single": "Single source",
+    "extrapolation": "Extrapolation"
+  },
+  "sourcesTitle": "Open-access sources",
+  "sources": [
+    { "id": 1, "title": "Sánchez-Moreno et al. 2020 — velocity loss in pull-ups", "url": "https://pubmed.ncbi.nlm.nih.gov/32213783/", "badge": "confirmed" },
+    { "id": 7, "title": "Schoenfeld et al. 2016 — training frequency", "url": "https://link.springer.com/article/10.1007/s40279-016-0543-8", "badge": "confirmed" },
+    { "id": 9, "title": "Ralston et al. 2018 — upper body frequency", "url": "https://link.springer.com/article/10.1186/s40798-018-0149-9", "badge": "confirmed" },
+    { "id": 16, "title": "Ralston et al. 2017 — weekly set volume", "url": "https://link.springer.com/article/10.1007/s40279-017-0762-7", "badge": "confirmed" },
+    { "id": 21, "title": "de Salles et al. 2009 — rest intervals", "url": "https://pubmed.ncbi.nlm.nih.gov/19691365/", "badge": "confirmed" },
+    { "id": 28, "title": "Zhang et al. 2021 — autoregulation", "url": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2021.651112/full", "badge": "confirmed" },
+    { "id": 43, "title": "Roig et al. 2009 — eccentric training meta-analysis", "url": "https://pubmed.ncbi.nlm.nih.gov/18981046/", "badge": "confirmed" },
+    { "id": 49, "title": "Beshears et al. 2021 — flexible scheduling", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8734590/", "badge": "extrapolation" }
+  ]
+}
