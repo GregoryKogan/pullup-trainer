@@ -8,7 +8,7 @@ import { recommendStart } from '@/domain/levels'
 import { computeTotals } from '@/domain/progression'
 import { setLocale } from '@/i18n'
 import { todayLocal, toIsoOffset } from '@/utils/dates'
-import { blockRepFractionKey, isValidRepCount, syncRepInput } from '@/utils/reps-input'
+import { blockRepFractionKey, clampRepCount, isValidRepCount, REP_COUNT_MAX, syncRepInput } from '@/utils/reps-input'
 
 const step = ref<'intro' | 'test' | 'recommend'>('intro')
 const reps = ref(0)
@@ -29,6 +29,9 @@ const recommendText = computed(() => {
   }
   return t(rec.explanationKey, params)
 })
+
+const repsAtMin = computed(() => reps.value <= 0)
+const repsAtMax = computed(() => reps.value >= REP_COUNT_MAX)
 
 const router = useRouter()
 const { t } = useI18n()
@@ -57,6 +60,11 @@ function onRepsInput(event: Event) {
   syncRepInput(event, (value) => {
     reps.value = value
   })
+}
+
+function adjustReps(delta: number) {
+  reps.value = clampRepCount(reps.value + delta)
+  repsError.value = ''
 }
 
 async function setLang(lang: 'en' | 'ru') {
@@ -88,6 +96,73 @@ async function accept() {
 <template>
   <div class="onboarding page">
     <h1 class="sr-only">{{ t('onboarding.introTitle') }}</h1>
+    <p class="step-indicator kicker">
+      <span class="step-dots" aria-hidden="true">
+        <i v-for="n in 3" :key="n" :class="{ on: n === stepNumber }" />
+      </span>
+      {{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}
+    </p>
+    <section v-if="step === 'intro'" class="panel">
+      <p class="kicker">{{ t('onboarding.introTitle') }}</p>
+      <p>{{ t('onboarding.introBody') }}</p>
+      <button type="button" class="btn accent" @click="goTest">{{ t('common.next') }}</button>
+    </section>
+    <section v-else-if="step === 'test'" class="panel">
+      <p class="kicker">{{ t('onboarding.testTitle') }}</p>
+      <p>{{ t('onboarding.testBody') }}</p>
+      <label class="field">
+        <span>{{ t('onboarding.repsLabel') }}</span>
+        <div class="rep-stepper">
+          <button
+            type="button"
+            class="iconbtn rep-step"
+            :class="{ inactive: repsAtMin }"
+            :aria-label="t('onboarding.repsDecrease')"
+            :disabled="repsAtMin"
+            @click="adjustReps(-1)"
+          >
+            −
+          </button>
+          <input
+            id="onboarding-reps"
+            v-model.number="reps"
+            type="number"
+            min="0"
+            :max="REP_COUNT_MAX"
+            step="1"
+            inputmode="numeric"
+            :placeholder="t('onboarding.repsPlaceholder')"
+            @keydown="blockRepFractionKey"
+            @input="onRepsInput"
+          />
+          <button
+            type="button"
+            class="iconbtn rep-step"
+            :class="{ inactive: repsAtMax }"
+            :aria-label="t('onboarding.repsIncrease')"
+            :disabled="repsAtMax"
+            @click="adjustReps(1)"
+          >
+            +
+          </button>
+        </div>
+      </label>
+      <p v-if="repsError" class="sub error">{{ repsError }}</p>
+      <p class="sub hint">{{ t('onboarding.testHint') }}</p>
+      <div class="btnrow">
+        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
+        <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
+      </div>
+    </section>
+    <section v-else class="panel">
+      <p class="kicker">{{ t('onboarding.recommendTitle') }}</p>
+      <p>{{ recommendText }}</p>
+      <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
+      <div class="btnrow">
+        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
+        <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
+      </div>
+    </section>
     <div class="langrow" role="group" :aria-label="t('settings.language')">
       <button
         type="button"
@@ -108,51 +183,6 @@ async function accept() {
         RU
       </button>
     </div>
-    <p class="step-indicator kicker">
-      <span class="step-dots" aria-hidden="true">
-        <i v-for="n in 3" :key="n" :class="{ on: n === stepNumber }" />
-      </span>
-      {{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}
-    </p>
-    <section v-if="step === 'intro'" class="panel">
-      <p class="kicker">{{ t('onboarding.introTitle') }}</p>
-      <p>{{ t('onboarding.introBody') }}</p>
-      <button type="button" class="btn accent" @click="goTest">{{ t('common.next') }}</button>
-    </section>
-    <section v-else-if="step === 'test'" class="panel">
-      <p class="kicker">{{ t('onboarding.testTitle') }}</p>
-      <p>{{ t('onboarding.testBody') }}</p>
-      <label class="field">
-        <span>{{ t('onboarding.repsLabel') }}</span>
-        <input
-          id="onboarding-reps"
-          v-model.number="reps"
-          type="number"
-          min="0"
-          max="100"
-          step="1"
-          inputmode="numeric"
-          :placeholder="t('onboarding.repsPlaceholder')"
-          @keydown="blockRepFractionKey"
-          @input="onRepsInput"
-        />
-      </label>
-      <p v-if="repsError" class="sub error">{{ repsError }}</p>
-      <p class="sub hint">{{ t('onboarding.testHint') }}</p>
-      <div class="btnrow">
-        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
-        <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
-      </div>
-    </section>
-    <section v-else class="panel">
-      <p class="kicker">{{ t('onboarding.recommendTitle') }}</p>
-      <p>{{ recommendText }}</p>
-      <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
-      <div class="btnrow">
-        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
-        <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
-      </div>
-    </section>
     <div class="links page-bottom">
       <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
       <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
@@ -161,10 +191,14 @@ async function accept() {
 </template>
 
 <style scoped>
+.onboarding.page {
+  padding-top: 12px;
+}
 .langrow {
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-top: 14px;
 }
 .step-indicator {
   margin-bottom: 14px;
@@ -210,13 +244,27 @@ async function accept() {
   margin: 16px 0;
   font: 800 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
-.field input {
+.rep-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.rep-stepper input {
+  flex: 1;
+  min-width: 0;
   min-height: 50px;
   font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   border: 2px solid var(--line);
   padding: 8px 12px;
   background: var(--bg);
   color: var(--ink);
+  text-align: center;
+}
+.rep-step {
+  flex: 0 0 50px;
+  width: 50px;
+  min-height: 50px;
+  font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .links {
   display: flex;

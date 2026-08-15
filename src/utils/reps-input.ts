@@ -2,6 +2,11 @@ export const REP_COUNT_MAX = 100
 
 const FRACTION_KEYS = new Set(['.', ',', 'e', 'E', '+', '-'])
 
+export function clampRepCount(value: number, max = REP_COUNT_MAX): number {
+  if (!Number.isFinite(value)) return 0
+  return Math.min(max, Math.max(0, Math.trunc(value)))
+}
+
 export function isValidRepCount(value: number): boolean {
   return Number.isFinite(value) && Number.isInteger(value) && value >= 0 && value <= REP_COUNT_MAX
 }

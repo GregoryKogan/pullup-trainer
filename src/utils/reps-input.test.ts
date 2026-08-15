@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isValidRepCount, normalizeRepCount } from './reps-input'
+import { isValidRepCount, normalizeRepCount, clampRepCount } from './reps-input'
 
 describe('reps-input', () => {
   it('accepts whole rep counts in range', () => {
@@ -19,5 +19,11 @@ describe('reps-input', () => {
     expect(normalizeRepCount('0.23423')).toBe(0)
     expect(normalizeRepCount('7.9')).toBe(7)
     expect(normalizeRepCount('100.5')).toBe(100)
+  })
+
+  it('clamps rep counts to the allowed range', () => {
+    expect(clampRepCount(-3)).toBe(0)
+    expect(clampRepCount(7.9)).toBe(7)
+    expect(clampRepCount(150)).toBe(100)
   })
 })

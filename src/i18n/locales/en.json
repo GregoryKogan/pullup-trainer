@@ -68,6 +68,8 @@
     "testBody": "Do as many strict pull-ups as you can. Enter the number.",
     "testHint": "Can't do a pull-up yet? Enter 0.",
     "repsLabel": "How many pull-ups?",
+    "repsDecrease": "Decrease reps",
+    "repsIncrease": "Increase reps",
     "repsPlaceholder": "0",
     "recommendTitle": "Your starting point",
     "recommend": {
