@@ -17,6 +17,7 @@ const progressStore = useProgressStore()
 
 const showRetest = ref(false)
 const showStartConfirm = ref(false)
+const showMoreActions = ref(false)
 const retestReps = ref(0)
 const retestError = ref('')
 const customPlanPreview = ref('')
@@ -213,15 +214,20 @@ async function reduceAnchor() {
         {{ t('common.start') }}
       </button>
       <template v-else>
-        <RouterLink to="/calendar" class="btn ghost">{{ t('home.openCalendar') }}</RouterLink>
-        <button type="button" class="btn ghost" @click="requestEarlyStart">
-          {{ t('home.startEarly') }}
+        <RouterLink to="/calendar" class="btn accent">{{ t('home.openCalendar') }}</RouterLink>
+        <button type="button" class="btn ghost" @click="showMoreActions = !showMoreActions">
+          {{ showMoreActions ? t('home.hideActions') : t('home.moreActions') }}
         </button>
+        <template v-if="showMoreActions">
+          <button type="button" class="btn ghost" @click="requestEarlyStart">
+            {{ t('home.startEarly') }}
+          </button>
+          <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
+            {{ t('home.repeatMissed') }}
+          </button>
+        </template>
         <p class="sub early-hint">{{ t('home.earlyStartHint') }}</p>
       </template>
-      <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
-        {{ t('home.repeatMissed') }}
-      </button>
     </section>
     <p v-else class="sub">{{ t('home.noProgress') }}</p>
 

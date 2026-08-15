@@ -289,7 +289,7 @@ async function confirmReset() {
     <section v-if="builtinProgress" class="sec">
       <h4>{{ t('settings.frequency') }}</h4>
       <div class="setrow">
-        <span class="k">{{ t('settings.frequency') }}</span>
+        <span class="k">{{ t('settings.frequencyValue') }}</span>
         <span class="seg">
           <button
             type="button"

@@ -216,6 +216,10 @@ async function accept() {
 }
 .links a {
   color: var(--ink);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 4px;
 }
 .sub.error {
   color: var(--bad);

@@ -30,6 +30,8 @@
     "restToday": "Сегодня отдых",
     "opensOn": "Следующая тренировка: {date}",
     "openCalendar": "Открыть календарь",
+    "moreActions": "Ещё действия",
+    "hideActions": "Скрыть",
     "startEarly": "Начать раньше",
     "earlyStartHint": "Нажми «Начать раньше» или открой календарь.",
     "maxReps": "Максимум",
@@ -37,7 +39,7 @@
     "planPreview": "План: {sets}",
     "planMax": "макс",
     "stepProgress": "Тренировка {step} из 6 · Раунд {cycle}",
-    "shiftBanner": "План сдвинут — пропуск перенесён",
+    "shiftBanner": "Пропуск сохранён — следующие даты сдвинуты. Открой календарь, чтобы увидеть план.",
     "noProgress": "Пройдите онбординг",
     "levelAnchor": "Твой уровень: {level} (макс {anchor})",
     "path0Step": "Путь с нуля · шаг {step}",
@@ -86,7 +88,8 @@
     "doneSeconds": "Готово — {n} сек",
     "doneMax": "Готово — макс",
     "logFewer": "Меньше",
-    "fewerLabel": "Сделано повторов",
+    "fewerLabelReps": "Сделано повторов",
+    "fewerLabelSeconds": "Сделано секунд",
     "rest": "ОТДЫХ",
     "restHint": "Вибрация + уведомление · без звука",
     "restPreset90": "90с",
@@ -95,6 +98,7 @@
     "adjustMinus": "−15 сек",
     "adjustPlus": "+15 сек",
     "setsRow": "Подходы тренировки",
+    "setsScrollHint": "Листай, чтобы увидеть все подходы",
     "skipRest": "Пропуск",
     "reset": "Сброс",
     "pause": "Пауза",
@@ -124,6 +128,9 @@
       "assisted": "Ассист"
     }
   },
+  "result": {
+    "tryAgain": "Повторить"
+  },
   "calendar": {
     "title": "Календарь",
     "done": "Сделано",
@@ -135,6 +142,8 @@
     "repeatMissed": "Повторить",
     "closeSheet": "Закрыть",
     "autoshiftApplied": "Пропущенная тренировка перенесена в плане.",
+    "notScheduled": "На этот день тренировка не запланирована.",
+    "moveUnchanged": "Выберите другую дату для переноса.",
     "nextMonth": "Следующий месяц",
     "prevMonth": "Предыдущий месяц",
     "dow": {
@@ -177,6 +186,7 @@
     "noSound": "Без звука — по задумке",
     "restPresets": "Пресеты",
     "frequency": "Частота",
+    "frequencyValue": "Раз в неделю",
     "frequency3": "3× / нед",
     "frequency2": "2× / нед",
     "weekdays": "Дни",
@@ -230,6 +240,8 @@
     "edit": "Изменить",
     "name": "Название",
     "steps": "Шаги",
+    "stepsCount": "{count} шаг | {count} шага | {count} шагов",
+    "empty": "Своих программ пока нет. Нажми «Новая программа», чтобы создать.",
     "stepN": "Шаг {n}",
     "addStep": "Добавить шаг",
     "addSet": "Добавить подход",

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useWorkoutSessionStore } from '@/stores/workout-session'
@@ -28,10 +28,23 @@ const nextStep = computed(() => {
   if (summary.value?.nextStep !== undefined) return String(summary.value.nextStep)
   return route.query.next
 })
+
+const retryDate = computed(() => summary.value?.date ?? (typeof route.query.date === 'string' ? route.query.date : null))
+
+function retryWorkout() {
+  if (retryDate.value) router.push(`/workout/${retryDate.value}`)
+  else router.push('/workout')
+}
+
+const statusRef = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+  statusRef.value?.focus()
+})
 </script>
 
 <template>
-  <div class="result panel" :class="success ? 'ok' : 'fail'" role="status">
+  <div class="result panel" :class="success ? 'ok' : 'fail'" role="status" aria-live="polite" aria-atomic="true">
     <h1 class="sr-only">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</h1>
     <div class="icon" aria-hidden="true">
       <svg v-if="success" width="48" height="48" viewBox="0 0 24 24">
@@ -41,13 +54,16 @@ const nextStep = computed(() => {
         <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.5" />
       </svg>
     </div>
-    <p class="kicker status-kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
+    <p ref="statusRef" tabindex="-1" class="kicker status-kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
     <p v-if="planned > 0" class="summary">{{ t('workout.resultVolume', { done, planned }) }}</p>
     <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', { n: volume }) }}</p>
     <p v-if="success && nextStep" class="sub">{{ t('workout.resultNext', { step: nextStep }) }}</p>
     <p v-else-if="!success" class="sub">{{ t('workout.resultRetry') }}</p>
     <div class="btnrow">
       <button type="button" class="btn accent" @click="router.push('/')">{{ t('nav.home') }}</button>
+      <button v-if="!success && retryDate" type="button" class="btn accent" @click="retryWorkout">
+        {{ t('result.tryAgain') }}
+      </button>
       <button v-if="!success" type="button" class="btn ghost" @click="router.push('/calendar')">
         {{ t('nav.calendar') }}
       </button>
@@ -81,10 +97,11 @@ const nextStep = computed(() => {
 }
 .status-kicker {
   margin-bottom: 12px;
+  outline: none;
 }
 .summary {
   font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.7rem;
   text-transform: uppercase;
   margin: 12px 0;
 }

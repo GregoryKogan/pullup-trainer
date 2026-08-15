@@ -18,6 +18,7 @@ export interface WorkoutResultSummary {
   planned: number
   done: number
   nextStep?: number
+  date?: string
 }
 
 export const useWorkoutSessionStore = defineStore('workoutSession', () => {

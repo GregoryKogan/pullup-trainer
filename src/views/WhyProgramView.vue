@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { safeBack } from '@/utils/navigation'
 
 const { t, tm } = useI18n()
 const router = useRouter()
@@ -22,7 +23,7 @@ const sources = computed(() => {
 <template>
   <div class="science">
     <div class="subpage-head">
-      <button type="button" class="btn ghost" @click="router.back()">{{ t('common.back') }}</button>
+      <button type="button" class="btn ghost" @click="safeBack(router)">{{ t('common.back') }}</button>
       <header class="head">
         <div>
           <p class="kicker">{{ t('why.kicker') }}</p>

@@ -37,7 +37,8 @@ const offset = computed(() => {
 
 <template>
   <section class="restcard">
-    <svg class="ring" viewBox="0 0 120 120" width="100" height="100" role="img" :aria-label="ringLabel">
+    <p class="sr-only" aria-live="polite" aria-atomic="true">{{ ringLabel }}</p>
+    <svg class="ring" viewBox="0 0 120 120" width="100" height="100" role="img" :aria-label="ringLabel" aria-hidden="true">
       <circle class="bg" cx="60" cy="60" r="52" />
       <circle
         class="fg"

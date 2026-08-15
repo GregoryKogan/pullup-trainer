@@ -64,6 +64,9 @@ async function activate(id: number) {
       </header>
     </div>
     <button type="button" class="btn accent" @click="createProgram">{{ t('programs.new') }}</button>
+    <section v-if="programs.length === 0" class="panel empty">
+      <p class="sub">{{ t('programs.empty') }}</p>
+    </section>
     <button
       v-if="progressStore.progress?.source === 'custom'"
       type="button"
@@ -74,7 +77,7 @@ async function activate(id: number) {
     </button>
     <section v-for="p in programs" :key="p.id" class="panel">
       <h3>{{ p.name }}</h3>
-      <p class="sub">{{ p.steps.length }} {{ t('programs.steps') }}</p>
+      <p class="sub">{{ t('programs.stepsCount', { count: p.steps.length }, p.steps.length) }}</p>
       <label v-if="p.id" class="step-pick">
         <span>{{ t('programs.jumpToStep') }}</span>
         <select v-model.number="stepPick[p.id]">

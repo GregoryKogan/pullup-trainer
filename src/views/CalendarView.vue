@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
@@ -17,6 +17,8 @@ const selectedIndex = ref<number | null>(null)
 const selectedMoveDate = ref<string | null>(null)
 const autoshiftBanner = ref(false)
 const showStartConfirm = ref(false)
+const dayHint = ref('')
+let dayHintTimer: ReturnType<typeof setTimeout> | null = null
 
 const today = todayLocal()
 const dowKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
@@ -79,15 +81,26 @@ function dismissSheet() {
   selectedMoveDate.value = null
 }
 
+function showDayHint(message: string) {
+  dayHint.value = message
+  if (dayHintTimer) clearTimeout(dayHintTimer)
+  dayHintTimer = setTimeout(() => {
+    dayHint.value = ''
+    dayHintTimer = null
+  }, 2800)
+}
+
 async function selectDay(date: string) {
   const idx = schedule.value.findIndex((s) => s.date === date)
   if (idx >= 0) {
     selectedIndex.value = idx
     selectedMoveDate.value = date
+    dayHint.value = ''
     await nextTick()
     sheetDialogRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   } else {
     dismissSheet()
+    showDayHint(t('calendar.notScheduled'))
   }
 }
 
@@ -135,8 +148,17 @@ function dayAriaLabel(date: string, day: number) {
   return statusText ? `${day}, ${statusText}` : String(day)
 }
 
+const moveUnchanged = computed(() => {
+  if (!selectedSlot.value || !selectedMoveDate.value) return false
+  return selectedMoveDate.value === selectedSlot.value.date
+})
+
 async function applyMove() {
   if (selectedIndex.value === null || !selectedMoveDate.value || !progressStore.progress) return
+  if (moveUnchanged.value) {
+    showDayHint(t('calendar.moveUnchanged'))
+    return
+  }
   const moved = rescheduleWorkout(schedule.value, selectedIndex.value, selectedMoveDate.value)
   if (!moved) return
   await progressStore.updateProgress({ ...progressStore.progress, schedule: moved })
@@ -182,6 +204,10 @@ async function handleMissedAutoshift() {
 onMounted(() => {
   void handleMissedAutoshift()
 })
+
+onBeforeUnmount(() => {
+  if (dayHintTimer) clearTimeout(dayHintTimer)
+})
 </script>
 
 <template>
@@ -198,6 +224,7 @@ onMounted(() => {
       </div>
     </header>
     <div v-if="autoshiftBanner" class="banner">{{ t('calendar.autoshiftApplied') }}</div>
+    <p v-if="dayHint" class="day-hint" role="status" aria-live="polite">{{ dayHint }}</p>
     <div class="calgrid">
       <div v-for="d in dowKeys" :key="d" class="dow">{{ t(`calendar.dow.${d}`) }}</div>
       <button
@@ -235,6 +262,7 @@ onMounted(() => {
           aria-modal="true"
           tabindex="-1"
           :aria-labelledby="'calendar-sheet-title'"
+          :aria-describedby="'calendar-sheet-desc'"
         >
           <div class="sheet-head">
             <h4 id="calendar-sheet-title">{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
@@ -253,9 +281,16 @@ onMounted(() => {
               {{ formatDisplayDate(opt, locale) }}
             </button>
           </div>
-          <p class="sub">{{ t('calendar.shiftNote') }}</p>
+          <p id="calendar-sheet-desc" class="sub">{{ t('calendar.shiftNote') }}</p>
           <div class="btnrow">
-            <button type="button" class="btn accent" @click="applyMove">{{ t('common.move') }}</button>
+            <button
+              type="button"
+              class="btn accent"
+              :disabled="moveUnchanged"
+              @click="applyMove"
+            >
+              {{ t('common.move') }}
+            </button>
             <button type="button" class="btn ghost" @click="startSelected">{{ t('calendar.startNow') }}</button>
             <button v-if="isMissedSelected" type="button" class="btn ghost" @click="repeatMissed">
               {{ t('calendar.repeatMissed') }}
@@ -288,6 +323,15 @@ onMounted(() => {
   margin-bottom: 12px;
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+}
+.day-hint {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 2px solid var(--line);
+  font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
+  text-align: center;
 }
 .nav {
   display: flex;
@@ -465,5 +509,13 @@ onMounted(() => {
   max-width: 480px;
   max-height: 70dvh;
   overflow-y: auto;
+}
+@media (max-width: 420px) {
+  .sheet-backdrop .btnrow {
+    flex-direction: column;
+  }
+  .sheet-backdrop .btnrow .btn {
+    width: 100%;
+  }
 }
 </style>

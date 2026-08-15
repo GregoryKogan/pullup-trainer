@@ -30,6 +30,8 @@
     "restToday": "Rest today",
     "opensOn": "Next workout: {date}",
     "openCalendar": "Open calendar",
+    "moreActions": "More actions",
+    "hideActions": "Hide actions",
     "startEarly": "Start early",
     "earlyStartHint": "Tap Start early or open Calendar.",
     "maxReps": "Max reps",
@@ -37,7 +39,7 @@
     "planPreview": "Plan: {sets}",
     "planMax": "max",
     "stepProgress": "Workout {step} of 6 · Round {cycle}",
-    "shiftBanner": "Plan shifted — missed workout moved forward",
+    "shiftBanner": "Missed workout kept — later dates moved forward. Open calendar to see your plan.",
     "noProgress": "Complete onboarding to start",
     "levelAnchor": "Your level: {level} (max {anchor})",
     "path0Step": "Starting path · step {step}",
@@ -86,7 +88,8 @@
     "doneSeconds": "Done — {n} sec",
     "doneMax": "Done — max",
     "logFewer": "Log fewer",
-    "fewerLabel": "Reps completed",
+    "fewerLabelReps": "Reps completed",
+    "fewerLabelSeconds": "Seconds completed",
     "rest": "REST",
     "restHint": "Vibrate + notify on finish · no sound",
     "restPreset90": "90s",
@@ -95,6 +98,7 @@
     "adjustMinus": "−15 sec",
     "adjustPlus": "+15 sec",
     "setsRow": "Workout sets",
+    "setsScrollHint": "Swipe to see all sets",
     "skipRest": "Skip",
     "reset": "Reset",
     "pause": "Pause",
@@ -124,6 +128,9 @@
       "assisted": "Assisted"
     }
   },
+  "result": {
+    "tryAgain": "Try again"
+  },
   "calendar": {
     "title": "Calendar",
     "done": "Done",
@@ -135,6 +142,8 @@
     "repeatMissed": "Repeat missed",
     "closeSheet": "Close",
     "autoshiftApplied": "Missed workout moved forward in your plan.",
+    "notScheduled": "This day has no workout planned.",
+    "moveUnchanged": "Pick a different date to move this workout.",
     "nextMonth": "Next month",
     "prevMonth": "Previous month",
     "dow": {
@@ -177,6 +186,7 @@
     "noSound": "No sound — by design",
     "restPresets": "Presets",
     "frequency": "Frequency",
+    "frequencyValue": "Times per week",
     "frequency3": "3× / week",
     "frequency2": "2× / week",
     "weekdays": "Weekdays",
@@ -230,6 +240,8 @@
     "edit": "Edit",
     "name": "Program name",
     "steps": "Steps",
+    "stepsCount": "{count} step | {count} steps",
+    "empty": "No custom programs yet. Tap New program to create one.",
     "stepN": "Step {n}",
     "addStep": "Add step",
     "addSet": "Add set",

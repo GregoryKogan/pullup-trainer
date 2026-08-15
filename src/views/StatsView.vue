@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
@@ -45,6 +45,37 @@ const streakWeeks = computed(() => {
 
 const historyLimit = 10
 const showAllHistory = ref(false)
+const isNarrow = ref(false)
+let narrowMq: MediaQueryList | null = null
+
+function updateNarrow() {
+  isNarrow.value = narrowMq?.matches ?? false
+}
+
+onMounted(() => {
+  narrowMq = window.matchMedia('(max-width: 420px)')
+  updateNarrow()
+  narrowMq.addEventListener('change', updateNarrow)
+})
+
+onBeforeUnmount(() => {
+  narrowMq?.removeEventListener('change', updateNarrow)
+})
+
+const displayMaxReps = computed(() => {
+  const pts = maxReps.value
+  return isNarrow.value && pts.length > 4 ? pts.slice(-4) : pts
+})
+
+const displayWeeklyBars = computed(() => {
+  const bars = weeklyBars.value
+  return isNarrow.value && bars.length > 4 ? bars.slice(-4) : bars
+})
+
+function chartX(index: number, count: number, start = 30, end = 330) {
+  if (count <= 1) return (start + end) / 2
+  return start + (index * (end - start)) / (count - 1)
+}
 
 const history = computed(() =>
   showAllHistory.value ? progressStore.records : progressStore.records.slice(0, historyLimit),
@@ -92,8 +123,8 @@ function exportHistoryJson() {
         <span>{{ t('stats.maxReps') }}</span>
       </div>
       <div class="kpi">
-        <b>{{ streakWeeks > 0 ? t('stats.streakWeeks', { n: streakWeeks }) : t('stats.noStreak') }}</b>
-        <span>{{ t('stats.streak') }}</span>
+        <b class="streak-num">{{ streakWeeks > 0 ? streakWeeks : '—' }}</b>
+        <span>{{ streakWeeks > 0 ? t('stats.streakWeeks', { n: streakWeeks }) : t('stats.noStreak') }}</span>
       </div>
       <div class="kpi">
         <b>{{ totalVolume }}</b>
@@ -104,52 +135,54 @@ function exportHistoryJson() {
       <h4>{{ t('stats.maxChart') }}</h4>
       <p class="sub">{{ t('stats.maxChartSub') }}</p>
       <p v-if="maxReps.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
-      <svg v-else class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
-        <title>{{ t('stats.maxChart') }}</title>
-        <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
-        <text class="chart-tick" x="24" :y="chartY(maxChartMax, maxChartMax) + 4" text-anchor="end">
-          {{ maxChartMax }}
-        </text>
-        <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
-        <line
-          v-for="i in 4"
-          :key="`grid-${i}`"
-          x1="30"
-          :y1="130 - i * 25"
-          x2="330"
-          :y2="130 - i * 25"
-          stroke="var(--line)"
-          stroke-width="1"
-          opacity="0.35"
-        />
-        <polyline
-          v-if="maxReps.length > 1"
-          class="line"
-          :points="maxReps.map((p, i) => `${30 + i * 60},${chartY(p.value, maxChartMax)}`).join(' ')"
-          fill="none"
-          stroke="var(--accent)"
-          stroke-width="2.5"
-        />
-        <g v-for="(p, i) in maxReps" :key="p.date">
-          <circle
-            :cx="30 + i * 60"
-            :cy="chartY(p.value, maxChartMax)"
-            r="5"
-            fill="var(--accent)"
+      <div v-else class="chart-wrap">
+        <svg class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
+          <title>{{ t('stats.maxChart') }}</title>
+          <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
+          <text class="chart-tick" x="24" :y="chartY(maxChartMax, maxChartMax) + 4" text-anchor="end">
+            {{ maxChartMax }}
+          </text>
+          <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
+          <line
+            v-for="i in 4"
+            :key="`grid-${i}`"
+            x1="30"
+            :y1="130 - i * 25"
+            x2="330"
+            :y2="130 - i * 25"
+            stroke="var(--line)"
+            stroke-width="1"
+            opacity="0.35"
           />
-          <text class="chart-label" :x="30 + i * 60" y="148" text-anchor="middle">
-            {{ chartDateLabel(p.date) }}
-          </text>
-          <text
-            class="chart-val"
-            :x="30 + i * 60"
-            :y="chartY(p.value, maxChartMax) - 8"
-            text-anchor="middle"
-          >
-            {{ p.value }}
-          </text>
-        </g>
-      </svg>
+          <polyline
+            v-if="displayMaxReps.length > 1"
+            class="line"
+            :points="displayMaxReps.map((p, i) => `${chartX(i, displayMaxReps.length)},${chartY(p.value, maxChartMax)}`).join(' ')"
+            fill="none"
+            stroke="var(--accent)"
+            stroke-width="2.5"
+          />
+          <g v-for="(p, i) in displayMaxReps" :key="p.date">
+            <circle
+              :cx="chartX(i, displayMaxReps.length)"
+              :cy="chartY(p.value, maxChartMax)"
+              r="5"
+              fill="var(--accent)"
+            />
+            <text class="chart-label" :x="chartX(i, displayMaxReps.length)" y="148" text-anchor="middle">
+              {{ chartDateLabel(p.date) }}
+            </text>
+            <text
+              class="chart-val"
+              :x="chartX(i, displayMaxReps.length)"
+              :y="chartY(p.value, maxChartMax) - 8"
+              text-anchor="middle"
+            >
+              {{ p.value }}
+            </text>
+          </g>
+        </svg>
+      </div>
       <ul v-if="maxReps.length > 0" class="sr-only">
         <li v-for="p in maxReps" :key="p.date">
           {{ chartDateLabel(p.date) }}: {{ p.value }} {{ t('stats.maxReps') }}
@@ -159,47 +192,49 @@ function exportHistoryJson() {
     <section class="sec">
       <h4>{{ t('stats.weeklyVolume') }}</h4>
       <p v-if="weeklyBars.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
-      <svg v-else class="chart" viewBox="0 0 354 148" role="img" :aria-label="t('stats.weeklyVolume')">
-        <title>{{ t('stats.weeklyVolume') }}</title>
-        <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
-        <text class="chart-tick" x="24" :y="chartY(weeklyChartMax, weeklyChartMax) + 4" text-anchor="end">
-          {{ weeklyChartMax }}
-        </text>
-        <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
-        <line
-          v-for="i in 4"
-          :key="`vgrid-${i}`"
-          x1="30"
-          :y1="130 - i * 25"
-          x2="330"
-          :y2="130 - i * 25"
-          stroke="var(--line)"
-          stroke-width="1"
-          opacity="0.35"
-        />
-        <g v-for="(b, i) in weeklyBars" :key="b.week">
-          <rect
-            class="bar"
-            :x="30 + i * 49"
-            :y="chartY(b.vol, weeklyChartMax)"
-            width="26"
-            :height="130 - chartY(b.vol, weeklyChartMax)"
-            fill="var(--accent)"
+      <div v-else class="chart-wrap">
+        <svg class="chart" viewBox="0 0 354 148" role="img" :aria-label="t('stats.weeklyVolume')">
+          <title>{{ t('stats.weeklyVolume') }}</title>
+          <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
+          <text class="chart-tick" x="24" :y="chartY(weeklyChartMax, weeklyChartMax) + 4" text-anchor="end">
+            {{ weeklyChartMax }}
+          </text>
+          <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
+          <line
+            v-for="i in 4"
+            :key="`vgrid-${i}`"
+            x1="30"
+            :y1="130 - i * 25"
+            x2="330"
+            :y2="130 - i * 25"
+            stroke="var(--line)"
+            stroke-width="1"
+            opacity="0.35"
           />
-          <text class="chart-label" :x="43 + i * 49" y="144" text-anchor="middle">
-            {{ chartDateLabel(b.week) }}
-          </text>
-          <text
-            v-if="b.vol > 0"
-            class="chart-val"
-            :x="43 + i * 49"
-            :y="chartY(b.vol, weeklyChartMax) - 6"
-            text-anchor="middle"
-          >
-            {{ b.vol }}
-          </text>
-        </g>
-      </svg>
+          <g v-for="(b, i) in displayWeeklyBars" :key="b.week">
+            <rect
+              class="bar"
+              :x="chartX(i, displayWeeklyBars.length) - 13"
+              :y="chartY(b.vol, weeklyChartMax)"
+              width="26"
+              :height="130 - chartY(b.vol, weeklyChartMax)"
+              fill="var(--accent)"
+            />
+            <text class="chart-label" :x="chartX(i, displayWeeklyBars.length)" y="144" text-anchor="middle">
+              {{ chartDateLabel(b.week) }}
+            </text>
+            <text
+              v-if="b.vol > 0"
+              class="chart-val"
+              :x="chartX(i, displayWeeklyBars.length)"
+              :y="chartY(b.vol, weeklyChartMax) - 6"
+              text-anchor="middle"
+            >
+              {{ b.vol }}
+            </text>
+          </g>
+        </svg>
+      </div>
       <ul v-if="weeklyBars.length > 0" class="sr-only">
         <li v-for="b in weeklyBars" :key="b.week">
           {{ chartDateLabel(b.week) }}: {{ b.vol }} {{ t('stats.volume') }}
@@ -252,6 +287,9 @@ function exportHistoryJson() {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.7rem;
 }
+.kpi .streak-num {
+  font-size: 1.7rem;
+}
 .kpi span {
   font: 700 0.68rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
@@ -260,15 +298,30 @@ function exportHistoryJson() {
   .kpis {
     grid-template-columns: 1fr;
   }
-  .kpi b {
+  .kpi b,
+  .kpi .streak-num {
     font-size: 2rem;
   }
+}
+.chart-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .chart-empty {
   margin: 12px 0 4px;
 }
 .chart {
   width: 100%;
+  min-width: 280px;
+}
+@media (max-width: 420px) {
+  .chart-tick,
+  .chart-label {
+    font-size: 9px;
+  }
+  .chart-val {
+    font-size: 10px;
+  }
 }
 .chart-tick,
 .chart-label,

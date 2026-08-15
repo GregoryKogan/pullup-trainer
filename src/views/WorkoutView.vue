@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SetCardsRow from '@/components/workout/SetCardsRow.vue'
@@ -80,6 +80,12 @@ const stepLabel = computed(() => {
     return `${t('home.path0Step', { step: p.state.path0Step })} · `
   }
   return ''
+})
+
+const fewerLabelKey = computed(() => {
+  const set = currentSet.value
+  if (!set) return 'workout.fewerLabelReps'
+  return set.unit === 'seconds' ? 'workout.fewerLabelSeconds' : 'workout.fewerLabelReps'
 })
 
 const setCards = computed(() =>
@@ -191,16 +197,19 @@ function finishSet(done: number) {
   if (workoutStore.isComplete()) finishWorkout()
 }
 
-function openFewer() {
+async function openFewer() {
   const set = currentSet.value
   fewerValue.value = set?.planned ?? 0
   maxDoneValue.value = set?.type === 'max' ? (set.planned + 20) : (set?.planned ?? 0)
   showFewer.value = true
+  await nextTick()
+  document.getElementById('fewer-input')?.focus()
 }
 
 function finishMaxSet() {
-  openFewer()
-  fewerValue.value = maxDoneValue.value || currentSet.value?.planned || 0
+  const set = currentSet.value
+  if (!set) return
+  finishSet(set.planned)
 }
 
 async function applyRestPreset(seconds: number) {
@@ -314,6 +323,7 @@ async function finishWorkout() {
     planned: plannedTotal,
     done: totals.volumeReps,
     nextStep,
+    date: active.date,
   })
   workoutStore.clear()
   router.push({ name: 'result' })
@@ -372,7 +382,10 @@ function confirmExit() {
       @skip="workoutStore.restRunning = false"
       @preset="applyRestPreset"
     />
-    <div v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning" class="btnrow">
+    <div
+      v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning && !showFewer"
+      class="btnrow"
+    >
       <button
         v-if="currentSet.type === 'max'"
         type="button"
@@ -394,14 +407,14 @@ function confirmExit() {
       <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logFewer') }}</button>
     </div>
     <div v-if="showFewer" class="fewer panel">
-      <label class="fewer-label" :for="'fewer-input'">{{ t('workout.fewerLabel') }}</label>
+      <label class="fewer-label" :for="'fewer-input'">{{ t(fewerLabelKey) }}</label>
       <input
         id="fewer-input"
         v-model.number="fewerValue"
         type="number"
         min="0"
         :max="maxDoneValue"
-        :aria-label="t('workout.fewerLabel')"
+        :aria-label="t(fewerLabelKey)"
       />
       <div class="btnrow">
         <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
@@ -430,6 +443,13 @@ function confirmExit() {
   padding: 2px 0 14px;
 }
 .step {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  padding: 0 8px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }

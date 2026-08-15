@@ -16,39 +16,57 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="setsrow" :aria-label="t('workout.setsRow')">
-    <div
-      v-for="(s, i) in sets"
-      :key="i"
-      class="s"
-      :class="{ done: s.doneFlag, now: s.current }"
-      :aria-label="t('workout.setLabel', { n: i + 1 })"
-      :aria-current="s.current ? 'step' : undefined"
-    >
-      <svg v-if="s.doneFlag" class="check" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-        <path d="M2 8.5 6 12.5 14 3.5" fill="none" stroke="currentColor" stroke-width="2.2" />
-      </svg>
-      <b>{{ s.done ?? s.planned }}</b>
-      <span>{{
-        s.doneFlag ? t('workout.setLabel', { n: i + 1 }) : s.current ? t('workout.setNow') : t('workout.setLabel', { n: i + 1 })
-      }}</span>
+  <div class="sets-wrap">
+    <div class="setsrow" :aria-label="t('workout.setsRow')">
+      <div
+        v-for="(s, i) in sets"
+        :key="i"
+        class="s"
+        :class="{ done: s.doneFlag, now: s.current }"
+        :aria-label="t('workout.setLabel', { n: i + 1 })"
+        :aria-current="s.current ? 'step' : undefined"
+      >
+        <svg v-if="s.doneFlag" class="check" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M2 8.5 6 12.5 14 3.5" fill="none" stroke="currentColor" stroke-width="2.2" />
+        </svg>
+        <b>{{ s.done ?? s.planned }}</b>
+        <span>{{
+          s.doneFlag ? t('workout.setLabel', { n: i + 1 }) : s.current ? t('workout.setNow') : t('workout.setLabel', { n: i + 1 })
+        }}</span>
+      </div>
     </div>
+    <p v-if="sets.length > 4" class="scroll-hint">{{ t('workout.setsScrollHint') }}</p>
   </div>
 </template>
 
 <style scoped>
+.sets-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+.sets-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 62px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+}
 .setsrow {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+  padding-bottom: 2px;
 }
 .setsrow .s {
-  flex: 1 0 56px;
-  min-width: 0;
+  flex: 0 0 62px;
+  width: 62px;
   min-height: 62px;
+  scroll-snap-align: center;
   border-radius: 2px;
   background: var(--card);
   border: 2px solid var(--line);
@@ -94,6 +112,13 @@ const { t } = useI18n()
 }
 .setsrow .s.now .check {
   color: var(--accent-ink);
+}
+.scroll-hint {
+  margin: 6px 0 0;
+  font: 700 0.62rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
 }
 @media (max-width: 360px) {
   .setsrow {

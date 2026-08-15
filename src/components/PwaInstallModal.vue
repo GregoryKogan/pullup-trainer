@@ -42,6 +42,27 @@ const steps = () => {
   const val = tm(key)
   return Array.isArray(val) ? (val as string[]) : []
 }
+
+function selectTab(tab: InstallPlatform) {
+  activeTab.value = tab
+}
+
+function onTabKeydown(e: KeyboardEvent) {
+  const idx = tabs.indexOf(activeTab.value)
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault()
+    selectTab(tabs[(idx + 1) % tabs.length])
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault()
+    selectTab(tabs[(idx - 1 + tabs.length) % tabs.length])
+  } else if (e.key === 'Home') {
+    e.preventDefault()
+    selectTab(tabs[0])
+  } else if (e.key === 'End') {
+    e.preventDefault()
+    selectTab(tabs[tabs.length - 1])
+  }
+}
 </script>
 
 <template>
@@ -80,7 +101,7 @@ const steps = () => {
             </button>
           </span>
         </div>
-        <div class="tabs" role="tablist" :aria-label="t('pwa.title')">
+        <div class="tabs" role="tablist" :aria-label="t('pwa.title')" @keydown="onTabKeydown">
           <button
             v-for="tab in tabs"
             :id="`pwa-tab-${tab}`"
@@ -92,7 +113,7 @@ const steps = () => {
             :aria-selected="tab === activeTab"
             :aria-controls="`pwa-panel-${tab}`"
             :tabindex="tab === activeTab ? 0 : -1"
-            @click="activeTab = tab"
+            @click="selectTab(tab)"
           >
             {{ t(`pwa.tabs.${tab}`) }}
           </button>
@@ -157,7 +178,7 @@ const steps = () => {
 .pwa-modal h2 {
   font-family: 'Arial Black', system-ui, sans-serif;
   text-transform: uppercase;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   margin: 0 0 8px;
 }
 .pwa-lead {

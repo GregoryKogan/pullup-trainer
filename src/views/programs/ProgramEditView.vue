@@ -155,6 +155,8 @@ function onSetTypeChange(stepIndex: number, setIndex: number) {
   margin-top: 6px;
   border: 2px solid var(--line);
   padding: 8px;
+  background: var(--bg);
+  color: var(--ink);
 }
 .step-head {
   display: flex;

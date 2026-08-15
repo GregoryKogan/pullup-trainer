@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { APP_VERSION } from '@/constants/app'
+import { safeBack } from '@/utils/navigation'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -10,7 +11,7 @@ const router = useRouter()
 <template>
   <div>
     <div class="subpage-head">
-      <button type="button" class="btn ghost" @click="router.back()">{{ t('common.back') }}</button>
+      <button type="button" class="btn ghost" @click="safeBack(router)">{{ t('common.back') }}</button>
       <header class="head">
         <div>
           <p class="kicker">{{ t('about.kicker') }}</p>
