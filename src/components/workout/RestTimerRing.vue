@@ -155,7 +155,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   stroke: var(--accent);
   fill: none;
   stroke-width: 7;
-  stroke-linecap: round;
+  stroke-linecap: butt;
 }
 .ring-num {
   font: 800 clamp(32px, 9vw, 44px) / 1 ui-monospace, 'SF Mono', Menlo, monospace;
