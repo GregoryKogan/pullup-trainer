@@ -302,6 +302,10 @@ a {
   padding-bottom: 6px;
 }
 
+.sec .sub {
+  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
 .setrow .v {
   flex-wrap: wrap;
   justify-content: flex-end;
