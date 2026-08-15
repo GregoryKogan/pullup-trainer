@@ -50,7 +50,7 @@ export async function completeWorkout(page: Page, maxReps = '8') {
   await clearRestGate(page)
 
   for (let i = 0; i < 4; i++) {
-    await page.getByRole('button', { name: /done — \d+ reps|готово — \d+ повт/i }).click()
+    await page.getByRole('button', { name: /^done$|^готово$/i }).click()
     await clearRestGate(page)
   }
 

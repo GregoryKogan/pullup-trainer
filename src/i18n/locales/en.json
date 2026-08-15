@@ -83,12 +83,9 @@
   "workout": {
     "setOf": "Set {current} of {total}",
     "setLabel": "Set {n}",
-    "setNow": "Now",
     "doNow": "Do now",
     "reps": "reps",
     "seconds": "sec",
-    "doneReps": "Done — {n} reps",
-    "doneSeconds": "Done — {n} sec",
     "doneMax": "Done",
     "logDifferent": "Different number",
     "maxDoneLabel": "How many did you do?",

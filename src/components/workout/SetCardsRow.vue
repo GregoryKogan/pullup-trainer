@@ -29,9 +29,6 @@ const { t } = useI18n()
       >
         <span v-if="s.doneFlag" class="check"><AppIcon name="check" :size="12" /></span>
         <b>{{ s.done ?? s.planned }}</b>
-        <span>{{
-          s.doneFlag ? t('workout.setLabel', { n: i + 1 }) : s.current ? t('workout.setNow') : t('workout.setLabel', { n: i + 1 })
-        }}</span>
       </div>
     </div>
     <p v-if="sets.length > 4" class="scroll-hint">{{ t('workout.setsScrollHint') }}</p>
@@ -77,13 +74,6 @@ const { t } = useI18n()
 .setsrow b {
   font: 800 1.2rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
-.setsrow span {
-  font: 700 0.68rem/1.2 ui-monospace, 'SF Mono', Menlo, monospace;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-align: center;
-}
 .setsrow .s.done {
   border-color: var(--ok);
 }
@@ -95,8 +85,7 @@ const { t } = useI18n()
   border-color: var(--line);
   box-shadow: 4px 4px 0 var(--shadow);
 }
-.setsrow .s.now b,
-.setsrow .s.now span {
+.setsrow .s.now b {
   color: var(--accent-ink);
 }
 .setsrow .s.now .check {
@@ -115,10 +104,6 @@ const { t } = useI18n()
   }
   .setsrow b {
     font-size: 1rem;
-  }
-  .setsrow span {
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
   }
 }
 </style>

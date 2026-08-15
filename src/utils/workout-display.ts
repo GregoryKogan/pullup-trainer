@@ -21,12 +21,6 @@ export function unitLabelKey(unit: PlannedSet['unit']): string {
   return unit === 'seconds' ? 'workout.seconds' : 'workout.reps'
 }
 
-export function doneButtonKey(set: PlannedSet): string {
-  if (set.type === 'max') return 'workout.doneMax'
-  if (set.unit === 'seconds') return 'workout.doneSeconds'
-  return 'workout.doneReps'
-}
-
 export function focusSubtitleKey(set: PlannedSet): string {
   if (set.type === 'max') return 'workout.focusMax'
   if (set.type === 'assisted') return 'workout.focusAssisted'

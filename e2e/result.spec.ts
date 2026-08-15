@@ -24,7 +24,7 @@ test.describe('Result', () => {
     await clearRestGate(page)
 
     for (let i = 0; i < 3; i++) {
-      await page.getByRole('button', { name: /done — \d+ reps/i }).click()
+      await page.getByRole('button', { name: /^done$|^готово$/i }).click()
       await clearRestGate(page)
     }
 

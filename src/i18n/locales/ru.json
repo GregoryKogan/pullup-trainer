@@ -83,12 +83,9 @@
   "workout": {
     "setOf": "Подход {current} из {total}",
     "setLabel": "Подход {n}",
-    "setNow": "Сейчас",
     "doNow": "Сделай сейчас",
     "reps": "повт",
     "seconds": "сек",
-    "doneReps": "Готово — {n} повт",
-    "doneSeconds": "Готово — {n} сек",
     "doneMax": "Готово",
     "logDifferent": "Другое число",
     "maxDoneLabel": "Сколько сделал?",

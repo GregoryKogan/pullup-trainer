@@ -20,13 +20,13 @@ test.describe('Workout log fewer', () => {
     await page.getByRole('button', { name: /different number|другое число/i }).click()
 
     await expect(page.getByRole('button', { name: /different number|другое число/i })).toHaveCount(0)
-    await expect(page.getByRole('button', { name: /done — \d+ reps/i })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /^done$|^готово$/i })).toHaveCount(0)
     await expect(page.locator('#fewer-input')).toBeVisible()
 
     await page.locator('#fewer-input').fill('3')
     await page.getByRole('button', { name: 'Confirm' }).click()
     await clearRestGate(page)
 
-    await expect(page.getByRole('button', { name: /done — \d+ reps/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^done$|^готово$/i })).toBeVisible()
   })
 })

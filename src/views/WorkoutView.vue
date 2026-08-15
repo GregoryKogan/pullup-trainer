@@ -25,7 +25,6 @@ import { getCustomProgram } from '@/db/repositories/custom-programs'
 import { todayLocal, toIsoOffset, formatTime } from '@/utils/dates'
 import {
   clampRestSeconds,
-  doneButtonKey,
   focusSubtitleKey,
   setTypeLabelKey,
 } from '@/utils/workout-display'
@@ -433,7 +432,7 @@ function confirmExit() {
       </div>
       <div v-else class="btnrow">
         <button type="button" class="btn accent" style="flex: 1.6" @click="finishSet(currentSet.planned)">
-          {{ t(doneButtonKey(currentSet), { n: currentSet.planned }) }}
+          {{ t('workout.doneMax') }}
         </button>
         <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logDifferent') }}</button>
       </div>

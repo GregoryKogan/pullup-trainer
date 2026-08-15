@@ -6,7 +6,7 @@ import SetCardsRow from '@/components/workout/SetCardsRow.vue'
 const i18n = createI18n({
   legacy: false,
   locale: 'en',
-  messages: { en: { workout: { setLabel: 'Set {n}', setNow: 'Now', setsRow: 'Sets' } } },
+  messages: { en: { workout: { setLabel: 'Set {n}', setsRow: 'Sets' } } },
 })
 
 describe('SetCardsRow', () => {
