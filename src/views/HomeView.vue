@@ -348,6 +348,7 @@ async function reduceAnchor() {
 }
 .opens-on {
   margin: 4px 0 0;
+  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .next .btn {
   text-decoration: none;
