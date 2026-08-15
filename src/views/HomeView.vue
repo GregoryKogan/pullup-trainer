@@ -9,6 +9,7 @@ import { detectReturnPolicy } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatDisplayDate, startOfWeek, todayLocal } from '@/utils/dates'
+import { blockRepFractionKey, isValidRepCount, syncRepInput } from '@/utils/reps-input'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 
 const router = useRouter()
@@ -138,13 +139,19 @@ function repeatMissed() {
 }
 
 async function submitRetest() {
-  if (retestReps.value < 0 || Number.isNaN(retestReps.value)) {
+  if (!isValidRepCount(retestReps.value)) {
     retestError.value = t('onboarding.repsInvalid')
     return
   }
   retestError.value = ''
   await progressStore.applyRetest(retestReps.value)
   showRetest.value = false
+}
+
+function onRetestRepsInput(event: Event) {
+  syncRepInput(event, (value) => {
+    retestReps.value = value
+  })
 }
 
 async function reduceAnchor() {
@@ -188,7 +195,11 @@ async function reduceAnchor() {
           type="number"
           min="0"
           max="100"
+          step="1"
+          inputmode="numeric"
           :placeholder="t('onboarding.repsPlaceholder')"
+          @keydown="blockRepFractionKey"
+          @input="onRetestRepsInput"
         />
       </label>
       <p v-if="retestError" class="sub error">{{ retestError }}</p>
@@ -315,7 +326,7 @@ async function reduceAnchor() {
 }
 .field input {
   min-height: 50px;
-  font-size: 1.5rem;
+  font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   border: 2px solid var(--line);
   background: var(--bg);
   color: var(--ink);

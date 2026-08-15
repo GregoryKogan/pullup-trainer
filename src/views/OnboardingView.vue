@@ -8,6 +8,7 @@ import { recommendStart } from '@/domain/levels'
 import { computeTotals } from '@/domain/progression'
 import { setLocale } from '@/i18n'
 import { todayLocal, toIsoOffset } from '@/utils/dates'
+import { blockRepFractionKey, isValidRepCount, syncRepInput } from '@/utils/reps-input'
 
 const step = ref<'intro' | 'test' | 'recommend'>('intro')
 const reps = ref(0)
@@ -44,12 +45,18 @@ function goBack() {
 }
 
 function submitTest() {
-  if (reps.value < 0 || Number.isNaN(reps.value)) {
+  if (!isValidRepCount(reps.value)) {
     repsError.value = t('onboarding.repsInvalid')
     return
   }
   repsError.value = ''
   step.value = 'recommend'
+}
+
+function onRepsInput(event: Event) {
+  syncRepInput(event, (value) => {
+    reps.value = value
+  })
 }
 
 async function setLang(lang: 'en' | 'ru') {
@@ -123,7 +130,11 @@ async function accept() {
           type="number"
           min="0"
           max="100"
+          step="1"
+          inputmode="numeric"
           :placeholder="t('onboarding.repsPlaceholder')"
+          @keydown="blockRepFractionKey"
+          @input="onRepsInput"
         />
       </label>
       <p v-if="repsError" class="sub error">{{ repsError }}</p>
@@ -201,7 +212,7 @@ async function accept() {
 }
 .field input {
   min-height: 50px;
-  font-size: 1.5rem;
+  font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   border: 2px solid var(--line);
   padding: 8px 12px;
   background: var(--bg);
