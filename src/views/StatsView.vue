@@ -7,7 +7,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { exportHistory } from '@/domain/export'
 import { downloadJson } from '@/utils/platform'
 import { computeWeeklyStreak } from '@/utils/streak'
-import { formatDisplayDate, startOfWeek, todayLocal } from '@/utils/dates'
+import { formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
 
 const { t, locale } = useI18n()
 const progressStore = useProgressStore()
@@ -48,7 +48,7 @@ const history = computed(() => progressStore.records.slice(0, 10))
 function recordLabel(r: (typeof progressStore.records)[0]) {
   if (r.kind === 'test') return `${r.sets[0]?.done ?? 0} ${t('workout.reps')}`
   const sets = r.sets.map((s) => s.done).join('·')
-  return sets || r.result
+  return sets || (r.result === 'success' ? t('stats.success') : t('stats.partial'))
 }
 
 function exportHistoryJson() {
@@ -72,7 +72,7 @@ function exportHistoryJson() {
         <span>{{ t('stats.maxReps') }}</span>
       </div>
       <div class="kpi">
-        <b>{{ streakWeeks > 0 ? t('stats.streakWeeks', { n: streakWeeks }) : '—' }}</b>
+        <b>{{ streakWeeks > 0 ? t('stats.streakWeeks', { n: streakWeeks }) : t('stats.noStreak') }}</b>
         <span>{{ t('stats.streak') }}</span>
       </div>
       <div class="kpi">
@@ -138,7 +138,7 @@ function exportHistoryJson() {
       <ul class="hist">
         <li v-for="r in history" :key="r.id ?? r.startedAt">
           <div class="date">
-            <b>{{ formatDisplayDate(r.date, locale).slice(0, 6) }}</b>
+            <b>{{ formatShortDate(r.date, locale) }}</b>
             <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
           </div>
           <div class="info"><b>{{ recordLabel(r) }}</b></div>

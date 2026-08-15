@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import { loadCustomPrograms, saveCustomProgram, deleteCustomProgram } from '@/db/repositories/custom-programs'
 import { useProgressStore } from '@/stores/progress'
 import type { CustomProgram } from '@/domain/types'
@@ -11,6 +12,7 @@ const router = useRouter()
 const progressStore = useProgressStore()
 const programs = ref<CustomProgram[]>([])
 const stepPick = ref<Record<number, number>>({})
+const deleteTarget = ref<number | null>(null)
 
 onMounted(async () => {
   programs.value = await loadCustomPrograms()
@@ -33,8 +35,13 @@ async function activateBuiltin() {
 }
 
 async function remove(id: number) {
-  if (!confirm(t('programs.deleteConfirm'))) return
-  await deleteCustomProgram(id)
+  deleteTarget.value = id
+}
+
+async function confirmDelete() {
+  if (deleteTarget.value === null) return
+  await deleteCustomProgram(deleteTarget.value)
+  deleteTarget.value = null
   programs.value = await loadCustomPrograms()
 }
 
@@ -78,6 +85,12 @@ async function activate(id: number) {
       </div>
     </section>
     <button type="button" class="btn ghost" @click="router.push('/settings')">{{ t('common.back') }}</button>
+    <ConfirmPanel
+      :visible="deleteTarget !== null"
+      :message="t('programs.deleteConfirm')"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 

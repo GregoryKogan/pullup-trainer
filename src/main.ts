@@ -22,6 +22,7 @@ async function bootstrap() {
     setLocale(settingsStore.settings.language)
   } else {
     document.documentElement.lang = 'en'
+    document.title = i18n.global.t('common.appTitle')
   }
 
   app.mount('#app')

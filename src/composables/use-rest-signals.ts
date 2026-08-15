@@ -1,9 +1,14 @@
-export async function signalRestEnd(vibrate: boolean, notify: boolean) {
+export async function signalRestEnd(
+  vibrate: boolean,
+  notify: boolean,
+  title: string,
+  body: string,
+) {
   if (vibrate && 'vibrate' in navigator) {
     navigator.vibrate([200, 100, 200])
   }
   if (notify && 'Notification' in window && Notification.permission === 'granted') {
-    new Notification('Pull-up Trainer', { body: 'Rest complete', tag: 'rest-timer' })
+    new Notification(title, { body, tag: 'rest-timer' })
   }
 }
 

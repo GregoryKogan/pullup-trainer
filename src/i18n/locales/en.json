@@ -20,7 +20,8 @@
     "next": "Next",
     "install": "Install app",
     "dismiss": "Continue in browser",
-    "programName": "Pull-up Trainer"
+    "programName": "Pull-up Trainer",
+    "appTitle": "Pull-up Trainer"
   },
   "home": {
     "title": "Get after it.",
@@ -77,11 +78,17 @@
     "skipRest": "Skip",
     "reset": "Reset",
     "pause": "Pause",
+    "resume": "Resume",
+    "chooseRest": "Pick duration",
+    "restCompleteTitle": "Pull-up Trainer",
+    "restCompleteBody": "Rest complete",
+    "loadError": "Could not load this workout.",
     "exitWarn": "Leave workout? Progress will count as fail.",
     "resultSuccess": "Workout complete",
     "resultFail": "Workout incomplete",
     "resultVolume": "{done} of {planned} planned",
     "resultNext": "Next: step {step}",
+    "resultRetry": "Repeat this step on your next workout.",
     "volume": "{n} reps total",
     "focusReps": "reps · set {n}",
     "focusSeconds": "sec · set {n}",
@@ -129,7 +136,8 @@
     "history": "History",
     "export": "Export history JSON",
     "partial": "Partial",
-    "success": "Done"
+    "success": "Done",
+    "noStreak": "—"
   },
   "settings": {
     "title": "Settings",
@@ -169,6 +177,8 @@
     "programSources": "Program sources",
     "whyProgram": "Why this program",
     "customPrograms": "Custom programs",
+    "restDecrease": "Decrease rest duration",
+    "restIncrease": "Increase rest duration",
     "palettes": {
       "p01-volt": "P01 Volt",
       "p02-signal-orange": "P02 Signal Orange",
@@ -202,6 +212,8 @@
     "deleteConfirm": "Delete this program?",
     "useBuiltin": "Use built-in program",
     "restDays": "Rest days after step",
+    "customFallback": "Custom program",
+    "notFound": "Program not found",
     "setTypes": {
       "reps": "Reps",
       "max": "Max",

@@ -29,7 +29,7 @@ const setsPreview = computed(() => {
     return s.sets.map((x) => x.planned).join('·')
   }
   if (p.source === 'builtin' && p.state.path === 'P0') {
-    return `P0-${p.state.path0Step}`
+    return t('home.path0Step', { step: nextSlot.value.stepRef })
   }
   return ''
 })
@@ -149,7 +149,7 @@ async function reduceAnchor() {
         {{ t('home.stepProgress', { step: cycleInfo.step, cycle: cycleInfo.cycle }) }}
       </p>
       <p v-if="levelInfo" class="sub">{{ levelInfo }}</p>
-      <button type="button" class="btn accent" @click="startWorkout()">{{ t('common.start') }}</button>
+      <button type="button" class="btn accent" @click="startWorkout(nextSlot.date)">{{ t('common.start') }}</button>
       <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
         {{ t('home.repeatMissed') }}
       </button>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { getCustomProgram, saveCustomProgram } from '@/db/repositories/custom-programs'
 import type { CustomProgram } from '@/domain/types'
@@ -9,10 +9,12 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const program = ref<CustomProgram | null>(null)
+const loaded = ref(false)
 
 onMounted(async () => {
   const id = Number(route.params.id)
   program.value = (await getCustomProgram(id)) ?? null
+  loaded.value = true
 })
 
 async function save() {
@@ -44,7 +46,10 @@ function addSet(stepIndex: number) {
 <template>
   <div v-if="program">
     <header class="head">
-      <h2>{{ program.name }}</h2>
+      <div>
+        <p class="kicker">{{ t('programs.kicker') }}</p>
+        <h2>{{ program.name }}</h2>
+      </div>
     </header>
     <label class="field">
       {{ t('programs.name') }}
@@ -67,13 +72,18 @@ function addSet(stepIndex: number) {
         </select>
       </div>
       <button type="button" class="btn ghost" @click="addSet(si)">{{ t('programs.addSet') }}</button>
-      <label>
+      <label class="rest-field">
         {{ t('programs.restDays') }}
         <input v-model.number="step.restDaysAfter" type="number" min="0" />
       </label>
     </section>
     <button type="button" class="btn" @click="addStep">{{ t('programs.addStep') }}</button>
     <button type="button" class="btn accent" @click="save">{{ t('common.save') }}</button>
+    <RouterLink to="/programs" class="btn ghost back">{{ t('common.back') }}</RouterLink>
+  </div>
+  <div v-else-if="loaded" class="panel not-found">
+    <p class="sub">{{ t('programs.notFound') }}</p>
+    <RouterLink to="/programs" class="btn accent">{{ t('common.back') }}</RouterLink>
   </div>
 </template>
 
@@ -101,5 +111,29 @@ function addSet(stepIndex: number) {
   border: 2px solid var(--line);
   background: var(--bg);
   color: var(--ink);
+}
+.rest-field {
+  display: block;
+  margin-top: 8px;
+  font: 800 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.rest-field input {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 6px;
+  border: 2px solid var(--line);
+  padding: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.back {
+  display: inline-block;
+  margin-top: 12px;
+  text-align: center;
+  text-decoration: none;
+}
+.not-found {
+  margin-top: 24px;
+  text-align: center;
 }
 </style>

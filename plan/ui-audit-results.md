@@ -162,3 +162,78 @@
 - `npm run test` — 23/23 pass
 - `npm run build` — pass
 - Browser smoke: onboarding M=7 → home → settings EN/RU → PWA modal — pass
+
+---
+
+## Round 2 — 2026-08-15
+
+**Scope:** functional-first (bugs, i18n, a11y, critical UX). Full mockup parity deferred.
+
+### Summary
+
+| Priority | Found | Fixed | Open |
+|---|---|---|---|
+| P0 | 4 | 4 | 0 |
+| P1 | 12 | 12 | 0 |
+| P2 | 3 | 3 | 0 |
+
+### [P0] Home Start ignores next slot date
+- **Файлы:** `src/views/HomeView.vue`
+- **Fix:** `@click="startWorkout(nextSlot.date)"` — URL now includes scheduled date
+- **Статус:** fixed
+
+### [P0] Stats history dates truncated (EN)
+- **Файлы:** `src/views/StatsView.vue`, `src/utils/dates.ts`
+- **Fix:** removed `.slice(0, 6)`; added `formatShortDate()`
+- **Статус:** fixed
+
+### [P0] Rest timer shows 0:00 when auto-start off
+- **Файлы:** `src/components/workout/RestTimerRing.vue`
+- **Fix:** show `—` + «Pick duration» until preset tapped; hide controls until `total > 0`
+- **Статус:** fixed
+
+### [P0] Blank screens on load failure
+- **Файлы:** `src/views/WorkoutView.vue`, `src/views/programs/ProgramEditView.vue`
+- **Fix:** error panels with Home/back navigation
+- **Статус:** fixed
+
+### [P1] i18n gaps (notifications, fallbacks, RU nextUp, title)
+- **Файлы:** `use-rest-signals.ts`, `WorkoutView.vue`, `HomeView.vue`, `ResultView.vue`, `StatsView.vue`, `i18n/*`, `main.ts`
+- **Статус:** fixed
+
+### [P1] a11y: rest ± labels, pause/resume, aria-current, PWA focus/Escape
+- **Файлы:** `SettingsView.vue`, `RestTimerRing.vue`, `AppTabBar.vue`, `PwaInstallModal.vue`
+- **Статус:** fixed
+
+### [P1] New-user flow: onboarding lang + About/Why links; result calendar CTA; program edit back
+- **Файлы:** `OnboardingView.vue`, `ResultView.vue`, `ProgramEditView.vue`
+- **Статус:** fixed
+
+### [P1] Native confirm() dialogs
+- **Файлы:** new `ConfirmPanel.vue`; `WorkoutView.vue`, `SettingsView.vue`, `ProgramsListView.vue`
+- **Статус:** fixed
+
+### [P2] Calendar legend color swatches
+- **Файлы:** `CalendarView.vue`
+- **Статус:** fixed
+
+### [P2] Workout close icon (SVG)
+- **Файлы:** `WorkoutView.vue`
+- **Статус:** fixed
+
+### [P2] Result NaN guard for query params
+- **Файлы:** `ResultView.vue`
+- **Статус:** fixed
+
+### Deferred (functional-first scope)
+- Calendar overlay bottom-sheet
+- Stats chart axis/date labels
+- Home KPI subtexts
+- Stats history richness vs mockup
+
+### Round 2 Verification
+- `npm run typecheck` — pass
+- `npm run lint` — pass
+- `npm run test` — 23/23 pass
+- `npm run build` — pass
+- Browser: `/workout/2026-08-17` loads; tab bar `aria-current`; PWA modal Escape/focus — pass

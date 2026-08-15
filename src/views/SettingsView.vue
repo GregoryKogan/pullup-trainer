@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AppTabBar from '@/components/AppTabBar.vue'
+import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
 import { PALETTE_SLUGS } from '@/utils/theme'
@@ -21,6 +22,7 @@ const settingsStore = useSettingsStore()
 const progressStore = useProgressStore()
 
 const importMessage = ref('')
+const showResetConfirm = ref(false)
 const weekdayOptions: Weekday[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 const settings = computed(() => settingsStore.settings)
@@ -137,7 +139,11 @@ async function importBackupFile(e: Event) {
 }
 
 async function resetAll() {
-  if (!confirm(t('settings.resetConfirm'))) return
+  showResetConfirm.value = true
+}
+
+async function confirmReset() {
+  showResetConfirm.value = false
   await db.delete()
   await db.open()
   await settingsStore.hydrate()
@@ -160,8 +166,24 @@ async function resetAll() {
         <span class="k">{{ t('settings.restDuration') }}</span>
         <span class="v">
           <b>{{ Math.floor(settings.restDurationSeconds / 60) }}:{{ String(settings.restDurationSeconds % 60).padStart(2, '0') }}</b>
-          <button type="button" class="iconbtn" style="width: 44px; height: 44px" @click="changeRest(-15)">−</button>
-          <button type="button" class="iconbtn" style="width: 44px; height: 44px" @click="changeRest(15)">+</button>
+          <button
+            type="button"
+            class="iconbtn"
+            style="width: 44px; height: 44px"
+            :aria-label="t('settings.restDecrease')"
+            @click="changeRest(-15)"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            class="iconbtn"
+            style="width: 44px; height: 44px"
+            :aria-label="t('settings.restIncrease')"
+            @click="changeRest(15)"
+          >
+            +
+          </button>
         </span>
       </div>
       <div class="setrow">
@@ -295,6 +317,12 @@ async function resetAll() {
       <RouterLink to="/programs" class="btn ghost">{{ t('settings.customPrograms') }}</RouterLink>
     </section>
     <AppTabBar />
+    <ConfirmPanel
+      :visible="showResetConfirm"
+      :message="t('settings.resetConfirm')"
+      @confirm="confirmReset"
+      @cancel="showResetConfirm = false"
+    />
   </div>
 </template>
 

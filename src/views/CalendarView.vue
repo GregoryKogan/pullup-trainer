@@ -164,10 +164,10 @@ handleMissedAutoshift()
       </button>
     </div>
     <div class="legend">
-      <span>{{ t('calendar.done') }}</span>
-      <span>{{ t('calendar.missed') }}</span>
-      <span>{{ t('calendar.planned') }}</span>
-      <span>{{ t('calendar.todayLegend') }}</span>
+      <span><i class="dot done" aria-hidden="true" />{{ t('calendar.done') }}</span>
+      <span><i class="dot missed" aria-hidden="true" />{{ t('calendar.missed') }}</span>
+      <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
+      <span><i class="dot today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
     </div>
     <div v-if="selectedIndex !== null" class="sheetcard panel">
       <h4>{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
@@ -282,6 +282,33 @@ handleMissedAutoshift()
   padding: 12px 0;
   font: 700 0.64rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--line);
+  flex-shrink: 0;
+}
+.dot.done {
+  border-color: var(--ok);
+}
+.dot.missed {
+  border-color: var(--muted);
+  background: var(--bg2);
+}
+.dot.planned {
+  background: var(--accent2);
+  border-color: var(--accent2);
+}
+.dot.today {
+  background: var(--accent);
+  border-color: var(--accent);
 }
 .optrow {
   display: flex;

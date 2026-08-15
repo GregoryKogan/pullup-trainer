@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useProgressStore } from '@/stores/progress'
+import { useSettingsStore } from '@/stores/settings'
 import { recommendStart } from '@/domain/levels'
 import { computeTotals } from '@/domain/progression'
+import { setLocale } from '@/i18n'
 import { todayLocal, toIsoOffset } from '@/utils/dates'
 
 const step = ref<'intro' | 'test' | 'recommend'>('intro')
@@ -14,6 +16,7 @@ const recommendation = computed(() => recommendStart(reps.value))
 const router = useRouter()
 const { t } = useI18n()
 const progressStore = useProgressStore()
+const settingsStore = useSettingsStore()
 
 function goTest() {
   step.value = 'test'
@@ -21,6 +24,13 @@ function goTest() {
 
 function submitTest() {
   step.value = 'recommend'
+}
+
+async function setLang(lang: 'en' | 'ru') {
+  if (settingsStore.settings) {
+    await settingsStore.setLanguage(lang)
+  }
+  setLocale(lang)
 }
 
 async function accept() {
@@ -44,6 +54,24 @@ async function accept() {
 
 <template>
   <div class="onboarding">
+    <div class="langrow">
+      <button
+        type="button"
+        class="lang"
+        :class="{ on: settingsStore.settings?.language === 'en' }"
+        @click="setLang('en')"
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        class="lang"
+        :class="{ on: settingsStore.settings?.language === 'ru' }"
+        @click="setLang('ru')"
+      >
+        RU
+      </button>
+    </div>
     <section v-if="step === 'intro'" class="panel">
       <p class="kicker">{{ t('onboarding.introTitle') }}</p>
       <p>{{ t('onboarding.introBody') }}</p>
@@ -64,10 +92,33 @@ async function accept() {
       <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
       <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
     </section>
+    <div class="links">
+      <RouterLink to="/about">{{ t('home.aboutLink') }}</RouterLink>
+      <RouterLink to="/why">{{ t('home.whyLink') }}</RouterLink>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.langrow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.lang {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  cursor: pointer;
+  color: var(--ink);
+}
+.lang.on {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
 .field {
   display: flex;
   flex-direction: column;
@@ -81,6 +132,16 @@ async function accept() {
   border: 2px solid var(--line);
   padding: 8px 12px;
   background: var(--bg);
+  color: var(--ink);
+}
+.links {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0 8px;
+  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
+}
+.links a {
   color: var(--ink);
 }
 </style>

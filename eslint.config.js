@@ -5,7 +5,7 @@ import globals from 'globals'
 import vueParser from 'vue-eslint-parser'
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'spec'] },
+  { ignores: ['dist', 'node_modules', 'spec', '.gigatool'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],

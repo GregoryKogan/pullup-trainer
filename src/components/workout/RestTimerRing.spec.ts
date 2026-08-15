@@ -27,7 +27,7 @@ describe('RestTimerRing', () => {
   it('emits adjust events', async () => {
     const wrapper = mount(RestTimerRing, {
       global: { plugins: [i18n] },
-      props: { remaining: 90, total: 180, label: 'REST' },
+      props: { remaining: 90, total: 180, paused: false, label: 'REST' },
     })
     await wrapper.findAll('.mini')[3].trigger('click')
     expect(wrapper.emitted('minus')).toBeTruthy()

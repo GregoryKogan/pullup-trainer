@@ -8,6 +8,7 @@ const { t } = useI18n()
 const props = defineProps<{
   remaining: number
   total: number
+  paused: boolean
   label: string
 }>()
 
@@ -20,7 +21,12 @@ const emit = defineEmits<{
   preset: [seconds: number]
 }>()
 
-const ringLabel = computed(() => `${props.label}: ${formatTime(props.remaining)}`)
+const ringLabel = computed(() => {
+  if (props.total <= 0) return `${props.label}: ${t('workout.chooseRest')}`
+  return `${props.label}: ${formatTime(props.remaining)}`
+})
+
+const displayTime = computed(() => (props.total > 0 ? formatTime(props.remaining) : '—'))
 
 const offset = computed(() => {
   const c = 2 * Math.PI * 52
@@ -42,8 +48,8 @@ const offset = computed(() => {
         :stroke-dashoffset="offset"
         transform="rotate(-90 60 60)"
       />
-      <text class="ring-num" x="60" y="57" text-anchor="middle">{{ formatTime(remaining) }}</text>
-      <text class="ring-lab" x="60" y="73" text-anchor="middle">{{ label }}</text>
+      <text class="ring-num" x="60" y="57" text-anchor="middle">{{ displayTime }}</text>
+      <text class="ring-lab" x="60" y="73" text-anchor="middle">{{ total > 0 ? label : t('workout.chooseRest') }}</text>
     </svg>
     <div class="restbody">
       <div class="presets">
@@ -51,17 +57,25 @@ const offset = computed(() => {
         <button type="button" class="mini" @click="emit('preset', 180)">{{ t('workout.restPreset180') }}</button>
         <button type="button" class="mini" @click="emit('preset', 300)">{{ t('workout.restPreset300') }}</button>
       </div>
-      <div class="restrow">
+      <div v-if="total > 0" class="restrow">
         <button type="button" class="mini" @click="emit('minus')">{{ t('workout.adjustMinus') }}</button>
-        <button type="button" class="mini" :aria-label="t('workout.pause')" @click="emit('pause')">
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+        <button
+          type="button"
+          class="mini"
+          :aria-label="paused ? t('workout.resume') : t('workout.pause')"
+          @click="emit('pause')"
+        >
+          <svg v-if="!paused" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
             <rect x="6" y="5" width="4" height="14" fill="currentColor" />
             <rect x="14" y="5" width="4" height="14" fill="currentColor" />
+          </svg>
+          <svg v-else width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 5v14l11-7z" fill="currentColor" />
           </svg>
         </button>
         <button type="button" class="mini" @click="emit('plus')">{{ t('workout.adjustPlus') }}</button>
       </div>
-      <div class="restrow">
+      <div v-if="total > 0" class="restrow">
         <button type="button" class="mini" @click="emit('reset')">{{ $t('workout.reset') }}</button>
         <button type="button" class="mini" @click="emit('skip')">{{ $t('workout.skipRest') }}</button>
       </div>

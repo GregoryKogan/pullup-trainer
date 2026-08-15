@@ -20,7 +20,8 @@
     "next": "Далее",
     "install": "Установить",
     "dismiss": "Продолжить в браузере",
-    "programName": "Pull-up Trainer"
+    "programName": "Pull-up Trainer",
+    "appTitle": "Pull-up Trainer"
   },
   "home": {
     "title": "Вперёд.",
@@ -59,7 +60,7 @@
     "setOf": "Подход {current} из {total}",
     "setLabel": "Подход {n}",
     "setNow": "Сейчас",
-    "nextUp": "Сейчас",
+    "nextUp": "Далее",
     "reps": "повт",
     "seconds": "сек",
     "doneReps": "Готово — {n} повт",
@@ -77,11 +78,17 @@
     "skipRest": "Пропуск",
     "reset": "Сброс",
     "pause": "Пауза",
+    "resume": "Продолжить",
+    "chooseRest": "Выберите длительность",
+    "restCompleteTitle": "Pull-up Trainer",
+    "restCompleteBody": "Отдых окончен",
+    "loadError": "Не удалось загрузить тренировку.",
     "exitWarn": "Выйти? Тренировка засчитается как провал.",
     "resultSuccess": "Тренировка выполнена",
     "resultFail": "Тренировка не завершена",
     "resultVolume": "{done} из {planned} по плану",
     "resultNext": "Далее: шаг {step}",
+    "resultRetry": "Повторите этот шаг на следующей тренировке.",
     "volume": "{n} повторений",
     "focusReps": "повт · подход {n}",
     "focusSeconds": "сек · подход {n}",
@@ -129,7 +136,8 @@
     "history": "История",
     "export": "Экспорт истории JSON",
     "partial": "Частично",
-    "success": "Готово"
+    "success": "Готово",
+    "noStreak": "—"
   },
   "settings": {
     "title": "Настройки",
@@ -169,6 +177,8 @@
     "programSources": "Источники программы",
     "whyProgram": "Почему такая программа",
     "customPrograms": "Свои программы",
+    "restDecrease": "Уменьшить время отдыха",
+    "restIncrease": "Увеличить время отдыха",
     "palettes": {
       "p01-volt": "P01 Volt",
       "p02-signal-orange": "P02 Signal Orange",
@@ -202,6 +212,8 @@
     "deleteConfirm": "Удалить программу?",
     "useBuiltin": "Встроенная программа",
     "restDays": "Дней отдыха после шага",
+    "customFallback": "Своя программа",
+    "notFound": "Программа не найдена",
     "setTypes": {
       "reps": "Повторы",
       "max": "Максимум",

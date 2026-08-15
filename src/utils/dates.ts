@@ -48,6 +48,13 @@ export function formatDisplayDate(iso: string, locale = 'en'): string {
   })
 }
 
+export function formatShortDate(iso: string, locale = 'en'): string {
+  return parseLocalDate(iso).toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', {
+    day: 'numeric',
+    month: 'short',
+  })
+}
+
 export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60

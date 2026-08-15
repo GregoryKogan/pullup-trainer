@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { InstallPlatform } from '@/utils/platform'
 
@@ -14,6 +14,8 @@ const emit = defineEmits<{ dismiss: []; install: [] }>()
 const { t, tm } = useI18n()
 const tabs: InstallPlatform[] = ['ios', 'android', 'desktop', 'other']
 const activeTab = ref<InstallPlatform>(props.platform)
+const dialogRef = ref<HTMLElement | null>(null)
+let escapeHandler: ((e: KeyboardEvent) => void) | null = null
 
 watch(
   () => props.platform,
@@ -21,6 +23,27 @@ watch(
     activeTab.value = p
   },
 )
+
+watch(
+  () => props.visible,
+  async (visible) => {
+    if (visible) {
+      await nextTick()
+      dialogRef.value?.focus()
+      escapeHandler = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') emit('dismiss')
+      }
+      window.addEventListener('keydown', escapeHandler)
+    } else if (escapeHandler) {
+      window.removeEventListener('keydown', escapeHandler)
+      escapeHandler = null
+    }
+  },
+)
+
+onBeforeUnmount(() => {
+  if (escapeHandler) window.removeEventListener('keydown', escapeHandler)
+})
 
 const steps = () => {
   const key = `pwa.${activeTab.value}.steps`
@@ -30,15 +53,15 @@ const steps = () => {
 </script>
 
 <template>
-  <div
-    v-if="visible"
-    class="modal-overlay modal-full"
-    role="dialog"
-    aria-modal="true"
-    :aria-labelledby="'pwa-dialog-title'"
-    @keydown.escape="emit('dismiss')"
-  >
-    <div class="modal-card pwa-modal">
+  <div v-if="visible" class="modal-overlay modal-full" role="presentation">
+    <div
+      ref="dialogRef"
+      class="modal-card pwa-modal"
+      role="dialog"
+      aria-modal="true"
+      tabindex="-1"
+      :aria-labelledby="'pwa-dialog-title'"
+    >
       <p class="kicker">{{ t('pwa.title') }}</p>
       <h2 id="pwa-dialog-title">{{ t('pwa.subtitle') }}</h2>
       <div class="tabs" role="tablist" :aria-label="t('pwa.title')">
