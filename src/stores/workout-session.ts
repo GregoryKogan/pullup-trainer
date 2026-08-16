@@ -9,7 +9,6 @@ export interface ActiveWorkout {
   completed: CompletedSet[]
   currentIndex: number
   programName: string
-  program: 'builtin' | 'custom'
 }
 
 export interface WorkoutResultSummary {
@@ -30,7 +29,6 @@ export const useWorkoutSessionStore = defineStore('workoutSession', () => {
     date: string
     planned: PlannedSet[]
     programName: string
-    program: 'builtin' | 'custom'
     startedAt: string
   }) {
     active.value = {

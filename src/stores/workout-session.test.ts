@@ -16,7 +16,6 @@ describe('useWorkoutSessionStore', () => {
         { position: 2, type: 'reps', unit: 'reps', planned: 5 },
       ],
       programName: 'Pull-up Trainer',
-      program: 'builtin',
       startedAt: '2026-08-17T10:00:00+03:00',
     })
 

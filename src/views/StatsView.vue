@@ -40,7 +40,7 @@ const totalVolume = computed(() =>
 
 const streakWeeks = computed(() => {
   const p = progressStore.progress
-  const freq = p?.source === 'builtin' ? p.frequencyDays : 3
+  const freq = p?.frequencyDays ?? 3
   return computeWeeklyStreak(progressStore.records, freq, todayLocal())
 })
 

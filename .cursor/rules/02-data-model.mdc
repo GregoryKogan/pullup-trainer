@@ -5,28 +5,26 @@ alwaysApply: true
 # Модель данных (ТЗ §3.9)
 
 ## IndexedDB (Dexie — первичный выбор)
-Таблицы: `settings` (синглтон: тема, таймер, язык), `customPrograms` (локальный id: имя, шаги, подходы), `activeProgress` (синглтон), `workoutRecords` (автоинкремент: глобальная история тренировок), `appMeta` (синглтон: версия seed встроенной программы, версия схемы данных, версия приложения).
+Таблицы: `settings` (синглтон: тема, таймер, язык), `activeProgress` (синглтон), `workoutRecords` (автоинкремент: глобальная история тренировок), `appMeta` (синглтон: версия seed встроенной программы, версия схемы данных, версия приложения).
 
 `activeProgress`:
-- `source`: `"builtin" | "custom"`.
 - builtin: `path` — `"L"` (генератор: `anchor`, `level`, `cycleIndex`, `stepInCycle` k, `failStreak` 0–2, `lastRetestDate`) или `"P0"` (путь 0: `path0Step` 1–12, `failStreak`).
-- custom: `currentStepIndex`, `failStreak`.
-- Общее: `schedule` — упорядоченные слоты `{date: "YYYY-MM-DD", stepRef}` (stepRef: k для L / номер шага для P0 / индекс шага для custom). Перенос тренировки и автосдвиг при пропуске — операции над `schedule`.
-- `frequencyDays` (2 или 3) и `weekdays` (напр. mon/wed/fri) — только для встроенной; свои программы строятся последовательно со своими «днями отдыха».
+- `schedule` — упорядоченные слоты `{date: "YYYY-MM-DD", stepRef}` (stepRef: k для L / номер шага для P0). Перенос тренировки и автосдвиг при пропуске — операции над `schedule`.
+- `frequencyDays` (2 или 3) и `weekdays` (напр. mon/wed/fri).
 
 ## Экспорт истории `pullup-trainer-history.json` (§3.9.2) — для ИИ
 - Верхний уровень: `format: "pullup-trainer.history"`, `schemaVersion` (int, повышается при ломающих изменениях), `generatedAt`, `appVersion`, `language`, `records[]`.
-- Запись: `date` (YYYY-MM-DD), `startedAt`/`finishedAt` (ISO 8601 с offset; `finishedAt` может отсутствовать при прерванной), `durationSeconds`, `kind` (`"workout" | "test"`), `program` (`"builtin" | "custom"`), `programName`, `context`, `result` (`"success" | "fail"`), `sets[]`, `totals`.
-- `context`: для builtin L — `{level, anchor, cycleIndex, stepInCycle}`; для builtin P0 — `{level: "P0", path0Step}`; для custom — отсутствует.
+- Запись: `date` (YYYY-MM-DD), `startedAt`/`finishedAt` (ISO 8601 с offset; `finishedAt` может отсутствовать при прерванной), `durationSeconds`, `kind` (`"workout" | "test"`), `program` (`"builtin"`; legacy-экспорты могут содержать `"custom"`), `programName`, `context`, `result` (`"success" | "fail"`), `sets[]`, `totals`.
+- `context`: для builtin L — `{level, anchor, cycleIndex, stepInCycle}`; для builtin P0 — `{level: "P0", path0Step}`.
 - `sets[]`: `position` (с 1), `type` (`reps|max|hold|negative|assisted`), `unit` (`reps|seconds`), `planned`, `done`. Для `max` `planned` = минимум N_k. Провал = `done < planned`.
 - `kind="test"`: один подход `{type:"max", unit:"reps", done:M}`; поля `planned` и `context` отсутствуют.
 - `totals`: `volumeReps` (Σ done reps), `maxSetReps` (лучший подход в повторах), `holdSeconds` (Σ done seconds).
 - Принципы: плоская структура, БЕЗ внутренних ID-ссылок (программа описывается значениями), ISO-даты, читатель обязан игнорировать неизвестные поля. Полный пример JSON — ТЗ §3.9.2.
 
 ## Полный бэкап `pullup-trainer-backup.json` (§3.9.3)
-`format: "pullup-trainer.backup"` + `settings`, `customPrograms`, `activeProgress`, `history` (записи в форме выше). Внутри бэкапа внутренние ссылки допустимы (это файл восстановления, не для ИИ). Импорт — полная замена состояния с подтверждением; валидация `format`/`schemaVersion`; чтение старых `schemaVersion` — обратная совместимость.
+`format: "pullup-trainer.backup"` + `settings`, `activeProgress`, `history` (записи в форме выше). `schemaVersion` 2. Импорт — полная замена состояния с подтверждением; валидация `format`/`schemaVersion`; чтение старых `schemaVersion` — обратная совместимость (legacy `customPrograms` игнорируется).
 
 ## Целостность
 - Автосохранение при каждом изменении состояния (без кнопки «Сохранить»).
-- История тренировок глобальна и НЕ привязана к программам; прогресс программы хранится отдельно.
+- История тренировок глобальна; прогресс встроенной программы хранится отдельно.
 - Миграции схемы IndexedDB по версиям приложения; seed встроенной программы версионируется в `appMeta`.

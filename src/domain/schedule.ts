@@ -1,4 +1,4 @@
-import type { CustomProgramStep, ScheduleSlot, Weekday, ReturnPolicy } from './types'
+import type { ScheduleSlot, Weekday, ReturnPolicy } from './types'
 import { addDays, daysBetween, parseLocalDate, formatLocalDate } from '@/utils/dates'
 
 const WEEKDAY_INDEX: Record<Weekday, number> = {
@@ -176,54 +176,6 @@ export function advanceScheduleAfterWorkout(
       const minGap = frequencyDays === 3 ? 2 : 3
       let cursor = addDays(lastDate, minGap)
       cursor = nextWeekdayOnOrAfter(cursor, weekdays)
-      result.push({ date: cursor, stepRef: nextStepRef })
-    } else {
-      result[0] = { ...result[0], stepRef: nextStepRef }
-    }
-  }
-  return result
-}
-
-function customRestGap(step: CustomProgramStep | undefined): number {
-  return Math.max(1, step?.restDaysAfter ?? 1)
-}
-
-export function buildCustomScheduleSlots(
-  startDate: string,
-  steps: CustomProgramStep[],
-  fromStepIndex: number,
-  count: number,
-): ScheduleSlot[] {
-  if (steps.length === 0 || count <= 0) return []
-  const slots: ScheduleSlot[] = []
-  let cursor = startDate
-  const maxIndex = steps.length - 1
-  let stepIdx = Math.min(Math.max(0, fromStepIndex), maxIndex)
-
-  for (let i = 0; i < count; i++) {
-    if (i > 0) {
-      cursor = addDays(cursor, customRestGap(steps[stepIdx]))
-      stepIdx = Math.min(stepIdx + 1, maxIndex)
-    }
-    slots.push({ date: cursor, stepRef: stepIdx })
-  }
-  return slots
-}
-
-export function advanceCustomScheduleAfterWorkout(
-  schedule: ScheduleSlot[],
-  slotIndex: number,
-  success: boolean,
-  nextStepRef: number,
-  steps: CustomProgramStep[],
-  completedStepRef: number,
-): ScheduleSlot[] {
-  const result = [...schedule]
-  if (success && slotIndex === 0 && result.length > 0) {
-    result.shift()
-    if (result.length === 0) {
-      const lastDate = schedule[0]?.date ?? formatLocalDate(new Date())
-      const cursor = addDays(lastDate, customRestGap(steps[completedStepRef]))
       result.push({ date: cursor, stepRef: nextStepRef })
     } else {
       result[0] = { ...result[0], stepRef: nextStepRef }

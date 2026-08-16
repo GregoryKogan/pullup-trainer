@@ -25,12 +25,6 @@ const router = createRouter({
     { path: '/onboarding', name: 'onboarding', component: () => import('@/views/OnboardingView.vue') },
     { path: '/workout/:date?', name: 'workout', component: () => import('@/views/WorkoutView.vue') },
     { path: '/result', name: 'result', component: () => import('@/views/ResultView.vue') },
-    { path: '/programs', name: 'programs', component: () => import('@/views/programs/ProgramsListView.vue') },
-    {
-      path: '/programs/:id/edit',
-      name: 'program-edit',
-      component: () => import('@/views/programs/ProgramEditView.vue'),
-    },
     { path: '/about', name: 'about', component: () => import('@/views/AboutView.vue') },
     { path: '/why', name: 'why', component: () => import('@/views/WhyProgramView.vue') },
   ],

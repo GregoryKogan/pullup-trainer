@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { exportHistory, exportBackup, validateBackup, defaultSettings } from './export'
+import {
+  exportHistory,
+  exportBackup,
+  validateBackup,
+  migrateBackupProgress,
+  normalizeImportedBackup,
+  defaultSettings,
+  SCHEMA_VERSION,
+} from './export'
 import type { WorkoutRecord } from './types'
 
 describe('export', () => {
@@ -23,14 +31,74 @@ describe('export', () => {
   it('exports history format', () => {
     const out = exportHistory([sample], '1.0.0', 'en')
     expect(out.format).toBe('pullup-trainer.history')
-    expect(out.schemaVersion).toBe(1)
+    expect(out.schemaVersion).toBe(SCHEMA_VERSION)
     expect(out.records[0].programName).toBe('Pull-up Trainer')
     expect(out.records[0].context?.level).toBe('L2')
   })
 
   it('exports backup format', () => {
-    const out = exportBackup(defaultSettings(), [], null, [sample], '1.0.0')
+    const out = exportBackup(defaultSettings(), null, [sample], '1.0.0')
     expect(out.format).toBe('pullup-trainer.backup')
+    expect(out.schemaVersion).toBe(2)
     expect(validateBackup(out)).toBe(true)
+    expect('customPrograms' in out).toBe(false)
+  })
+
+  it('migrateBackupProgress rejects custom activeProgress', () => {
+    expect(
+      migrateBackupProgress({
+        source: 'custom',
+        customProgramId: 1,
+        currentStepIndex: 0,
+        failStreak: 0,
+        schedule: [],
+        lastWorkoutDate: null,
+      }),
+    ).toBeNull()
+  })
+
+  it('migrateBackupProgress strips source from v1 builtin progress', () => {
+    const migrated = migrateBackupProgress({
+      source: 'builtin',
+      frequencyDays: 3,
+      weekdays: ['mon', 'wed', 'fri'],
+      schedule: [{ date: '2026-08-01', stepRef: 1 }],
+      lastWorkoutDate: null,
+      state: {
+        path: 'L',
+        anchor: 7,
+        level: 'L2',
+        cycleIndex: 0,
+        stepInCycle: 1,
+        failStreak: 0,
+        lastRetestDate: '2026-08-01',
+        cycleBestMax: 0,
+      },
+    })
+    expect(migrated).not.toBeNull()
+    expect(migrated && 'source' in migrated).toBe(false)
+  })
+
+  it('normalizeImportedBackup ignores legacy customPrograms', () => {
+    const legacy = {
+      format: 'pullup-trainer.backup',
+      schemaVersion: 1,
+      exportedAt: '2026-08-01T00:00:00+03:00',
+      appVersion: '1.0.0',
+      settings: defaultSettings(),
+      customPrograms: [{ id: 1, name: 'Test', steps: [] }],
+      activeProgress: {
+        source: 'custom',
+        customProgramId: 1,
+        currentStepIndex: 0,
+        failStreak: 0,
+        schedule: [],
+        lastWorkoutDate: null,
+      },
+      history: [],
+    }
+    const normalized = normalizeImportedBackup(legacy)
+    expect(normalized?.activeProgress).toBeNull()
+    expect(normalized?.schemaVersion).toBe(2)
   })
 })

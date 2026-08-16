@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useProgressStore } from '@/stores/progress'
-import { getCustomProgram } from '@/db/repositories/custom-programs'
 import { session } from '@/domain/session'
 import { detectReturnPolicy } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
@@ -21,7 +20,6 @@ const showRetest = ref(false)
 const showStartConfirm = ref(false)
 const retestReps = ref(0)
 const retestError = ref('')
-const customPlanPreview = ref('')
 const today = todayLocal()
 
 const nextSlot = computed(() => progressStore.getNextSlot())
@@ -31,39 +29,15 @@ const isWorkoutToday = computed(() => nextSlot.value?.date === today)
 const setsPreview = computed(() => {
   const p = progressStore.progress
   if (!p || !nextSlot.value) return ''
-  if (p.source === 'builtin' && p.state.path === 'L') {
+  if (p.state.path === 'L') {
     const s = session(p.state.anchor, nextSlot.value.stepRef)
     const parts = s.sets.map((x) =>
       x.type === 'max' ? t('home.planMax') : String(x.planned),
     )
     return t('home.planPreview', { sets: parts.join(' + ') })
   }
-  if (p.source === 'builtin' && p.state.path === 'P0') {
-    return t('home.path0Step', { step: nextSlot.value.stepRef })
-  }
-  return customPlanPreview.value
+  return t('home.path0Step', { step: nextSlot.value.stepRef })
 })
-
-watch(
-  () => [progressStore.progress, nextSlot.value] as const,
-  async ([p, slot]) => {
-    if (!p || p.source !== 'custom' || !slot) {
-      customPlanPreview.value = ''
-      return
-    }
-    const program = await getCustomProgram(p.customProgramId)
-    const step = program?.steps[slot.stepRef]
-    if (!step) {
-      customPlanPreview.value = ''
-      return
-    }
-    const parts = step.sets.map((x) =>
-      x.type === 'max' ? t('home.planMax') : String(x.planned),
-    )
-    customPlanPreview.value = t('home.planPreview', { sets: parts.join(' + ') })
-  },
-  { immediate: true },
-)
 
 const maxReps = computed(() => {
   let max = 0
@@ -85,20 +59,20 @@ const weekVolume = computed(() => {
 
 const cycleInfo = computed(() => {
   const p = progressStore.progress
-  if (!p || p.source !== 'builtin' || p.state.path !== 'L') return null
+  if (!p || p.state.path !== 'L') return null
   return { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 }
 })
 
 const progressPercent = computed(() => {
   const p = progressStore.progress
-  if (!p || p.source !== 'builtin') return 0
+  if (!p) return 0
   if (p.state.path === 'P0') return Math.round((p.state.path0Step / 12) * 100)
   return Math.round((p.state.stepInCycle / 6) * 100)
 })
 
 const levelInfo = computed(() => {
   const p = progressStore.progress
-  if (!p || p.source !== 'builtin') return null
+  if (!p) return null
   if (p.state.path === 'P0') return t('home.path0Step', { step: p.state.path0Step })
   return t('home.levelAnchor', {
     level: t(`levels.${p.state.level}`),
@@ -108,13 +82,13 @@ const levelInfo = computed(() => {
 
 const streakWeeks = computed(() => {
   const p = progressStore.progress
-  const freq = p?.source === 'builtin' ? p.frequencyDays : 3
+  const freq = p?.frequencyDays ?? 3
   return computeWeeklyStreak(progressStore.records, freq, today)
 })
 
 const needsRetestPrompt = computed(() => {
   const p = progressStore.progress
-  if (!p || p.source !== 'builtin') return false
+  if (!p) return false
   if (detectReturnPolicy(p.lastWorkoutDate, today) === 'retest') return true
   if (p.state.path === 'L') {
     return needsRetest(p.state.lastRetestDate, p.state.cycleIndex, today, p.lastWorkoutDate)

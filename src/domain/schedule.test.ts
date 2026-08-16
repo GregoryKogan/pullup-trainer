@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
   buildInitialSchedule,
-  buildCustomScheduleSlots,
-  advanceCustomScheduleAfterWorkout,
   rescheduleWorkout,
   autoskipMissed,
   detectReturnPolicy,
@@ -116,26 +114,5 @@ describe('schedule', () => {
     const iso = formatLocalDate(d)
     expect(iso).toBe('2026-08-15')
     expect(addDays(iso, 1)).toBe('2026-08-16')
-  })
-
-  it('buildCustomScheduleSlots uses restDaysAfter between steps', () => {
-    const steps = [
-      { sets: [], restDaysAfter: 2 },
-      { sets: [], restDaysAfter: 4 },
-      { sets: [] },
-    ]
-    const slots = buildCustomScheduleSlots('2026-08-01', steps, 0, 3)
-    expect(slots).toEqual([
-      { date: '2026-08-01', stepRef: 0 },
-      { date: '2026-08-03', stepRef: 1 },
-      { date: '2026-08-07', stepRef: 2 },
-    ])
-  })
-
-  it('advanceCustomScheduleAfterWorkout appends slot with custom rest gap', () => {
-    const steps = [{ sets: [], restDaysAfter: 3 }, { sets: [] }]
-    const schedule = [{ date: '2026-08-01', stepRef: 0 }]
-    const next = advanceCustomScheduleAfterWorkout(schedule, 0, true, 1, steps, 0)
-    expect(next).toEqual([{ date: '2026-08-04', stepRef: 1 }])
   })
 })

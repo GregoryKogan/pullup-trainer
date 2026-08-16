@@ -1,9 +1,24 @@
 import { db } from '../database'
 import type { ActiveProgress, WorkoutRecord } from '@/domain/types'
 
+function normalizeProgress(raw: unknown): ActiveProgress | null {
+  if (!raw || typeof raw !== 'object') return null
+  const p = raw as Record<string, unknown>
+  if (p.source === 'custom') return null
+  if (p.source === 'builtin') {
+    const rest = { ...p }
+    delete rest.source
+    return rest as unknown as ActiveProgress
+  }
+  if ('state' in p && 'frequencyDays' in p && 'weekdays' in p && 'schedule' in p) {
+    return p as unknown as ActiveProgress
+  }
+  return null
+}
+
 export async function loadProgress(): Promise<ActiveProgress | null> {
   const row = await db.activeProgress.get('singleton')
-  return row?.data ?? null
+  return normalizeProgress(row?.data ?? null)
 }
 
 export async function saveProgress(data: ActiveProgress | null): Promise<void> {
@@ -23,8 +38,7 @@ export async function getRecordsByDate(date: string): Promise<WorkoutRecord[]> {
 }
 
 export async function clearAllData(): Promise<void> {
-  await db.transaction('rw', db.settings, db.customPrograms, db.activeProgress, db.workoutRecords, db.appMeta, async () => {
-    await db.customPrograms.clear()
+  await db.transaction('rw', db.settings, db.activeProgress, db.workoutRecords, db.appMeta, async () => {
     await db.activeProgress.clear()
     await db.workoutRecords.clear()
   })

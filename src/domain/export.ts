@@ -1,7 +1,6 @@
 import type {
   WorkoutRecord,
   AppSettings,
-  CustomProgram,
   ActiveProgress,
   AppMeta,
 } from './types'
@@ -9,7 +8,7 @@ import { toIsoOffset } from '@/utils/dates'
 
 export const HISTORY_FORMAT = 'pullup-trainer.history'
 export const BACKUP_FORMAT = 'pullup-trainer.backup'
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 
 export interface HistoryExport {
   format: typeof HISTORY_FORMAT
@@ -48,8 +47,16 @@ export interface BackupExport {
   exportedAt: string
   appVersion: string
   settings: AppSettings
-  customPrograms: CustomProgram[]
   activeProgress: ActiveProgress | null
+  history: HistoryRecordExport[]
+}
+
+export interface LegacyBackupV1 {
+  format: typeof BACKUP_FORMAT
+  schemaVersion: number
+  settings: AppSettings
+  customPrograms?: unknown[]
+  activeProgress: unknown
   history: HistoryRecordExport[]
 }
 
@@ -101,7 +108,6 @@ export function exportHistory(
 
 export function exportBackup(
   settings: AppSettings,
-  customPrograms: CustomProgram[],
   activeProgress: ActiveProgress | null,
   records: WorkoutRecord[],
   appVersion: string,
@@ -112,13 +118,52 @@ export function exportBackup(
     exportedAt: toIsoOffset(new Date()),
     appVersion,
     settings,
-    customPrograms,
     activeProgress,
     history: records.map(recordToExport),
   }
 }
 
-export function validateBackup(data: unknown): data is BackupExport {
+export function migrateBackupProgress(raw: unknown): ActiveProgress | null {
+  if (!raw || typeof raw !== 'object') return null
+  const p = raw as Record<string, unknown>
+  if (p.source === 'custom') return null
+  if (p.source === 'builtin') {
+    const rest = { ...p }
+    delete rest.source
+    return rest as unknown as ActiveProgress
+  }
+  if ('state' in p && 'frequencyDays' in p && 'weekdays' in p && 'schedule' in p) {
+    return p as unknown as ActiveProgress
+  }
+  return null
+}
+
+export function normalizeImportedBackup(data: unknown): BackupExport | null {
+  if (!validateBackup(data)) return null
+  const d = data as LegacyBackupV1 & BackupExport
+  if (d.schemaVersion >= 2) {
+    return {
+      format: BACKUP_FORMAT,
+      schemaVersion: d.schemaVersion,
+      exportedAt: d.exportedAt ?? toIsoOffset(new Date()),
+      appVersion: d.appVersion ?? '1.0.0',
+      settings: d.settings,
+      activeProgress: migrateBackupProgress(d.activeProgress),
+      history: d.history ?? [],
+    }
+  }
+  return {
+    format: BACKUP_FORMAT,
+    schemaVersion: SCHEMA_VERSION,
+    exportedAt: d.exportedAt ?? toIsoOffset(new Date()),
+    appVersion: d.appVersion ?? '1.0.0',
+    settings: d.settings,
+    activeProgress: migrateBackupProgress(d.activeProgress),
+    history: d.history ?? [],
+  }
+}
+
+export function validateBackup(data: unknown): data is BackupExport | LegacyBackupV1 {
   if (!data || typeof data !== 'object') return false
   const d = data as Record<string, unknown>
   return d.format === BACKUP_FORMAT && typeof d.schemaVersion === 'number'

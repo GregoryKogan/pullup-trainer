@@ -17,13 +17,6 @@ test.describe('Settings', () => {
     await expect(page.getByRole('link', { name: 'Главная' })).toBeVisible()
   })
 
-  test('links to custom programs', async ({ page }) => {
-    await page.getByRole('link', { name: 'Settings' }).click()
-    await page.getByRole('link', { name: /custom programs|свои программы/i }).click()
-    await expect(page).toHaveURL(/\/programs/)
-    await expect(page.getByRole('button', { name: /new program|новая программа/i })).toBeVisible()
-  })
-
   test('frequency toggle works for builtin program', async ({ page }) => {
     await page.getByRole('link', { name: 'Settings' }).click()
     await page.getByRole('button', { name: '2× / week' }).click()

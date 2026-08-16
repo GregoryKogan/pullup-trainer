@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 import type { ActiveProgress, BuiltinLState, Path0State, Weekday, WorkoutRecord } from '@/domain/types'
-import { buildBuiltinScheduleSlots, buildCustomScheduleSlots } from '@/domain/schedule'
+import { buildBuiltinScheduleSlots } from '@/domain/schedule'
 import { levelFromM } from '@/domain/levels'
 import { loadProgress, saveProgress, loadAllRecords, addRecord } from '@/db/repositories/progress'
-import { getCustomProgram } from '@/db/repositories/custom-programs'
 import { todayLocal } from '@/utils/dates'
 
 const DEFAULT_WEEKDAYS: Weekday[] = ['mon', 'wed', 'fri']
@@ -27,7 +26,6 @@ export const useProgressStore = defineStore('progress', () => {
     if (m <= 0) {
       const state: Path0State = { path: 'P0', path0Step: 1, failStreak: 0 }
       progress.value = {
-        source: 'builtin',
         frequencyDays: 3,
         weekdays: DEFAULT_WEEKDAYS,
         schedule: buildBuiltinScheduleSlots(today, 1, 12, 3, DEFAULT_WEEKDAYS),
@@ -47,28 +45,12 @@ export const useProgressStore = defineStore('progress', () => {
         cycleBestMax: 0,
       }
       progress.value = {
-        source: 'builtin',
         frequencyDays: 3,
         weekdays: DEFAULT_WEEKDAYS,
         schedule: buildBuiltinScheduleSlots(today, 1, 8, 3, DEFAULT_WEEKDAYS),
         lastWorkoutDate: null,
         state,
       }
-    }
-    await persist()
-  }
-
-  async function setCustomActive(programId: number, stepIndex = 0) {
-    const program = await getCustomProgram(programId)
-    if (!program) return
-    const today = todayLocal()
-    progress.value = {
-      source: 'custom',
-      customProgramId: programId,
-      currentStepIndex: stepIndex,
-      failStreak: 0,
-      schedule: buildCustomScheduleSlots(today, program.steps, stepIndex, 8),
-      lastWorkoutDate: null,
     }
     await persist()
   }
@@ -90,7 +72,7 @@ export const useProgressStore = defineStore('progress', () => {
 
   async function updateBuiltinScheduleSettings(frequencyDays: 2 | 3, weekdays: Weekday[]) {
     const p = progress.value
-    if (!p || p.source !== 'builtin') return
+    if (!p) return
     const stepRef = p.schedule[0]?.stepRef ?? 1
     const count = Math.max(p.schedule.length, 8)
     progress.value = {
@@ -104,11 +86,10 @@ export const useProgressStore = defineStore('progress', () => {
 
   async function applyRetest(m: number) {
     const p = progress.value
-    if (!p || p.source !== 'builtin') return
+    if (!p) return
     const today = todayLocal()
     if (m <= 0) {
       progress.value = {
-        source: 'builtin',
         frequencyDays: p.frequencyDays,
         weekdays: p.weekdays,
         schedule: buildBuiltinScheduleSlots(today, 1, 12, p.frequencyDays, p.weekdays),
@@ -118,7 +99,6 @@ export const useProgressStore = defineStore('progress', () => {
     } else {
       const level = levelFromM(m)
       progress.value = {
-        source: 'builtin',
         frequencyDays: p.frequencyDays,
         weekdays: p.weekdays,
         schedule: buildBuiltinScheduleSlots(today, 1, 8, p.frequencyDays, p.weekdays),
@@ -140,7 +120,7 @@ export const useProgressStore = defineStore('progress', () => {
 
   async function reduceAnchor() {
     const p = progress.value
-    if (!p || p.source !== 'builtin' || p.state.path !== 'L') return
+    if (!p || p.state.path !== 'L') return
     const anchor = Math.max(1, Math.floor(p.state.anchor * 0.9))
     progress.value = {
       ...p,
@@ -167,19 +147,11 @@ export const useProgressStore = defineStore('progress', () => {
     return { ...progress.value.schedule[idx], index: idx }
   }
 
-  async function activateBuiltin() {
-    const testRec = records.value.find((r) => r.kind === 'test')
-    const m = testRec?.sets[0]?.done ?? 7
-    await applyRetest(m)
-  }
-
   return {
     progress,
     records,
     hydrate,
     initFromTest,
-    setCustomActive,
-    activateBuiltin,
     saveRecord,
     getNextSlot,
     updateProgress,

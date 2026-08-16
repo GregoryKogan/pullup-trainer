@@ -211,7 +211,6 @@
     "importTitle": "Restore backup?",
     "about": "About",
     "whyProgram": "Why this program",
-    "customPrograms": "Custom programs",
     "restDecrease": "Decrease rest duration",
     "restIncrease": "Increase rest duration",
     "palettes": {
@@ -229,40 +228,6 @@
       "p12-ultraviolet": "P12 Ultraviolet",
       "p13-coral-sunrise": "P13 Coral Sunrise",
       "p14-mono-ink": "P14 Mono Ink"
-    }
-  },
-  "programs": {
-    "kicker": "Custom",
-    "title": "Custom programs",
-    "new": "New program",
-    "defaultName": "My Program",
-    "edit": "Edit",
-    "name": "Program name",
-    "steps": "Steps",
-    "stepsCount": "{count} step | {count} steps",
-    "empty": "No custom programs yet. Tap New program to create one.",
-    "stepN": "Step {n}",
-    "addStep": "Add step",
-    "addSet": "Add set",
-    "setActive": "Set active",
-    "jumpToStep": "Start at step",
-    "deleteTitle": "Delete program?",
-    "deleteConfirm": "This program will be removed from your library.",
-    "useBuiltin": "Use built-in program",
-    "restDays": "Rest days after step",
-    "fieldType": "Type",
-    "fieldPlanned": "Target",
-    "fieldUnit": "Unit",
-    "deleteSet": "Remove set",
-    "deleteStep": "Remove step",
-    "customFallback": "Custom program",
-    "notFound": "Program not found",
-    "setTypes": {
-      "reps": "Reps",
-      "max": "Max",
-      "hold": "Hold",
-      "negative": "Negative",
-      "assisted": "Assisted"
     }
   },
   "about": {

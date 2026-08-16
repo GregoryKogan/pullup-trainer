@@ -14,14 +14,12 @@ import { path0Session } from '@/domain/path0'
 import {
   applyBuiltinLResult,
   applyPath0Result,
-  applyCustomResult,
   computeTotals,
   evaluateWorkout,
 } from '@/domain/progression'
-import { advanceCustomScheduleAfterWorkout, advanceScheduleAfterWorkout, findScheduleSlotIndex } from '@/domain/schedule'
+import { advanceScheduleAfterWorkout, findScheduleSlotIndex } from '@/domain/schedule'
 import { useRestTimer } from '@/composables/use-rest-timer'
 import { requestNotificationPermission, signalRestEnd } from '@/composables/use-rest-signals'
-import { getCustomProgram } from '@/db/repositories/custom-programs'
 import { todayLocal, toIsoOffset, formatTime } from '@/utils/dates'
 import {
   clampRestSeconds,
@@ -51,9 +49,7 @@ const elapsed = ref(0)
 let elapsedTimer: ReturnType<typeof setInterval> | null = null
 const startedAt = ref(new Date())
 
-const isPathP0 = computed(
-  () => progressStore.progress?.source === 'builtin' && progressStore.progress.state.path === 'P0',
-)
+const isPathP0 = computed(() => progressStore.progress?.state.path === 'P0')
 
 const restDuration = computed(() => {
   const base = settingsStore.settings?.restDurationSeconds ?? 180
@@ -94,13 +90,10 @@ const headerA11yLabel = computed(() => {
   const p = progressStore.progress
   const setLabel = setProgressLabel.value
   if (!p) return setLabel
-  if (p.source === 'builtin' && p.state.path === 'L') {
+  if (p.state.path === 'L') {
     return `${t('home.stepProgress', { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 })} · ${setLabel}`
   }
-  if (p.source === 'builtin' && p.state.path === 'P0') {
-    return `${t('home.path0Step', { step: p.state.path0Step })} · ${setLabel}`
-  }
-  return setLabel
+  return `${t('home.path0Step', { step: p.state.path0Step })} · ${setLabel}`
 })
 
 const fewerLabelKey = computed(() => {
@@ -135,15 +128,13 @@ function resolveSlotIndex(): number {
 function resolvePlanned(): PlannedSet[] {
   const p = progressStore.progress
   if (!p) return []
-  if (p.source === 'custom') return []
   const slot = p.schedule[resolveSlotIndex()]
   if (p.state.path === 'P0') {
     const step = slot?.stepRef ?? p.state.path0Step
     return path0Session(step).sets
   }
-  const k = slot?.stepRef ?? (p.state.path === 'L' ? p.state.stepInCycle : 1)
-  if (p.state.path === 'L') return session(p.state.anchor, k).sets
-  return []
+  const k = slot?.stepRef ?? p.state.stepInCycle
+  return session(p.state.anchor, k).sets
 }
 
 function workoutDate(): string {
@@ -160,24 +151,6 @@ async function loadSession() {
     return
   }
   const date = workoutDate()
-  if (p.source === 'custom') {
-    const program = await getCustomProgram(p.customProgramId)
-    const slot = p.schedule[resolveSlotIndex()]
-    const stepRef = slot?.stepRef ?? p.currentStepIndex
-    const step = program?.steps[stepRef]
-    if (!step) {
-      loadFailed.value = true
-      return
-    }
-    workoutStore.start({
-      date,
-      planned: step.sets,
-      programName: program?.name ?? t('programs.customFallback'),
-      program: 'custom',
-      startedAt: toIsoOffset(new Date()),
-    })
-    return
-  }
   const planned = resolvePlanned()
   if (!planned.length) {
     loadFailed.value = true
@@ -187,7 +160,6 @@ async function loadSession() {
     date,
     planned,
     programName: t('common.programName'),
-    program: 'builtin',
     startedAt: toIsoOffset(new Date()),
   })
 }
@@ -283,7 +255,7 @@ async function finishWorkout() {
 
   let context
   let nextStep: number | undefined
-  if (p.source === 'builtin' && p.state.path === 'L') {
+  if (p.state.path === 'L') {
     context = {
       level: p.state.level,
       anchor: p.state.anchor,
@@ -291,7 +263,7 @@ async function finishWorkout() {
       stepInCycle: p.state.stepInCycle,
     }
     nextStep = result === 'success' ? p.state.stepInCycle + 1 : p.state.stepInCycle
-  } else if (p.source === 'builtin' && p.state.path === 'P0') {
+  } else {
     context = { level: 'P0' as const, path0Step: p.state.path0Step }
     nextStep = result === 'success' ? p.state.path0Step + 1 : p.state.path0Step
   }
@@ -302,7 +274,7 @@ async function finishWorkout() {
     finishedAt: toIsoOffset(now),
     durationSeconds: elapsed.value,
     kind: 'workout',
-    program: active.program,
+    program: 'builtin',
     programName: active.programName,
     context,
     result,
@@ -311,60 +283,39 @@ async function finishWorkout() {
   })
 
   const slotIndex = findScheduleSlotIndex(p.schedule, active.date)
-  let updated: ActiveProgress = { ...p }
-  if (p.source === 'builtin') {
-    if (p.state.path === 'L') {
-      const newState = applyBuiltinLResult(p.state, active.completed, active.planned)
-      updated = {
-        ...p,
-        state: newState,
-        lastWorkoutDate: active.date,
-        schedule: advanceScheduleAfterWorkout(
-          p.schedule,
-          slotIndex,
-          result === 'success',
-          newState.stepInCycle,
-          p.frequencyDays,
-          p.weekdays,
-        ),
-      }
-      nextStep = newState.stepInCycle
-    } else {
-      const newState = applyPath0Result(p.state, active.completed, active.planned)
-      updated = {
-        ...p,
-        state: newState,
-        lastWorkoutDate: active.date,
-        schedule: advanceScheduleAfterWorkout(
-          p.schedule,
-          slotIndex,
-          result === 'success',
-          newState.path0Step,
-          p.frequencyDays,
-          p.weekdays,
-        ),
-      }
-      nextStep = newState.path0Step
-    }
-  } else if (p.source === 'custom') {
-    const program = await getCustomProgram(p.customProgramId)
-    const totalSteps = program?.steps.length ?? 1
-    const completedStepRef = p.schedule[slotIndex]?.stepRef ?? p.currentStepIndex
-    const customState = applyCustomResult(p, active.completed, active.planned, totalSteps)
+  let updated: ActiveProgress
+  if (p.state.path === 'L') {
+    const newState = applyBuiltinLResult(p.state, active.completed, active.planned)
     updated = {
       ...p,
-      ...customState,
+      state: newState,
       lastWorkoutDate: active.date,
-      schedule: advanceCustomScheduleAfterWorkout(
+      schedule: advanceScheduleAfterWorkout(
         p.schedule,
         slotIndex,
         result === 'success',
-        customState.currentStepIndex,
-        program?.steps ?? [],
-        completedStepRef,
+        newState.stepInCycle,
+        p.frequencyDays,
+        p.weekdays,
       ),
     }
-    nextStep = customState.currentStepIndex + 1
+    nextStep = newState.stepInCycle
+  } else {
+    const newState = applyPath0Result(p.state, active.completed, active.planned)
+    updated = {
+      ...p,
+      state: newState,
+      lastWorkoutDate: active.date,
+      schedule: advanceScheduleAfterWorkout(
+        p.schedule,
+        slotIndex,
+        result === 'success',
+        newState.path0Step,
+        p.frequencyDays,
+        p.weekdays,
+      ),
+    }
+    nextStep = newState.path0Step
   }
 
   await progressStore.updateProgress(updated)

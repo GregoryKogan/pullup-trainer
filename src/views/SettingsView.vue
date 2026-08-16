@@ -7,13 +7,12 @@ import AppIcon from '@/components/icons/AppIcon.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
 import { PALETTE_SLUGS } from '@/utils/theme'
-import { exportBackup, validateBackup, defaultSettings, type BackupExport } from '@/domain/export'
+import { exportBackup, validateBackup, normalizeImportedBackup, defaultSettings, type BackupExport } from '@/domain/export'
 import { APP_VERSION, REST_MAX_SECONDS, REST_MIN_SECONDS, REST_PRESET_SECONDS } from '@/constants/app'
 import { formatTime } from '@/utils/dates'
 import { clampRestSeconds } from '@/utils/workout-display'
 import { downloadJson } from '@/utils/platform'
 import { db } from '@/db/database'
-import { loadCustomPrograms } from '@/db/repositories/custom-programs'
 import { saveSettings } from '@/db/repositories/settings'
 import { saveProgress } from '@/db/repositories/progress'
 import { setLocale } from '@/i18n'
@@ -39,9 +38,7 @@ const restAtMax = computed(
   () => (settings.value?.restDurationSeconds ?? REST_MAX_SECONDS) >= REST_MAX_SECONDS,
 )
 
-const builtinProgress = computed(() =>
-  progressStore.progress?.source === 'builtin' ? progressStore.progress : null,
-)
+const scheduleProgress = computed(() => progressStore.progress)
 
 function paletteLabel(slug: string) {
   return t(`settings.palettes.${slug}`, slug)
@@ -91,7 +88,7 @@ async function setPalette(slug: string) {
 }
 
 async function setFrequency(days: 2 | 3) {
-  const p = builtinProgress.value
+  const p = scheduleProgress.value
   if (!p) return
   let weekdays = [...p.weekdays]
   if (weekdays.length > days) {
@@ -101,13 +98,13 @@ async function setFrequency(days: 2 | 3) {
 }
 
 function isWeekdayDisabled(day: Weekday) {
-  const p = builtinProgress.value
+  const p = scheduleProgress.value
   if (!p) return true
   return !p.weekdays.includes(day) && p.weekdays.length >= p.frequencyDays
 }
 
 async function toggleWeekday(day: Weekday) {
-  const p = builtinProgress.value
+  const p = scheduleProgress.value
   if (!p) return
   const set = new Set(p.weekdays)
   if (set.has(day)) {
@@ -121,10 +118,8 @@ async function toggleWeekday(day: Weekday) {
 }
 
 async function exportBackupFile() {
-  const programs = await loadCustomPrograms()
   const data = exportBackup(
     settings.value ?? defaultSettings(),
-    programs,
     progressStore.progress,
     progressStore.records,
     APP_VERSION,
@@ -144,7 +139,11 @@ async function importBackupFile(e: Event) {
       importMessage.value = t('settings.importError')
       return
     }
-    pendingImport.value = data
+    pendingImport.value = normalizeImportedBackup(data)
+    if (!pendingImport.value) {
+      importMessage.value = t('settings.importError')
+      return
+    }
     showImportConfirm.value = true
   } catch {
     importMessage.value = t('settings.importError')
@@ -159,10 +158,6 @@ async function confirmImport() {
   if (!data) return
   try {
     await saveSettings(data.settings)
-    await db.customPrograms.clear()
-    for (const p of data.customPrograms) {
-      await db.customPrograms.add(p)
-    }
     await saveProgress(data.activeProgress)
     await db.workoutRecords.clear()
     for (const r of data.history) {
@@ -288,30 +283,30 @@ async function confirmReset() {
       </div>
       <p class="sub">{{ t('settings.noSound') }}</p>
     </section>
-    <section v-if="builtinProgress" class="sec">
+    <section v-if="scheduleProgress" class="sec">
       <h4>{{ t('settings.frequency') }}</h4>
       <div class="setrow">
         <span class="k">{{ t('settings.frequencyValue') }}</span>
         <span class="seg">
           <button
             type="button"
-            :class="{ on: builtinProgress.frequencyDays === 3 }"
-            :aria-pressed="builtinProgress.frequencyDays === 3"
+            :class="{ on: scheduleProgress.frequencyDays === 3 }"
+            :aria-pressed="scheduleProgress.frequencyDays === 3"
             @click="setFrequency(3)"
           >
             {{ t('settings.frequency3') }}
           </button>
           <button
             type="button"
-            :class="{ on: builtinProgress.frequencyDays === 2 }"
-            :aria-pressed="builtinProgress.frequencyDays === 2"
+            :class="{ on: scheduleProgress.frequencyDays === 2 }"
+            :aria-pressed="scheduleProgress.frequencyDays === 2"
             @click="setFrequency(2)"
           >
             {{ t('settings.frequency2') }}
           </button>
         </span>
       </div>
-      <p class="sub">{{ t('settings.weekdaysLimit', { n: builtinProgress.frequencyDays }) }}</p>
+      <p class="sub">{{ t('settings.weekdaysLimit', { n: scheduleProgress.frequencyDays }) }}</p>
       <div class="setrow last">
         <span class="k">{{ t('settings.weekdays') }}</span>
         <span class="weekdays">
@@ -320,11 +315,11 @@ async function confirmReset() {
             :key="day"
             type="button"
             class="wd"
-            :class="{ on: builtinProgress.weekdays.includes(day) }"
+            :class="{ on: scheduleProgress.weekdays.includes(day) }"
             :disabled="isWeekdayDisabled(day)"
             :aria-disabled="isWeekdayDisabled(day)"
-            :aria-pressed="builtinProgress.weekdays.includes(day)"
-            :title="isWeekdayDisabled(day) ? t('settings.weekdaysLimit', { n: builtinProgress.frequencyDays }) : undefined"
+            :aria-pressed="scheduleProgress.weekdays.includes(day)"
+            :title="isWeekdayDisabled(day) ? t('settings.weekdaysLimit', { n: scheduleProgress.frequencyDays }) : undefined"
             @click="toggleWeekday(day)"
           >
             {{ t(`calendar.dow.${day}`) }}
@@ -424,7 +419,6 @@ async function confirmReset() {
       <h4>{{ t('settings.about') }}</h4>
       <RouterLink to="/about" class="btn ghost">{{ t('settings.about') }}</RouterLink>
       <RouterLink to="/why" class="btn ghost">{{ t('settings.whyProgram') }}</RouterLink>
-      <RouterLink to="/programs" class="btn ghost">{{ t('settings.customPrograms') }}</RouterLink>
     </section>
     <ConfirmPanel
       :visible="showResetConfirm"

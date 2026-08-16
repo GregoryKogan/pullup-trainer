@@ -211,7 +211,6 @@
     "importTitle": "Восстановить бэкап?",
     "about": "О приложении",
     "whyProgram": "Почему такая программа",
-    "customPrograms": "Свои программы",
     "restDecrease": "Уменьшить время отдыха",
     "restIncrease": "Увеличить время отдыха",
     "palettes": {
@@ -229,40 +228,6 @@
       "p12-ultraviolet": "P12 Ultraviolet",
       "p13-coral-sunrise": "P13 Coral Sunrise",
       "p14-mono-ink": "P14 Mono Ink"
-    }
-  },
-  "programs": {
-    "kicker": "Свои",
-    "title": "Свои программы",
-    "new": "Новая программа",
-    "defaultName": "Моя программа",
-    "edit": "Изменить",
-    "name": "Название",
-    "steps": "Шаги",
-    "stepsCount": "{count} шаг | {count} шага | {count} шагов",
-    "empty": "Своих программ пока нет. Нажми «Новая программа», чтобы создать.",
-    "stepN": "Шаг {n}",
-    "addStep": "Добавить шаг",
-    "addSet": "Добавить подход",
-    "setActive": "Сделать активной",
-    "jumpToStep": "Начать с шага",
-    "deleteTitle": "Удалить программу?",
-    "deleteConfirm": "Программа будет удалена из списка.",
-    "useBuiltin": "Встроенная программа",
-    "restDays": "Дней отдыха после шага",
-    "fieldType": "Тип",
-    "fieldPlanned": "Цель",
-    "fieldUnit": "Единица",
-    "deleteSet": "Удалить подход",
-    "deleteStep": "Удалить шаг",
-    "customFallback": "Своя программа",
-    "notFound": "Программа не найдена",
-    "setTypes": {
-      "reps": "Повторы",
-      "max": "Максимум",
-      "hold": "Удержание",
-      "negative": "Негатив",
-      "assisted": "Ассист"
     }
   },
   "about": {

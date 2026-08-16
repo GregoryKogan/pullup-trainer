@@ -1,7 +1,7 @@
 export type SetType = 'reps' | 'max' | 'hold' | 'negative' | 'assisted'
 export type SetUnit = 'reps' | 'seconds'
 export type WorkoutResult = 'success' | 'fail'
-export type ProgramSource = 'builtin' | 'custom'
+export type LegacyProgramSource = 'builtin' | 'custom'
 export type BuiltinPath = 'L' | 'P0'
 export type Level = 'P0' | 'L1' | 'L2' | 'L3' | 'L4'
 export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
@@ -50,35 +50,12 @@ export interface Path0State {
   failStreak: number
 }
 
-export interface CustomProgressState {
-  source: 'custom'
-  customProgramId: number
-  currentStepIndex: number
-  failStreak: number
-  schedule: ScheduleSlot[]
-  lastWorkoutDate: string | null
-}
-
-export interface BuiltinProgressState {
-  source: 'builtin'
+export interface ActiveProgress {
   frequencyDays: 2 | 3
   weekdays: Weekday[]
   schedule: ScheduleSlot[]
   lastWorkoutDate: string | null
   state: BuiltinLState | Path0State
-}
-
-export type ActiveProgress = BuiltinProgressState | CustomProgressState
-
-export interface CustomProgramStep {
-  sets: PlannedSet[]
-  restDaysAfter?: number
-}
-
-export interface CustomProgram {
-  id?: number
-  name: string
-  steps: CustomProgramStep[]
 }
 
 export interface WorkoutRecordContextL {
@@ -106,7 +83,7 @@ export interface WorkoutRecord {
   finishedAt?: string
   durationSeconds: number
   kind: RecordKind
-  program: ProgramSource
+  program: LegacyProgramSource
   programName: string
   context?: WorkoutRecordContextL | WorkoutRecordContextP0
   result: WorkoutResult

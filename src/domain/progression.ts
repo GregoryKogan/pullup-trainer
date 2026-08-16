@@ -4,7 +4,6 @@ import type {
   WorkoutResult,
   BuiltinLState,
   Path0State,
-  CustomProgressState,
 } from './types'
 import { daysBetween } from '@/utils/dates'
 
@@ -86,23 +85,6 @@ export function applyPath0Result(state: Path0State, sets: CompletedSet[], planne
       path0Step: Math.min(12, state.path0Step + 1),
       failStreak: 0,
       path: 'P0',
-    }
-  }
-  return { ...state, failStreak: state.failStreak + 1 }
-}
-
-export function applyCustomResult(
-  state: CustomProgressState,
-  sets: CompletedSet[],
-  planned: PlannedSet[],
-  totalSteps: number,
-): CustomProgressState {
-  const result = evaluateWorkout(sets, planned)
-  if (result === 'success') {
-    return {
-      ...state,
-      currentStepIndex: Math.min(totalSteps - 1, state.currentStepIndex + 1),
-      failStreak: 0,
     }
   }
   return { ...state, failStreak: state.failStreak + 1 }
