@@ -39,6 +39,7 @@ export interface BuiltinLState {
   stepInCycle: number
   failStreak: number
   lastRetestDate: string | null
+  lastRetestCycleIndex: number
   cycleBestMax: number
 }
 

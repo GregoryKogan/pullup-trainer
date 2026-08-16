@@ -7,8 +7,9 @@ import { session } from '@/domain/session'
 import { detectReturnPolicy } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
 import { computeWeeklyStreak } from '@/utils/streak'
-import { formatDisplayDate, startOfWeek, todayLocal } from '@/utils/dates'
+import { formatDisplayDate, startOfWeek, todayLocal, toIsoOffset } from '@/utils/dates'
 import { blockRepFractionKey, isValidTestRepCount, syncTestRepInput, REP_COUNT_MAX } from '@/utils/reps-input'
+import { computeTotals } from '@/domain/progression'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
 
@@ -86,7 +87,12 @@ const needsRetestPrompt = computed(() => {
   const p = progressStore.progress
   if (!p) return false
   if (detectReturnPolicy(p.lastWorkoutDate, today) === 'retest') return true
-  return needsRetest(p.state.lastRetestDate, p.state.cycleIndex, today, p.lastWorkoutDate)
+  return needsRetest(
+    p.state.cycleIndex,
+    p.state.lastRetestCycleIndex ?? 0,
+    today,
+    p.lastWorkoutDate,
+  )
 })
 
 function startWorkout(date?: string) {
@@ -119,6 +125,21 @@ async function submitRetest() {
   }
   retestError.value = ''
   await progressStore.applyRetest(retestReps.value)
+  const totals = computeTotals([
+    { position: 1, type: 'max', unit: 'reps', planned: 0, done: retestReps.value },
+  ])
+  await progressStore.saveRecord({
+    date: todayLocal(),
+    startedAt: toIsoOffset(new Date()),
+    finishedAt: toIsoOffset(new Date()),
+    durationSeconds: 0,
+    kind: 'test',
+    program: 'builtin',
+    programName: t('common.programName'),
+    result: 'success',
+    sets: [{ position: 1, type: 'max', unit: 'reps', planned: 0, done: retestReps.value }],
+    totals,
+  })
   showRetest.value = false
 }
 

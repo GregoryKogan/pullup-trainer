@@ -143,6 +143,12 @@ export function migrateBackupProgress(raw: unknown): ActiveProgress | null {
     delete rest.path
     progress = { ...progress, state: rest as unknown as ActiveProgress['state'] }
   }
+  if (typeof progress.state.lastRetestCycleIndex !== 'number') {
+    progress = {
+      ...progress,
+      state: { ...progress.state, lastRetestCycleIndex: 0 },
+    }
+  }
   return progress
 }
 

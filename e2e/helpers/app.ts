@@ -1,12 +1,43 @@
-import type { Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 
 const DB_NAME = 'PullupTrainer'
+
+export interface SeedState {
+  anchor?: number
+  level?: string
+  cycleIndex?: number
+  stepInCycle?: number
+  failStreak?: number
+  lastRetestDate?: string | null
+  lastRetestCycleIndex?: number
+  cycleBestMax?: number
+}
+
+export interface SeedOptions {
+  anchor?: number
+  today?: string
+  stepRef?: number
+  schedule?: { date: string; stepRef: number }[]
+  lastWorkoutDate?: string | null
+  frequencyDays?: 2 | 3
+  weekdays?: string[]
+  state?: SeedState
+  language?: 'en' | 'ru'
+  restDurationSeconds?: number
+}
 
 async function withOrigin(page: Page) {
   const url = page.url()
   if (!url.includes('127.0.0.1:4173') && !url.includes('localhost:4173')) {
-    await page.goto('/')
+    await page.goto('.')
   }
+}
+
+function levelFromAnchor(anchor: number): string {
+  if (anchor >= 20) return 'L4'
+  if (anchor >= 10) return 'L3'
+  if (anchor >= 5) return 'L2'
+  return 'L1'
 }
 
 export async function clearAppState(page: Page) {
@@ -40,14 +71,18 @@ export async function clearRestGate(page: Page) {
   }
 }
 
-export async function completeWorkout(page: Page, maxReps = '8') {
-  const start = page.getByRole('button', { name: /^start$|^начать$/i })
+export async function startWorkout(page: Page, date?: string) {
+  const start = page.getByRole('button', { name: /^start$|^начать$|^start now$/i })
   if (await start.isVisible().catch(() => false)) {
     await start.click()
   } else {
-    await page.goto(`/workout/${todayLocal()}`)
+    await page.goto(`/workout/${date ?? todayLocal()}`)
   }
   await clearRestGate(page)
+}
+
+export async function completeWorkout(page: Page, maxReps = '8') {
+  await startWorkout(page)
 
   for (let i = 0; i < 4; i++) {
     await page.getByRole('button', { name: /^done$|^готово$/i }).click()
@@ -56,19 +91,110 @@ export async function completeWorkout(page: Page, maxReps = '8') {
 
   await page.locator('#max-done-input').fill(maxReps)
   await page.getByRole('button', { name: /^done$|^готово$/i }).click()
+  await expect(page).toHaveURL(/\/result/)
+}
+
+export async function failWorkoutEarly(page: Page) {
+  await startWorkout(page)
+  await page.getByRole('button', { name: /leave workout|выйти из тренировки/i }).click()
+  await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
+  await expect(page).toHaveURL(/\/result/)
+}
+
+export async function failWorkoutShortSet(page: Page, maxReps = '8') {
+  await startWorkout(page)
+
+  await page.getByRole('button', { name: /log different|другой результат|другой/i }).click()
+  await page.locator('#fewer-input').fill('1')
+  await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
+  await clearRestGate(page)
+
+  for (let i = 0; i < 3; i++) {
+    await page.getByRole('button', { name: /^done$|^готово$/i }).click()
+    await clearRestGate(page)
+  }
+
+  await page.locator('#max-done-input').fill(maxReps)
+  await page.getByRole('button', { name: /^done$|^готово$/i }).click()
+}
+
+export async function assertSetTargets(page: Page, targets: number[]) {
+  const cards = page.locator('.setsrow .s b')
+  await expect(cards).toHaveCount(targets.length)
+  for (let i = 0; i < targets.length; i++) {
+    await expect(cards.nth(i)).toHaveText(String(targets[i]))
+  }
+}
+
+export async function readProgress(page: Page) {
+  await withOrigin(page)
+  return page.evaluate(async (dbName) => {
+    return new Promise<Record<string, unknown> | null>((resolve, reject) => {
+      const req = indexedDB.open(dbName)
+      req.onsuccess = () => {
+        const db = req.result
+        const tx = db.transaction('activeProgress', 'readonly')
+        const get = tx.objectStore('activeProgress').get('singleton')
+        get.onsuccess = () => {
+          db.close()
+          resolve((get.result as { data?: Record<string, unknown> } | undefined)?.data ?? null)
+        }
+        get.onerror = () => reject(get.error)
+      }
+      req.onerror = () => reject(req.error)
+    })
+  }, DB_NAME)
+}
+
+export async function readRecords(page: Page) {
+  await withOrigin(page)
+  return page.evaluate(async (dbName) => {
+    return new Promise<unknown[]>((resolve, reject) => {
+      const req = indexedDB.open(dbName)
+      req.onsuccess = () => {
+        const db = req.result
+        const tx = db.transaction('workoutRecords', 'readonly')
+        const getAll = tx.objectStore('workoutRecords').getAll()
+        getAll.onsuccess = () => {
+          db.close()
+          resolve(getAll.result ?? [])
+        }
+        getAll.onerror = () => reject(getAll.error)
+      }
+      req.onerror = () => reject(req.error)
+    })
+  }, DB_NAME)
 }
 
 export async function resetApp(page: Page) {
-  await page.goto('/')
+  await page.goto('.')
   await clearAppState(page)
   await page.reload()
   await dismissPwaModal(page)
 }
 
 export async function seedBuiltinProgress(page: Page, anchor: number, today: string) {
+  await seedProgress(page, { anchor, today, stepRef: 1 })
+}
+
+export async function seedProgress(page: Page, options: SeedOptions = {}) {
+  const today = options.today ?? todayLocal()
+  const anchor = options.anchor ?? 7
+  const stepRef = options.stepRef ?? options.state?.stepInCycle ?? 1
+  const state = {
+    anchor,
+    level: options.state?.level ?? levelFromAnchor(anchor),
+    cycleIndex: options.state?.cycleIndex ?? 0,
+    stepInCycle: options.state?.stepInCycle ?? stepRef,
+    failStreak: options.state?.failStreak ?? 0,
+    lastRetestDate: options.state?.lastRetestDate ?? today,
+    lastRetestCycleIndex: options.state?.lastRetestCycleIndex ?? 0,
+    cycleBestMax: options.state?.cycleBestMax ?? 0,
+  }
+
   await withOrigin(page)
   await page.evaluate(
-    async ({ dbName, anchor, today }) => {
+    async ({ dbName, payload }) => {
       await new Promise<void>((resolve, reject) => {
         const req = indexedDB.open(dbName)
         req.onsuccess = () => {
@@ -81,28 +207,20 @@ export async function seedBuiltinProgress(page: Page, anchor: number, today: str
             id: 'singleton',
             palette: 'p01-volt',
             themeMode: 'system',
-            restDurationSeconds: 180,
+            restDurationSeconds: payload.restDurationSeconds,
             restAutoStart: false,
             restVibrate: false,
             restNotify: false,
-            language: 'en',
+            language: payload.language,
           })
           tx.objectStore('activeProgress').put({
             id: 'singleton',
             data: {
-              frequencyDays: 3,
-              weekdays: ['mon', 'wed', 'fri'],
-              schedule: [{ date: today, stepRef: 1 }],
-              lastWorkoutDate: null,
-              state: {
-                anchor,
-                level: anchor >= 20 ? 'L4' : anchor >= 10 ? 'L3' : anchor >= 5 ? 'L2' : 'L1',
-                cycleIndex: 0,
-                stepInCycle: 1,
-                failStreak: 0,
-                lastRetestDate: today,
-                cycleBestMax: 0,
-              },
+              frequencyDays: payload.frequencyDays,
+              weekdays: payload.weekdays,
+              schedule: payload.schedule,
+              lastWorkoutDate: payload.lastWorkoutDate,
+              state: payload.state,
             },
           })
           tx.objectStore('appMeta').put({
@@ -120,12 +238,24 @@ export async function seedBuiltinProgress(page: Page, anchor: number, today: str
         req.onerror = () => reject(req.error)
       })
     },
-    { dbName: DB_NAME, anchor, today },
+    {
+      dbName: DB_NAME,
+      payload: {
+        restDurationSeconds: options.restDurationSeconds ?? 180,
+        language: options.language ?? 'en',
+        frequencyDays: options.frequencyDays ?? 3,
+        weekdays: options.weekdays ?? ['mon', 'wed', 'fri'],
+        schedule: options.schedule ?? [{ date: today, stepRef }],
+        lastWorkoutDate: options.lastWorkoutDate ?? null,
+        state,
+      },
+    },
   )
 }
 
-export async function gotoApp(page: Page, path = '/') {
-  await page.goto(path)
+export async function gotoApp(page: Page, path = '') {
+  const target = path ? (path.startsWith('/') ? path.slice(1) : path) : '.'
+  await page.goto(target)
   await dismissPwaModal(page)
 }
 
@@ -141,10 +271,18 @@ export async function prepareSeededApp(page: Page, anchor: number, today: string
   await expectHomeReady(page)
 }
 
-async function expectHomeReady(page: Page) {
-  await page.goto('/')
+export async function prepareProgress(page: Page, options: SeedOptions = {}) {
+  await resetApp(page)
+  await seedProgress(page, options)
+  await page.reload({ waitUntil: 'networkidle' })
   await dismissPwaModal(page)
-  const nav = page.getByRole('navigation', { name: 'Main navigation' })
+  await expectHomeReady(page)
+}
+
+async function expectHomeReady(page: Page) {
+  await page.goto('.')
+  await dismissPwaModal(page)
+  const nav = page.getByRole('navigation', { name: /main navigation|основная навигация/i })
   await nav.waitFor({ state: 'visible', timeout: 15_000 })
 }
 
@@ -154,4 +292,39 @@ export function todayLocal(): string {
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
+}
+
+export function addDays(isoDate: string, delta: number): string {
+  const [y, m, d] = isoDate.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  date.setDate(date.getDate() + delta)
+  const yy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  return `${yy}-${mm}-${dd}`
+}
+
+export async function setLanguageRu(page: Page) {
+  await withOrigin(page)
+  await page.evaluate(async (dbName) => {
+    await new Promise<void>((resolve, reject) => {
+      const req = indexedDB.open(dbName)
+      req.onsuccess = () => {
+        const db = req.result
+        const tx = db.transaction('settings', 'readwrite')
+        const store = tx.objectStore('settings')
+        const get = store.get('singleton')
+        get.onsuccess = () => {
+          const row = get.result ?? { id: 'singleton' }
+          store.put({ ...row, id: 'singleton', language: 'ru' })
+        }
+        tx.oncomplete = () => {
+          db.close()
+          resolve()
+        }
+        tx.onerror = () => reject(tx.error)
+      }
+      req.onerror = () => reject(req.error)
+    })
+  }, DB_NAME)
 }

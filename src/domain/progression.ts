@@ -4,6 +4,7 @@ import type {
   WorkoutResult,
   BuiltinLState,
 } from './types'
+import { levelFromM } from './levels'
 import { daysBetween } from '@/utils/dates'
 
 export function evaluateWorkout(sets: CompletedSet[], planned: PlannedSet[]): WorkoutResult {
@@ -46,9 +47,11 @@ export function applyBuiltinLResult(
   if (result === 'fail') {
     const failStreak = state.failStreak + 1
     if (failStreak >= 2) {
+      const anchor = deloadAnchor(state.anchor)
       return {
         ...state,
-        anchor: deloadAnchor(state.anchor),
+        anchor,
+        level: levelFromM(anchor),
         failStreak: 0,
         cycleBestMax: 0,
       }
@@ -70,6 +73,7 @@ export function applyBuiltinLResult(
   return {
     ...state,
     anchor: newAnchor,
+    level: levelFromM(newAnchor),
     cycleIndex: state.cycleIndex + 1,
     stepInCycle: 1,
     failStreak: 0,
@@ -78,8 +82,8 @@ export function applyBuiltinLResult(
 }
 
 export function needsRetest(
-  lastRetestDate: string | null,
   cycleIndex: number,
+  lastRetestCycleIndex: number,
   today: string,
   lastWorkoutDate: string | null,
 ): boolean {
@@ -87,8 +91,8 @@ export function needsRetest(
     const gap = daysBetween(lastWorkoutDate, today)
     if (gap > 14) return true
   }
-  if (cycleIndex >= 2 && cycleIndex % 2 === 0) {
-    if (!lastRetestDate) return true
+  if (cycleIndex >= 2 && cycleIndex % 2 === 0 && cycleIndex > lastRetestCycleIndex) {
+    return true
   }
   return false
 }

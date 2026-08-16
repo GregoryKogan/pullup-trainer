@@ -44,6 +44,15 @@ const streakWeeks = computed(() => {
   return computeWeeklyStreak(progressStore.records, freq, todayLocal())
 })
 
+const levelInfo = computed(() => {
+  const p = progressStore.progress
+  if (!p) return null
+  return t('home.levelAnchor', {
+    level: t(`levels.${p.state.level}`),
+    anchor: p.state.anchor,
+  })
+})
+
 const historyLimit = 10
 const showAllHistory = ref(false)
 const isNarrow = ref(false)
@@ -116,6 +125,7 @@ function exportHistoryJson() {
       <div>
         <p class="kicker">{{ t('stats.kicker') }}</p>
         <h1>{{ t('stats.title') }}</h1>
+        <p v-if="levelInfo" class="sub level-info">{{ levelInfo }}</p>
       </div>
     </header>
     <div class="kpis">
@@ -384,5 +394,10 @@ function exportHistoryJson() {
 }
 .history-toggle {
   margin-bottom: 8px;
+}
+.level-info {
+  margin: 6px 0 0;
+  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
 }
 </style>

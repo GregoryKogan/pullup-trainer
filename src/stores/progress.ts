@@ -16,6 +16,7 @@ function createState(m: number, today: string): BuiltinLState {
     stepInCycle: 1,
     failStreak: 0,
     lastRetestDate: today,
+    lastRetestCycleIndex: 0,
     cycleBestMax: 0,
   }
 }
@@ -102,6 +103,7 @@ export const useProgressStore = defineStore('progress', () => {
         stepInCycle: 1,
         failStreak: 0,
         lastRetestDate: todayLocal(),
+        lastRetestCycleIndex: p.state.cycleIndex,
       },
     }
     await persist()

@@ -112,4 +112,33 @@ describe('export', () => {
     expect(normalized?.activeProgress).toBeNull()
     expect(normalized?.schemaVersion).toBe(3)
   })
+
+  it('normalizes backup with lastRetestCycleIndex default', () => {
+    const backup = {
+      format: 'pullup-trainer.backup',
+      schemaVersion: 3,
+      exportedAt: '2026-08-01T00:00:00+03:00',
+      appVersion: '1.0.0',
+      settings: defaultSettings(),
+      activeProgress: {
+        frequencyDays: 3 as const,
+        weekdays: ['mon', 'wed', 'fri'] as const,
+        schedule: [{ date: '2026-08-01', stepRef: 1 }],
+        lastWorkoutDate: null,
+        state: {
+          anchor: 7,
+          level: 'L2' as const,
+          cycleIndex: 0,
+          stepInCycle: 1,
+          failStreak: 0,
+          lastRetestDate: '2026-08-01',
+          cycleBestMax: 0,
+        },
+      },
+      history: [],
+    }
+    const normalized = normalizeImportedBackup(backup)
+    expect(normalized?.activeProgress?.state.lastRetestCycleIndex).toBe(0)
+    expect(normalized?.activeProgress?.state.anchor).toBe(7)
+  })
 })

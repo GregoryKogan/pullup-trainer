@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
   color: var(--ok);
 }
 .day.missed .day-icon {
-  color: var(--bad);
+  color: var(--muted);
 }
 .shift-note {
   display: flex;
