@@ -18,15 +18,69 @@ function scrollIfHash() {
 onMounted(scrollIfHash)
 watch(() => route.hash, scrollIfHash)
 
-const sections = ['frequency', 'volume', 'workingSets', 'finalMax', 'rest', 'autoreg', 'retest', 'path0', 'skips'] as const
+const sections = [
+  'overview',
+  'levels',
+  'algorithm',
+  'progression',
+  'frequency',
+  'volume',
+  'workingSets',
+  'finalMax',
+  'rest',
+  'path0',
+  'skips',
+  'rejected',
+  'limitations',
+] as const
+
+function parseCitations(text: string): { type: 'text' | 'cite'; value: string }[] {
+  const parts: { type: 'text' | 'cite'; value: string }[] = []
+  const re = /\[(\d+)\]/g
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+  while ((match = re.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', value: text.slice(lastIndex, match.index) })
+    }
+    parts.push({ type: 'cite', value: match[1] })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < text.length) {
+    parts.push({ type: 'text', value: text.slice(lastIndex) })
+  }
+  return parts
+}
+
+function asParagraphs(key: string): string[] {
+  const val = tm(`science.sections.${key}.body`)
+  return Array.isArray(val) ? (val as string[]) : []
+}
+
+const introParagraphs = computed(() => {
+  const val = tm('science.intro')
+  return Array.isArray(val) ? (val as string[]) : []
+})
 
 const formulas = computed(() => {
-  const items = tm('science.formulas.items') as { name: string; formula: string; example: string }[]
+  const items = tm('science.formulas.items') as {
+    name: string
+    formula: string
+    example: string
+    note?: string
+  }[]
   return Array.isArray(items) ? items : []
 })
 
 const sources = computed(() => {
-  const items = tm('science.sources') as { id: number; title: string; url: string; badge: string }[]
+  const items = tm('science.sources') as {
+    id: number
+    title: string
+    url: string
+    badge: string
+    journal?: string
+    year?: string
+  }[]
   return Array.isArray(items) ? items : []
 })
 </script>
@@ -46,11 +100,21 @@ const sources = computed(() => {
       </header>
     </div>
     <section class="panel">
-      <p>{{ t('science.headline') }}</p>
+      <p v-for="(para, i) in introParagraphs" :key="`intro-${i}`">
+        <template v-for="(part, j) in parseCitations(para)" :key="`intro-${i}-${j}`">
+          <a v-if="part.type === 'cite'" :href="`#source-${part.value}`" class="cite">[{{ part.value }}]</a>
+          <span v-else>{{ part.value }}</span>
+        </template>
+      </p>
     </section>
     <section v-for="key in sections" :key="key" class="sec">
       <h4>{{ t(`science.sections.${key}.title`) }}</h4>
-      <p>{{ t(`science.sections.${key}.body`) }}</p>
+      <p v-for="(para, i) in asParagraphs(key)" :key="`${key}-${i}`">
+        <template v-for="(part, j) in parseCitations(para)" :key="`${key}-${i}-${j}`">
+          <a v-if="part.type === 'cite'" :href="`#source-${part.value}`" class="cite">[{{ part.value }}]</a>
+          <span v-else>{{ part.value }}</span>
+        </template>
+      </p>
     </section>
     <section class="sec">
       <h4>{{ t('science.formulas.title') }}</h4>
@@ -58,14 +122,24 @@ const sources = computed(() => {
         <b>{{ f.name }}</b>
         <code>{{ f.formula }}</code>
         <span class="sub">{{ f.example }}</span>
+        <span v-if="f.note" class="sub note">
+          <template v-for="(part, j) in parseCitations(f.note)" :key="`note-${i}-${j}`">
+            <a v-if="part.type === 'cite'" :href="`#source-${part.value}`" class="cite">[{{ part.value }}]</a>
+            <span v-else>{{ part.value }}</span>
+          </template>
+        </span>
       </div>
     </section>
     <section id="sources" class="sec">
       <h4>{{ t('science.sourcesTitle') }}</h4>
       <ul class="sources">
-        <li v-for="s in sources" :key="s.id">
+        <li v-for="s in sources" :id="`source-${s.id}`" :key="s.id">
           <span class="badge">{{ t(`science.badges.${s.badge}`) }}</span>
+          <span class="source-id">[{{ s.id }}]</span>
           <a :href="s.url" target="_blank" rel="noopener">{{ s.title }}</a>
+          <span v-if="s.journal && s.year" class="sub source-meta">
+            {{ s.journal }}, {{ s.year }}
+          </span>
         </li>
       </ul>
     </section>
@@ -85,6 +159,22 @@ const sources = computed(() => {
   overflow-x: auto;
   word-break: break-word;
 }
+.formula .note {
+  display: block;
+  margin-top: 4px;
+}
+.panel p + p,
+.sec p + p {
+  margin-top: 12px;
+}
+.cite {
+  font: 700 0.75rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--accent);
+  text-decoration: none;
+}
+.cite:hover {
+  text-decoration: underline;
+}
 .sources {
   list-style: none;
   padding: 0;
@@ -101,5 +191,13 @@ const sources = computed(() => {
   padding: 3px 6px;
   margin-right: 8px;
   border: 1px solid var(--line);
+}
+.source-id {
+  font: 700 0.75rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  margin-right: 6px;
+}
+.source-meta {
+  display: block;
+  margin-top: 4px;
 }
 </style>
