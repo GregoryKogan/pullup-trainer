@@ -99,7 +99,8 @@ const sources = computed(() => {
         </div>
       </header>
     </div>
-    <section class="panel">
+    <section class="sec">
+      <h4>{{ t('science.introTitle') }}</h4>
       <p v-for="(para, i) in introParagraphs" :key="`intro-${i}`">
         <template v-for="(part, j) in parseCitations(para)" :key="`intro-${i}-${j}`">
           <a v-if="part.type === 'cite'" :href="`#source-${part.value}`" class="cite">[{{ part.value }}]</a>
@@ -163,7 +164,6 @@ const sources = computed(() => {
   display: block;
   margin-top: 4px;
 }
-.panel p + p,
 .sec p + p {
   margin-top: 12px;
 }

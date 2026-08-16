@@ -1,113 +1,114 @@
 {
   "title": "Why this program",
+  "introTitle": "The short version",
   "intro": [
-    "No randomized trials have compared pull-up progression schemes head to head. Linear plans, rep ladders, and rest-pause protocols in pull-ups simply have not been tested in controlled studies.",
-    "This program is a synthesis built from indirect evidence: training frequency, weekly set volume, rest between sets, how close you train to failure, autoregulated progression, and eccentric loading for beginners. Every design choice below ties back to published research.",
-    "Where data come from bench press, lat pulldown, or squat studies, we say so. Those transfers are extrapolations, not proven facts about pull-ups."
+    "No randomized trial has ever compared pull-up progression schemes head to head. Linear plans, rep ladders, and rest-pause protocols have simply not been tested in controlled studies on pull-ups.",
+    "This program is a synthesis built from indirect evidence: training frequency, weekly set volume, rest between sets, proximity to failure, autoregulated progression, and eccentric loading for beginners. Every design choice below is tied to published research, and all sources are listed at the end of the page.",
+    "Where the evidence comes from bench press, lat pulldown, or squat studies, we say so. Those transfers are extrapolations, not proven facts about pull-ups."
   ],
   "sections": {
     "overview": {
-      "title": "How the program is structured",
+      "title": "How the program works",
       "body": [
-        "You start with a max-rep test. That result sets an anchor M*, your current estimate of how many strict pull-ups you can do in one set. Each workout has five sets. A cycle has six workouts, each one a step with slightly higher targets.",
-        "Sets 1 through 4 stay submaximal: fixed rep targets at 50 to 70% of your anchor. Set 5 is a max set with a minimum rep count that rises each step. Hit every target and you advance. Miss any set and you repeat the same step next time.",
-        "The anchor updates after each completed cycle and again at a formal retest every four weeks. Volume lands at 15 hard sets per week at the default three sessions [16][17]. One set per workout goes near failure for a progression signal [36][37]. Progression gates on actual performance, not a fixed calendar [28][29]."
+        "You begin with a max-rep test. The result becomes your anchor M*, the app's estimate of how many strict pull-ups you can do in a single set. Every workout has five sets. A cycle has six workouts, and each workout is one step with slightly higher targets than the previous one.",
+        "Sets 1 to 4 are submaximal: fixed rep counts at 50 to 70% of the anchor. Set 5 is a maximum-effort set with a minimum rep count that rises from step to step. Hit every target and you advance to the next step. Miss any set and you repeat the same step next time.",
+        "The anchor updates after each completed cycle and again at a formal retest every four weeks. At the default three sessions per week, this adds up to 15 hard sets [1][2]. One set per workout goes close to failure and provides the progression signal [3][4]. Advancing depends on actual performance, not on the calendar [5][6]."
       ]
     },
     "levels": {
       "title": "Entry test and levels",
       "body": [
-        "On your first session you do strict pull-ups to failure. The count is M. If M is zero, you enter Path 0 (eccentric and assisted work). Otherwise the app stores M as your anchor M* and assigns a level label.",
-        "Levels are display tags only. They do not change the math. M = 0 maps to Path 0. M from 1 to 4 is L1 Beginner. M from 5 to 9 is L2 Base. M from 10 to 19 is L3 Intermediate. M 20 or more is L4 Advanced.",
-        "The label helps you read progress charts. Step targets always come from the generator rule and your current anchor, not from the level name."
+        "On your first session you do strict pull-ups to failure. The count is M. If M is zero, you enter Path 0 with eccentric and assisted work. Otherwise the app stores M as your anchor M* and assigns a level.",
+        "Levels are display labels for the statistics screen. They never change the math. M = 0 maps to Path 0, M from 1 to 4 to L1 Beginner, M from 5 to 9 to L2 Base, M from 10 to 19 to L3 Intermediate, and M of 20 or more to L4 Advanced.",
+        "The label only helps you read the progress charts. Set targets always come from the generator rule and your current anchor, never from the level name."
       ]
     },
     "algorithm": {
       "title": "Step generator: session(M*, k)",
       "body": [
-        "The app does not store fixed workout tables. It generates each step from your anchor M* and the step index k (1 through 6 in the current cycle).",
-        "Working sets 1 to 4 use ceil(0.7·M*), ceil(0.6·M*), ceil(0.6·M*), ceil(0.5·M*), each at least 1 rep. Set 5 is type Maximum with minimum N_k = min(ceil(0.6·M*) + k − 1, M* + 1). The cap at M* + 1 means we never ask for more than one rep above your tested max in a single step.",
-        "Example with M* = 7 and k = 3: working targets are 5, 5, 5, 4. The final set minimum is N_3 = min(5 + 2, 8) = 7. Full reference tables for M* = 3, 7, 15, and 25 appear in the formulas section below."
+        "The app stores no fixed workout tables. Every step is computed from your anchor M* and the step index k, which runs from 1 to 6 within the current cycle.",
+        "Working sets 1 to 4 are ceil(0.7·M*), ceil(0.6·M*), ceil(0.6·M*), and ceil(0.5·M*), each at least 1 rep. Set 5 is of type Maximum with a minimum of N_k = min(ceil(0.6·M*) + k - 1, M* + 1). The cap at M* + 1 means a single step never asks for more than one rep above your tested max.",
+        "Example with M* = 7 and k = 3: working targets are 5, 5, 5, 4, and the final-set minimum is N_3 = min(5 + 2, 8) = 7. Reference tables for M* = 3, 7, 15, and 25 appear in the formulas section at the end of the page."
       ]
     },
     "progression": {
       "title": "Success, failure, deload, and retest",
       "body": [
-        "Success means all five sets meet their targets, including final set reps at or above N_k. You move to step k + 1 on the next scheduled workout.",
-        "Failure means any working set falls short or the final set lands below N_k. The same step repeats. Two consecutive failures on one step trigger a deload: M* becomes floor(0.9·M*), minimum 1. The next step recalculates from the lower anchor. Autoregulated load changes perform at least as well as fixed progression in meta-analyses [28], with no significant downside in others [29]. Deload weeks are common in trained lifters, roughly every five to six weeks [32].",
-        "After six successful steps, the cycle ends. New anchor M*' = max(best final-set reps in the cycle, M* − 1). A new cycle starts at step 1. Every two cycles, about four weeks at three sessions per week, you run a full max test. That result becomes the new M*. Repeated max tests do not inflate strength gains on their own [34]. After a break longer than two weeks, the app suggests a retest or a roughly 10% anchor reduction."
+        "Success means all five sets meet their targets and the final set reaches N_k or more. The next scheduled workout is step k + 1.",
+        "Failure means any working set falls short or the final set lands below N_k. The same step repeats on the next workout. Two consecutive failures on one step trigger a deload: the anchor becomes floor(0.9·M*), minimum 1, and the same step is recalculated from the lower anchor. Autoregulated loading performs at least as well as fixed progression in meta-analyses [5], and other reviews find no downside [6]. Trained lifters commonly deload about every five to six weeks [7].",
+        "After six successful steps the cycle ends. The new anchor is M*' = max(best final-set reps in the cycle, M* - 1), and a new cycle starts at step 1. Every two cycles, about four weeks at three sessions per week, you run a full max test and its result becomes the new M*. Repeated max tests do not inflate strength gains on their own [8]. After a break longer than two weeks, the app suggests a retest or an anchor cut of roughly 10%."
       ]
     },
     "frequency": {
-      "title": "Frequency: 3 sessions per week, 48 h minimum gap",
+      "title": "Frequency: 3 sessions per week, 48 hours apart",
       "body": [
-        "Default schedule is three non-consecutive days per week, for example Monday, Wednesday, Friday. You must leave at least 48 hours between sessions.",
-        "Training a muscle group twice per week beats once per week for hypertrophy in meta-analysis [7]. For upper-body strength, three or more sessions per week beat one when weekly volume is matched [9]. Strength usually returns within about two days after a session when acute loss stays under 20% [14].",
-        "Two sessions per week is a valid option, especially at advanced levels if progress stalls. ACSM guidelines recommend training major muscle groups at least twice weekly [12]."
+        "The default schedule is three non-consecutive days per week, for example Monday, Wednesday, and Friday. Sessions must be at least 48 hours apart.",
+        "Training a muscle group twice per week beats once per week for hypertrophy in meta-analysis [9]. For upper-body strength, three or more weekly sessions beat one when volume is matched [10]. After a session that lowers strength by no more than 20%, strength is usually restored within about two days [11].",
+        "Two sessions per week is a valid option, especially at advanced levels when progress stalls. ACSM guidelines recommend training every major muscle group at least twice per week [12]."
       ]
     },
     "volume": {
       "title": "Volume: 5 sets × 3 workouts = 15 per week",
       "body": [
-        "Each workout has five sets. Three workouts per week gives 15 hard sets for the pulling muscles.",
-        "Strength meta-analysis finds at least 10 sets per week clearly beats five or fewer (effect size 0.18) [16]. For hypertrophy in trained people, 12 to 20 sets per week per muscle is a common optimum band [17]. A lat-pulldown trial found five sets beat three and one for both strength and rep-max performance [19].",
-        "Fifteen weekly sets sit inside that range without pushing into diminishing returns territory [18]. More volume helps up to a point, then gains flatten, especially for strength."
+        "Each workout has five sets. Three workouts per week make 15 hard sets for the pulling muscles.",
+        "For strength, at least 10 sets per week clearly beat five or fewer, with an effect size of 0.18 [1]. For hypertrophy in trained lifters, 12 to 20 weekly sets per muscle is the commonly cited optimum [2]. A lat-pulldown trial found that five sets beat three and one on both strength and rep tests [13].",
+        "Fifteen weekly sets sit inside that range without reaching the zone of diminishing returns [14]. Volume helps up to a point, then gains flatten, especially for strength."
       ]
     },
     "workingSets": {
       "title": "Working sets: submaximal descending reps",
       "body": [
-        "The four working sets use descending fractions of your anchor: 70%, 60%, 60%, and 50%, rounded up. That keeps most reps away from deep failure.",
-        "Pull-up research comparing velocity-loss cutoffs found that stopping sets at 25% velocity loss produced larger strength and endurance gains than allowing 50% loss [1]. Broader failure literature shows strength gains are similar across a wide range of reps in reserve [36]. Training every set to failure costs you reps in later sets and adds soreness [42].",
-        "Submaximal front sets preserve quality for the final max set. That pattern matches what we know about managing fatigue across multiple sets."
+        "The four working sets use descending fractions of the anchor: 70%, 60%, 60%, and 50%, rounded up. Most reps stay well away from deep failure.",
+        "One pull-up study compared stopping a set at 25% versus 50% velocity loss, and the earlier stop produced larger gains in strength and endurance [15]. Broader failure research shows that strength gains are similar across a wide range of reps in reserve [3]. Going to failure on every set costs reps in later sets and adds soreness [16].",
+        "Submaximal front sets preserve quality for the final max set. That is how you manage fatigue across a series of sets."
       ]
     },
     "finalMax": {
-      "title": "Final set: Maximum with rising minimum",
+      "title": "Final set: maximum with a rising minimum",
       "body": [
-        "Set 5 is always a max effort with a floor of N_k reps. N_k rises by one each step until it hits the cap M* + 1. Over a full cycle the minimum typically climbs by three reps total.",
-        "Muscle size tends to increase as sets end closer to failure, but the effect is small [36][39]. For strength, failure is not required [37][38]. Local muscular endurance gains look similar whether you stop at failure or two reps in reserve [41].",
-        "The exact protocol of four submaximal sets plus one max set has not been tested as a single package in a randomized trial. We built it from separate lines of evidence on volume, failure proximity, and autoregulation. Treat that combination as an extrapolation."
+        "Set 5 is always a maximum-effort set with a floor of N_k reps. N_k rises by one each step until it hits the cap M* + 1. Over a full cycle the minimum typically climbs by three reps.",
+        "Muscle size tends to increase as sets end closer to failure, but the effect is small [3][17]. For strength, failure is not required [4][18]. Local muscular endurance gains look similar whether you stop at failure or two reps in reserve [19].",
+        "The exact package of four submaximal sets plus one max set has not been tested as a unit in a randomized trial. We assembled it from separate lines of evidence on volume, proximity to failure, and autoregulation. Treat that combination as an extrapolation."
       ]
     },
     "rest": {
-      "title": "Rest between sets: 3 min default",
+      "title": "Rest between sets: 3 minutes by default",
       "body": [
-        "Default rest is three minutes between sets. Presets offer 90 seconds and five minutes. You can adjust in 15-second steps during a workout.",
-        "For strength, three to five minutes between sets at 50 to 90% of max allows more reps across multiple sets than shorter rest [21]. Trained lifters need more than two minutes to maximize strength gains [23]. Short rest collapses rep output: at one minute between squat sets, reps fell from 7.7 to 2.2 by set four; at five minutes they held 7.4 to 4.7 [26].",
-        "For hypertrophy, benefit from rest beyond 90 seconds is unclear. A 2024 Bayesian meta-analysis found no meaningful difference above 90 seconds [25]. A 2025 preprint argues long rest does not beat short rest for hypertrophy, though it still favors long rest for strength [27]. Our goal is rep-max performance, so three minutes stays the default. Path 0 uses 90 seconds to three minutes between sets."
+        "The default rest between sets is three minutes. Presets offer 90 seconds and five minutes, and you can adjust in 15-second steps during a workout.",
+        "For strength work at 50 to 90% of max, three to five minutes of rest allows more reps across multiple sets than short rest [20]. Trained lifters need more than two minutes to maximize strength gains [21]. In one squat study, one-minute rests cut reps from 7.7 to 2.2 by set four, while five-minute rests held them at 7.4 to 4.7 [22].",
+        "For hypertrophy, the benefit of resting beyond 90 seconds is unclear. A 2024 Bayesian meta-analysis found no meaningful difference above 90 seconds [23]. A 2025 preprint argues that long rest does not beat short rest for hypertrophy, though it still favors long rest for strength [24]. Since our goal is rep-max performance, three minutes stays the default. Path 0 uses 90 seconds to three minutes between sets."
       ]
     },
     "path0": {
       "title": "Path 0: starting from zero pull-ups",
       "body": [
-        "If your max test is zero, you follow a 12-step path across three phases, four workouts each, at three sessions per week.",
-        "Steps 1 to 4: scapular pulls 3×8–10 plus dead hangs 3×20–30 seconds, adding five seconds to hangs each step. Steps 5 to 8: negative pull-ups 3×5 with three to five second lowering plus assisted pull-ups 3×6–8. Steps 9 to 12: negatives 3×6 plus assisted 3×8. Then you retest and enter L1 if you can do at least one rep.",
-        "Eccentric training has the strongest evidence for building strength when concentric max is limited [43][44]. Eccentric-only work beats concentric-only for eccentric strength, but concentric strength needs concentric practice too [46]. A 12-week pull-up program with controlled eccentric tempo raised max reps from 2.1 to 7.8 in one trial [2]. Scapular pulls and hang progressions lack direct RCTs. Those phases are coaching practice, marked as extrapolation."
+        "If your max test comes back zero, you follow a 12-step path in three phases of four workouts each, at three sessions per week.",
+        "Steps 1 to 4: scapular pulls, three sets of eight, plus hangs, three sets starting at 20 seconds with five seconds added each step. Steps 5 to 8: negative pull-ups, three sets with a three to five second lowering, plus assisted pull-ups, three sets of six. Steps 9 to 12: negatives, three sets of six, plus assisted pull-ups, three sets of eight. Then you retest and enter L1 if you can manage at least one rep.",
+        "Eccentric training has the strongest evidence for building strength when your concentric max is limited [25][26]. Eccentric-only work beats concentric-only work for eccentric strength, but concentric strength needs concentric practice too [27]. In one 12-week trial, a program with controlled eccentric tempo raised the pull-up max from 2.1 to 7.8 [28]. Scapular pulls and hang progressions have no direct RCTs. Those phases come from coaching practice and are marked as extrapolation."
       ]
     },
     "skips": {
-      "title": "Missed workouts and return after a break",
+      "title": "Missed workouts and returning after a break",
       "body": [
-        "Skipping a scheduled day does not advance or penalize your step. The missed workout stays available. Later dates shift forward by the gap while keeping the same spacing between sessions.",
-        "Strength is maintained for up to about three weeks without training, then decays faster [48]. Adolescent athletes showed no loss after three weeks off [51]. A break of two weeks or less: resume the same step. Longer breaks: take a fresh max test or accept an automatic anchor cut.",
-        "Flexible scheduling supports long-term exercise habits better than rigid time windows in a large field experiment [49]. Guilt after a missed session correlates with worse outcomes in relapse-prevention research [50]. The calendar marks skipped days neutrally, not in red."
+        "Skipping a scheduled day neither advances nor penalizes your step. The missed workout stays available, and later dates shift forward by the gap while keeping the same spacing between sessions.",
+        "Strength is maintained for up to about three weeks without training, then decay speeds up [29]. Adolescent athletes lost nothing after three weeks off [30]. A break of two weeks or less: resume the same step. A longer break: take a fresh max test or accept an automatic anchor cut.",
+        "In a large field experiment, flexible scheduling supported long-term exercise habits better than rigid time windows [31]. In relapse-prevention research, guilt after a missed session is linked to worse outcomes [32]. That is why the calendar marks skipped days neutrally, not in red."
       ]
     },
     "rejected": {
       "title": "Patterns we rejected",
       "body": [
-        "Daily high-frequency training without rest days conflicts with recovery data. Strength typically returns within two days, which implies spacing hard sessions at least 48 hours apart [14].",
-        "Very high weekly volumes with no deload or performance gate risk overuse and ignore dose-response ceilings [16][17]. Rest-pause protocols have RCT support on bench press and curls, not on pull-ups [6]. With fixed bodyweight load, the main rest-pause benefit (more reps at the same external load) matters less.",
-        "We do not use an RPE or reps-in-reserve scale in the UI. Novices mis-estimate effort by more than a rep on average [30]. The app uses an objective pass or fail gate instead."
+        "Daily high-frequency training without rest days conflicts with the recovery data. Strength typically returns within two days, so hard sessions should be at least 48 hours apart [11].",
+        "Very high weekly volumes without a deload or a performance gate run into the dose-response ceiling and raise the risk of overuse [1][2]. Rest-pause protocols have RCT support on bench press and curls, but not on pull-ups [33]. With a fixed bodyweight load, the main rest-pause benefit, more reps at the same external load, matters less.",
+        "The interface has no RPE or reps-in-reserve scale. Novices misjudge their reserve by more than one rep on average [34]. The app uses an objective pass or fail gate instead."
       ]
     },
     "limitations": {
       "title": "Honest limits",
       "body": [
-        "No RCT has tested this exact progression scheme in pull-ups. Most evidence is transferred from other exercises or muscle groups.",
-        "The four-plus-one max set structure, Path 0 hang and scapular progressions, and skip-reschedule policy are project extrapolations, not replicated trial findings.",
-        "Literature disagrees on some details. Training frequency at matched volume [7][13], autoregulation versus fixed loading [28][29], and long versus short rest for hypertrophy [25][27] all have conflicting papers. We picked conservative defaults aimed at rep-max gains and note the disputes where they matter."
+        "No RCT has tested this exact progression scheme in pull-ups. Most of the supporting evidence is transferred from other exercises or muscle groups.",
+        "The four-plus-one max-set structure, the hang and scapular phases of Path 0, and the skip-reschedule policy are project extrapolations, not replicated trial findings.",
+        "The literature disagrees on some details. Frequency at matched volume [9][35], autoregulation versus fixed loading [5][6], and long versus short rest for hypertrophy [23][24] all have conflicting papers. We picked conservative defaults aimed at rep-max gains and noted the disputes where they matter."
       ]
     }
   },
@@ -116,19 +117,19 @@
     "items": [
       {
         "name": "Levels from test result M",
-        "formula": "M=0 → Path 0; 1–4 → L1; 5–9 → L2; 10–19 → L3; 20+ → L4",
+        "formula": "M=0 → Path 0; 1-4 → L1; 5-9 → L2; 10-19 → L3; 20+ → L4",
         "example": "M=7 → L2 Base",
         "note": "Labels only; steps come from M* and k."
       },
       {
-        "name": "Working sets (sets 1–4)",
+        "name": "Working sets (sets 1-4)",
         "formula": "ceil(0.7·M*), ceil(0.6·M*), ceil(0.6·M*), ceil(0.5·M*), minimum 1",
         "example": "M*=7 → 5,5,5,4 | M*=15 → 11,9,9,8 | M*=25 → 18,15,15,13",
-        "note": "Submaximal ladder [1][36]."
+        "note": "Submaximal ladder [15][3]."
       },
       {
         "name": "Final set minimum N_k",
-        "formula": "N_k = min(ceil(0.6·M*) + k − 1, M* + 1), k = 1…6",
+        "formula": "N_k = min(ceil(0.6·M*) + k - 1, M* + 1), k = 1…6",
         "example": "M*=7: N_1…N_6 = 5,6,7,8,8,8 (cap 8)",
         "note": "Rises +1 per step; cap at M*+1."
       },
@@ -136,25 +137,25 @@
         "name": "Deload after two fails",
         "formula": "M* := floor(0.9·M*), minimum 1",
         "example": "M*=7 → 6; M*=3 → 2",
-        "note": "Autoregulation [28][29]; deload timing [32]."
+        "note": "Autoregulation [5][6]; deload timing [7]."
       },
       {
         "name": "End of cycle",
-        "formula": "M*' = max(best final set in cycle, M* − 1)",
+        "formula": "M*' = max(best final set in cycle, M* - 1)",
         "example": "Best final = 8, M*=7 → M*' = 8",
         "note": "Performance-based anchor update."
       },
       {
         "name": "Path 0 phases",
-        "formula": "Steps 1–4: scap pulls + hangs | 5–8: negatives + assist | 9–12: heavier negatives + assist",
+        "formula": "Steps 1-4: scap pulls + hangs | 5-8: negatives + assist | 9-12: heavier negatives + assist",
         "example": "Hang duration +5 s per step in phase 1",
-        "note": "Eccentric evidence [43][44][46]; phases 1 scap/hang extrapolated."
+        "note": "Eccentric evidence [25][26][27]; phase 1 scap and hang extrapolated."
       },
       {
         "name": "Cycle length and retest",
         "formula": "6 steps × 3 sessions/week ≈ 2 weeks per cycle; retest every 2 cycles ≈ 4 weeks",
-        "example": "Formal max test resets M*; retests do not inflate gains [34].",
-        "note": "Frequency [7][9]; recovery gap 48 h [14]."
+        "example": "A formal max test resets M*; retests do not inflate gains [8].",
+        "note": "Frequency [9][10]; recovery gap 48 h [11]."
       }
     ]
   },
@@ -165,40 +166,40 @@
   },
   "sourcesTitle": "Open-access sources",
   "sources": [
-    { "id": 1, "title": "Sánchez-Moreno et al. — velocity loss in pull-up training", "journal": "J Strength Cond Res", "year": "2020", "url": "https://pubmed.ncbi.nlm.nih.gov/32213783/", "badge": "confirmed" },
-    { "id": 2, "title": "Zhang & Fan — eccentric tempo and pull-up performance", "journal": "Front Sports Act Living", "year": "2026", "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2026.1800713/full", "badge": "single" },
-    { "id": 6, "title": "Prestes et al. — rest-pause vs traditional sets", "journal": "J Strength Cond Res", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/28617715/", "badge": "confirmed" },
-    { "id": 7, "title": "Schoenfeld et al. — training frequency and hypertrophy", "journal": "Sports Med", "year": "2016", "url": "https://link.springer.com/article/10.1007/s40279-016-0543-8", "badge": "confirmed" },
-    { "id": 9, "title": "Ralston et al. — upper-body training frequency", "journal": "Sports Med Open", "year": "2018", "url": "https://link.springer.com/article/10.1186/s40798-018-0149-9", "badge": "confirmed" },
-    { "id": 12, "title": "ACSM — 2026 resistance training guidelines update", "journal": "acsm.org", "year": "2026", "url": "https://www.acsm.org/resistance-training-guidelines-update-2026/", "badge": "confirmed" },
-    { "id": 14, "title": "Peake et al. — recovery after exercise", "journal": "J Appl Physiol", "year": "2017", "url": "https://journals.physiology.org/doi/10.1152/japplphysiol.00971.2016", "badge": "confirmed" },
-    { "id": 16, "title": "Ralston et al. — weekly set volume and strength", "journal": "Sports Med", "year": "2017", "url": "https://link.springer.com/article/10.1007/s40279-017-0762-7", "badge": "confirmed" },
-    { "id": 17, "title": "Baz-Valle et al. — volume and hypertrophy", "journal": "J Hum Kinet", "year": "2022", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8884877/", "badge": "confirmed" },
-    { "id": 18, "title": "Pelland et al. — resistance training dose response", "journal": "Sports Med", "year": "2025", "url": "https://link.springer.com/article/10.1007/s40279-025-02344-w", "badge": "confirmed" },
-    { "id": 19, "title": "Radaelli et al. — dose response in lat pulldown", "journal": "J Strength Cond Res", "year": "2015", "url": "https://pubmed.ncbi.nlm.nih.gov/25546444/", "badge": "confirmed" },
-    { "id": 21, "title": "de Salles et al. — rest interval between sets", "journal": "Sports Med", "year": "2009", "url": "https://pubmed.ncbi.nlm.nih.gov/19691365/", "badge": "confirmed" },
-    { "id": 23, "title": "Grgic et al. — rest interval and strength", "journal": "Sports Med", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/28933024/", "badge": "confirmed" },
-    { "id": 25, "title": "Singer et al. — rest interval and hypertrophy meta-analysis", "journal": "Front Sports Act Living", "year": "2024", "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2024.1429789/full", "badge": "confirmed" },
-    { "id": 26, "title": "Rahimi — rest interval and squat volume", "journal": "J Sports Sci Med", "year": "2005", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3899651/", "badge": "confirmed" },
-    { "id": 27, "title": "Davidson & Barillas — rest interval preprint", "journal": "medRxiv", "year": "2025", "url": "https://www.medrxiv.org/content/10.1101/2025.09.22.25336351v2", "badge": "single" },
-    { "id": 28, "title": "Zhang et al. — autoregulation vs fixed loading", "journal": "Front Physiol", "year": "2021", "url": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2021.651112/full", "badge": "confirmed" },
-    { "id": 29, "title": "Hickmott et al. — load autoregulation meta-analysis", "journal": "Sports Med Open", "year": "2022", "url": "https://link.springer.com/article/10.1186/s40798-021-00404-9", "badge": "confirmed" },
-    { "id": 30, "title": "Helms et al. — RIR rating accuracy", "journal": "Strength Cond J", "year": "2016", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/", "badge": "confirmed" },
-    { "id": 32, "title": "Rogerson et al. — deload practices in strength sports", "journal": "Sports Med Open", "year": "2024", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10948666/", "badge": "confirmed" },
-    { "id": 34, "title": "Micke et al. — repeated 1RM testing effects", "journal": "J Sports Sci Med", "year": "2025", "url": "https://pubmed.ncbi.nlm.nih.gov/40469860/", "badge": "confirmed" },
-    { "id": 36, "title": "Robinson et al. — proximity to failure meta-analysis", "journal": "Sports Med", "year": "2024", "url": "https://doi.org/10.1007/s40279-024-02069-2", "badge": "confirmed" },
-    { "id": 37, "title": "Grgic et al. — failure vs non-failure training", "journal": "J Sport Health Sci", "year": "2021", "url": "https://doi.org/10.1016/j.jshs.2021.01.007", "badge": "confirmed" },
-    { "id": 38, "title": "Vieira et al. — failure vs non-failure strength", "journal": "J Strength Cond Res", "year": "2021", "url": "https://doi.org/10.1519/JSC.0000000000003936", "badge": "confirmed" },
-    { "id": 39, "title": "Refalo et al. — proximity to failure and hypertrophy", "journal": "Sports Med", "year": "2023", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9935748/", "badge": "confirmed" },
-    { "id": 41, "title": "Hermann et al. — failure vs RIR muscular endurance", "journal": "Med Sci Sports Exerc", "year": "2025", "url": "https://doi.org/10.1249/MSS.0000000000003728", "badge": "confirmed" },
-    { "id": 42, "title": "Refalo et al. — failure and neuromuscular fatigue", "journal": "Sports Med Open", "year": "2023", "url": "https://doi.org/10.1186/s40798-023-00554-y", "badge": "confirmed" },
-    { "id": 43, "title": "Roig et al. — eccentric vs concentric training meta-analysis", "journal": "Br J Sports Med", "year": "2009", "url": "https://pubmed.ncbi.nlm.nih.gov/18981046/", "badge": "confirmed" },
-    { "id": 44, "title": "Douglas et al. — chronic eccentric adaptations review", "journal": "Sports Med", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/27647157/", "badge": "confirmed" },
-    { "id": 46, "title": "Spudić & Nosaka — eccentric vs concentric isokinetic training", "journal": "Sports Med Open", "year": "2025", "url": "https://link.springer.com/article/10.1186/s40798-025-00887-w", "badge": "confirmed" },
-    { "id": 48, "title": "McMaster et al. — strength retention during detraining", "journal": "Sports Med", "year": "2013", "url": "https://doi.org/10.1007/s40279-013-0031-3", "badge": "confirmed" },
-    { "id": 49, "title": "Beshears et al. — flexible vs rigid exercise scheduling", "journal": "Management Science", "year": "2021", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8734590/", "badge": "extrapolation" },
-    { "id": 50, "title": "Stetson et al. — guilt and exercise relapse", "journal": "Ann Behav Med", "year": "2005", "url": "https://link.springer.com/article/10.1207/s15324796abm3001_4", "badge": "extrapolation" },
-    { "id": 51, "title": "Gavanda et al. — three weeks detraining in adolescents", "journal": "Int J Exerc Sci", "year": "2020", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7241623/", "badge": "confirmed" },
-    { "id": 13, "title": "Grgic et al. — weekly frequency and hypertrophy", "journal": "J Sci Med Sport", "year": "2019", "url": "https://www.jsams.org/article/S1440-2440(18)30862-4/abstract", "badge": "confirmed" }
+    { "id": 1, "title": "Ralston et al. Weekly set volume and strength", "journal": "Sports Med", "year": "2017", "url": "https://link.springer.com/article/10.1007/s40279-017-0762-7", "badge": "confirmed" },
+    { "id": 2, "title": "Baz-Valle et al. Training volume and hypertrophy", "journal": "J Hum Kinet", "year": "2022", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8884877/", "badge": "confirmed" },
+    { "id": 3, "title": "Robinson et al. Proximity to failure, strength, and hypertrophy", "journal": "Sports Med", "year": "2024", "url": "https://doi.org/10.1007/s40279-024-02069-2", "badge": "confirmed" },
+    { "id": 4, "title": "Grgic et al. Training to failure versus non-failure", "journal": "J Sport Health Sci", "year": "2021", "url": "https://doi.org/10.1016/j.jshs.2021.01.007", "badge": "confirmed" },
+    { "id": 5, "title": "Zhang et al. Autoregulation versus fixed loading", "journal": "Front Physiol", "year": "2021", "url": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2021.651112/full", "badge": "confirmed" },
+    { "id": 6, "title": "Hickmott et al. Load autoregulation meta-analysis", "journal": "Sports Med Open", "year": "2022", "url": "https://link.springer.com/article/10.1186/s40798-021-00404-9", "badge": "confirmed" },
+    { "id": 7, "title": "Rogerson et al. Deloading practices in strength sports", "journal": "Sports Med Open", "year": "2024", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10948666/", "badge": "confirmed" },
+    { "id": 8, "title": "Micke et al. Repeated 1RM testing", "journal": "J Sports Sci Med", "year": "2025", "url": "https://pubmed.ncbi.nlm.nih.gov/40469860/", "badge": "confirmed" },
+    { "id": 9, "title": "Schoenfeld et al. Training frequency and hypertrophy", "journal": "Sports Med", "year": "2016", "url": "https://link.springer.com/article/10.1007/s40279-016-0543-8", "badge": "confirmed" },
+    { "id": 10, "title": "Ralston et al. Training frequency for upper-body strength", "journal": "Sports Med Open", "year": "2018", "url": "https://link.springer.com/article/10.1186/s40798-018-0149-9", "badge": "confirmed" },
+    { "id": 11, "title": "Peake et al. Recovery after exercise", "journal": "J Appl Physiol", "year": "2017", "url": "https://journals.physiology.org/doi/10.1152/japplphysiol.00971.2016", "badge": "confirmed" },
+    { "id": 12, "title": "ACSM 2026 resistance training guidelines update", "journal": "acsm.org", "year": "2026", "url": "https://www.acsm.org/resistance-training-guidelines-update-2026/", "badge": "confirmed" },
+    { "id": 13, "title": "Radaelli et al. Dose response in the lat pulldown", "journal": "J Strength Cond Res", "year": "2015", "url": "https://pubmed.ncbi.nlm.nih.gov/25546444/", "badge": "confirmed" },
+    { "id": 14, "title": "Pelland et al. The resistance training dose response", "journal": "Sports Med", "year": "2025", "url": "https://link.springer.com/article/10.1007/s40279-025-02344-w", "badge": "confirmed" },
+    { "id": 15, "title": "Sánchez-Moreno et al. Velocity loss in pull-up training", "journal": "J Strength Cond Res", "year": "2020", "url": "https://pubmed.ncbi.nlm.nih.gov/32213783/", "badge": "confirmed" },
+    { "id": 16, "title": "Refalo et al. Training to failure and neuromuscular fatigue", "journal": "Sports Med Open", "year": "2023", "url": "https://doi.org/10.1186/s40798-023-00554-y", "badge": "confirmed" },
+    { "id": 17, "title": "Refalo et al. Proximity to failure and hypertrophy", "journal": "Sports Med", "year": "2023", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9935748/", "badge": "confirmed" },
+    { "id": 18, "title": "Vieira et al. Training to failure versus not to failure", "journal": "J Strength Cond Res", "year": "2021", "url": "https://doi.org/10.1519/JSC.0000000000003936", "badge": "confirmed" },
+    { "id": 19, "title": "Hermann et al. Failure versus reps in reserve for endurance", "journal": "Med Sci Sports Exerc", "year": "2025", "url": "https://doi.org/10.1249/MSS.0000000000003728", "badge": "confirmed" },
+    { "id": 20, "title": "de Salles et al. Rest intervals between sets", "journal": "Sports Med", "year": "2009", "url": "https://pubmed.ncbi.nlm.nih.gov/19691365/", "badge": "confirmed" },
+    { "id": 21, "title": "Grgic et al. Rest intervals and strength", "journal": "Sports Med", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/28933024/", "badge": "confirmed" },
+    { "id": 22, "title": "Rahimi. Rest intervals and squat volume", "journal": "J Sports Sci Med", "year": "2005", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3899651/", "badge": "confirmed" },
+    { "id": 23, "title": "Singer et al. Rest intervals and hypertrophy: a Bayesian meta-analysis", "journal": "Front Sports Act Living", "year": "2024", "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2024.1429789/full", "badge": "confirmed" },
+    { "id": 24, "title": "Davidson & Barillas. Short versus long rest, a preprint", "journal": "medRxiv", "year": "2025", "url": "https://www.medrxiv.org/content/10.1101/2025.09.22.25336351v2", "badge": "single" },
+    { "id": 25, "title": "Roig et al. Eccentric versus concentric training: a meta-analysis", "journal": "Br J Sports Med", "year": "2009", "url": "https://pubmed.ncbi.nlm.nih.gov/18981046/", "badge": "confirmed" },
+    { "id": 26, "title": "Douglas et al. Chronic adaptations to eccentric training", "journal": "Sports Med", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/27647157/", "badge": "confirmed" },
+    { "id": 27, "title": "Spudić & Nosaka. Eccentric-only versus concentric-only training", "journal": "Sports Med Open", "year": "2025", "url": "https://link.springer.com/article/10.1186/s40798-025-00887-w", "badge": "confirmed" },
+    { "id": 28, "title": "Zhang & Fan. Eccentric tempo and pull-up performance", "journal": "Front Sports Act Living", "year": "2026", "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2026.1800713/full", "badge": "single" },
+    { "id": 29, "title": "McMaster et al. Strength retention during detraining", "journal": "Sports Med", "year": "2013", "url": "https://doi.org/10.1007/s40279-013-0031-3", "badge": "confirmed" },
+    { "id": 30, "title": "Gavanda et al. Three weeks of detraining in adolescents", "journal": "Int J Exerc Sci", "year": "2020", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7241623/", "badge": "confirmed" },
+    { "id": 31, "title": "Beshears et al. Flexible versus rigid exercise scheduling", "journal": "Management Science", "year": "2021", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8734590/", "badge": "extrapolation" },
+    { "id": 32, "title": "Stetson et al. Guilt and exercise relapse", "journal": "Ann Behav Med", "year": "2005", "url": "https://link.springer.com/article/10.1207/s15324796abm3001_4", "badge": "extrapolation" },
+    { "id": 33, "title": "Prestes et al. Rest-pause versus traditional sets", "journal": "J Strength Cond Res", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/28617715/", "badge": "confirmed" },
+    { "id": 34, "title": "Helms et al. Accuracy of reps-in-reserve ratings", "journal": "Strength Cond J", "year": "2016", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/", "badge": "confirmed" },
+    { "id": 35, "title": "Grgic et al. Weekly frequency and hypertrophy", "journal": "J Sci Med Sport", "year": "2019", "url": "https://www.jsams.org/article/S1440-2440(18)30862-4/abstract", "badge": "confirmed" }
   ]
 }
