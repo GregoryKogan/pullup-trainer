@@ -8,12 +8,20 @@ import { recommendStart } from '@/domain/levels'
 import { computeTotals } from '@/domain/progression'
 import { setLocale } from '@/i18n'
 import { todayLocal, toIsoOffset } from '@/utils/dates'
-import { blockRepFractionKey, clampRepCount, isValidRepCount, REP_COUNT_MAX, syncRepInput } from '@/utils/reps-input'
+import {
+  blockRepFractionKey,
+  clampTestRepCount,
+  isValidTestRepCount,
+  REP_COUNT_MAX,
+  REP_COUNT_MIN,
+  syncTestRepInput,
+} from '@/utils/reps-input'
 import AppIcon from '@/components/icons/AppIcon.vue'
 
 const step = ref<'intro' | 'test' | 'recommend'>('intro')
-const reps = ref(0)
+const reps = ref(1)
 const repsError = ref('')
+const showZeroMessage = ref(false)
 const recommendation = computed(() => recommendStart(reps.value))
 
 const stepNumber = computed(() => {
@@ -31,7 +39,7 @@ const recommendText = computed(() => {
   return t(rec.explanationKey, params)
 })
 
-const repsAtMin = computed(() => reps.value <= 0)
+const repsAtMin = computed(() => reps.value <= REP_COUNT_MIN)
 const repsAtMax = computed(() => reps.value >= REP_COUNT_MAX)
 
 const router = useRouter()
@@ -49,7 +57,13 @@ function goBack() {
 }
 
 function submitTest() {
-  if (!isValidRepCount(reps.value)) {
+  showZeroMessage.value = false
+  if (reps.value === 0) {
+    repsError.value = t('onboarding.zeroNotSupported')
+    showZeroMessage.value = true
+    return
+  }
+  if (!isValidTestRepCount(reps.value)) {
     repsError.value = t('onboarding.repsInvalid')
     return
   }
@@ -58,13 +72,26 @@ function submitTest() {
 }
 
 function onRepsInput(event: Event) {
-  syncRepInput(event, (value) => {
+  showZeroMessage.value = false
+  syncTestRepInput(event, (value) => {
     reps.value = value
+    if (value === 0) {
+      repsError.value = t('onboarding.zeroNotSupported')
+      showZeroMessage.value = true
+    } else {
+      repsError.value = ''
+    }
   })
 }
 
 function adjustReps(delta: number) {
-  reps.value = clampRepCount(reps.value + delta)
+  reps.value = clampTestRepCount(reps.value + delta)
+  repsError.value = ''
+  showZeroMessage.value = false
+}
+
+function openZeroMessage() {
+  showZeroMessage.value = true
   repsError.value = ''
 }
 
@@ -128,7 +155,7 @@ async function accept() {
             id="onboarding-reps"
             v-model.number="reps"
             type="number"
-            min="0"
+            min="1"
             :max="REP_COUNT_MAX"
             step="1"
             inputmode="numeric"
@@ -150,6 +177,13 @@ async function accept() {
       </label>
       <p v-if="repsError" class="sub error">{{ repsError }}</p>
       <p class="sub hint">{{ t('onboarding.testHint') }}</p>
+      <button type="button" class="text-link zero-link" @click="openZeroMessage">
+        {{ t('onboarding.cannotDoPullupsLink') }}
+      </button>
+      <div v-if="showZeroMessage" class="panel zero-panel">
+        <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
+        <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
+      </div>
       <div class="btnrow">
         <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
         <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
@@ -286,6 +320,24 @@ async function accept() {
 }
 .hint {
   margin: 0 0 12px;
+}
+.zero-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.zero-panel {
+  margin-bottom: 14px;
+  background: var(--bg2);
 }
 .panel > .btn + .btnrow {
   margin-top: 14px;

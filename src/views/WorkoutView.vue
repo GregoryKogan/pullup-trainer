@@ -10,10 +10,8 @@ import { useWorkoutSessionStore } from '@/stores/workout-session'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
 import { session } from '@/domain/session'
-import { path0Session } from '@/domain/path0'
 import {
   applyBuiltinLResult,
-  applyPath0Result,
   computeTotals,
   evaluateWorkout,
 } from '@/domain/progression'
@@ -26,10 +24,7 @@ import {
   focusSubtitleKey,
   setTypeLabelKey,
 } from '@/utils/workout-display'
-import {
-  REST_MAX_SECONDS,
-  REST_P0_MAX_SECONDS,
-} from '@/constants/app'
+import { REST_MAX_SECONDS } from '@/constants/app'
 import type { PlannedSet, ActiveProgress } from '@/domain/types'
 
 const route = useRoute()
@@ -49,15 +44,13 @@ const elapsed = ref(0)
 let elapsedTimer: ReturnType<typeof setInterval> | null = null
 const startedAt = ref(new Date())
 
-const isPathP0 = computed(() => progressStore.progress?.state.path === 'P0')
-
 const restDuration = computed(() => {
   const base = settingsStore.settings?.restDurationSeconds ?? 180
-  return clampRestSeconds(base, isPathP0.value)
+  return clampRestSeconds(base)
 })
 
 const restMin = 0
-const restMax = computed(() => (isPathP0.value ? REST_P0_MAX_SECONDS : REST_MAX_SECONDS))
+const restMax = REST_MAX_SECONDS
 
 const restTimer = useRestTimer(async () => {
   const s = settingsStore.settings
@@ -69,14 +62,6 @@ const restTimer = useRestTimer(async () => {
   )
   workoutStore.restRunning = false
 })
-
-watch(
-  restMax,
-  (max) => {
-    restTimer.setBounds(restMin, max)
-  },
-  { immediate: true },
-)
 
 const planned = computed(() => workoutStore.active?.planned ?? [])
 const current = computed(() => workoutStore.active?.currentIndex ?? 0)
@@ -90,10 +75,7 @@ const headerA11yLabel = computed(() => {
   const p = progressStore.progress
   const setLabel = setProgressLabel.value
   if (!p) return setLabel
-  if (p.state.path === 'L') {
-    return `${t('home.stepProgress', { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 })} · ${setLabel}`
-  }
-  return `${t('home.path0Step', { step: p.state.path0Step })} · ${setLabel}`
+  return `${t('home.stepProgress', { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 })} · ${setLabel}`
 })
 
 const fewerLabelKey = computed(() => {
@@ -129,10 +111,6 @@ function resolvePlanned(): PlannedSet[] {
   const p = progressStore.progress
   if (!p) return []
   const slot = p.schedule[resolveSlotIndex()]
-  if (p.state.path === 'P0') {
-    const step = slot?.stepRef ?? p.state.path0Step
-    return path0Session(step).sets
-  }
   const k = slot?.stepRef ?? p.state.stepInCycle
   return session(p.state.anchor, k).sets
 }
@@ -173,6 +151,7 @@ async function ensureSession() {
 }
 
 onMounted(async () => {
+  restTimer.setBounds(restMin, restMax)
   await requestNotificationPermission()
   await ensureSession()
   startedAt.value = new Date()
@@ -234,7 +213,7 @@ async function openFewer() {
 }
 
 async function applyRestPreset(seconds: number) {
-  const clamped = clampRestSeconds(seconds, isPathP0.value)
+  const clamped = clampRestSeconds(seconds)
   await settingsStore.update({ restDurationSeconds: clamped })
   restTimer.start(clamped)
   workoutStore.restRunning = true
@@ -253,20 +232,13 @@ async function finishWorkout() {
   )
   const now = new Date()
 
-  let context
-  let nextStep: number | undefined
-  if (p.state.path === 'L') {
-    context = {
-      level: p.state.level,
-      anchor: p.state.anchor,
-      cycleIndex: p.state.cycleIndex,
-      stepInCycle: p.state.stepInCycle,
-    }
-    nextStep = result === 'success' ? p.state.stepInCycle + 1 : p.state.stepInCycle
-  } else {
-    context = { level: 'P0' as const, path0Step: p.state.path0Step }
-    nextStep = result === 'success' ? p.state.path0Step + 1 : p.state.path0Step
+  const context = {
+    level: p.state.level,
+    anchor: p.state.anchor,
+    cycleIndex: p.state.cycleIndex,
+    stepInCycle: p.state.stepInCycle,
   }
+  let nextStep = result === 'success' ? p.state.stepInCycle + 1 : p.state.stepInCycle
 
   await progressStore.saveRecord({
     date: active.date,
@@ -283,40 +255,21 @@ async function finishWorkout() {
   })
 
   const slotIndex = findScheduleSlotIndex(p.schedule, active.date)
-  let updated: ActiveProgress
-  if (p.state.path === 'L') {
-    const newState = applyBuiltinLResult(p.state, active.completed, active.planned)
-    updated = {
-      ...p,
-      state: newState,
-      lastWorkoutDate: active.date,
-      schedule: advanceScheduleAfterWorkout(
-        p.schedule,
-        slotIndex,
-        result === 'success',
-        newState.stepInCycle,
-        p.frequencyDays,
-        p.weekdays,
-      ),
-    }
-    nextStep = newState.stepInCycle
-  } else {
-    const newState = applyPath0Result(p.state, active.completed, active.planned)
-    updated = {
-      ...p,
-      state: newState,
-      lastWorkoutDate: active.date,
-      schedule: advanceScheduleAfterWorkout(
-        p.schedule,
-        slotIndex,
-        result === 'success',
-        newState.path0Step,
-        p.frequencyDays,
-        p.weekdays,
-      ),
-    }
-    nextStep = newState.path0Step
+  const newState = applyBuiltinLResult(p.state, active.completed, active.planned)
+  const updated: ActiveProgress = {
+    ...p,
+    state: newState,
+    lastWorkoutDate: active.date,
+    schedule: advanceScheduleAfterWorkout(
+      p.schedule,
+      slotIndex,
+      result === 'success',
+      newState.stepInCycle,
+      p.frequencyDays,
+      p.weekdays,
+    ),
   }
+  nextStep = newState.stepInCycle
 
   await progressStore.updateProgress(updated)
   workoutStore.setLastResult({

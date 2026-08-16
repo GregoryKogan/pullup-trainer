@@ -8,7 +8,7 @@ import { detectReturnPolicy } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatDisplayDate, startOfWeek, todayLocal } from '@/utils/dates'
-import { blockRepFractionKey, isValidRepCount, syncRepInput } from '@/utils/reps-input'
+import { blockRepFractionKey, isValidTestRepCount, syncTestRepInput, REP_COUNT_MAX } from '@/utils/reps-input'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
 
@@ -18,8 +18,9 @@ const progressStore = useProgressStore()
 
 const showRetest = ref(false)
 const showStartConfirm = ref(false)
-const retestReps = ref(0)
+const retestReps = ref(1)
 const retestError = ref('')
+const showRetestZeroMessage = ref(false)
 const today = todayLocal()
 
 const nextSlot = computed(() => progressStore.getNextSlot())
@@ -29,14 +30,11 @@ const isWorkoutToday = computed(() => nextSlot.value?.date === today)
 const setsPreview = computed(() => {
   const p = progressStore.progress
   if (!p || !nextSlot.value) return ''
-  if (p.state.path === 'L') {
-    const s = session(p.state.anchor, nextSlot.value.stepRef)
-    const parts = s.sets.map((x) =>
-      x.type === 'max' ? t('home.planMax') : String(x.planned),
-    )
-    return t('home.planPreview', { sets: parts.join(' + ') })
-  }
-  return t('home.path0Step', { step: nextSlot.value.stepRef })
+  const s = session(p.state.anchor, nextSlot.value.stepRef)
+  const parts = s.sets.map((x) =>
+    x.type === 'max' ? t('home.planMax') : String(x.planned),
+  )
+  return t('home.planPreview', { sets: parts.join(' + ') })
 })
 
 const maxReps = computed(() => {
@@ -59,21 +57,19 @@ const weekVolume = computed(() => {
 
 const cycleInfo = computed(() => {
   const p = progressStore.progress
-  if (!p || p.state.path !== 'L') return null
+  if (!p) return null
   return { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 }
 })
 
 const progressPercent = computed(() => {
   const p = progressStore.progress
   if (!p) return 0
-  if (p.state.path === 'P0') return Math.round((p.state.path0Step / 12) * 100)
   return Math.round((p.state.stepInCycle / 6) * 100)
 })
 
 const levelInfo = computed(() => {
   const p = progressStore.progress
   if (!p) return null
-  if (p.state.path === 'P0') return t('home.path0Step', { step: p.state.path0Step })
   return t('home.levelAnchor', {
     level: t(`levels.${p.state.level}`),
     anchor: p.state.anchor,
@@ -90,10 +86,7 @@ const needsRetestPrompt = computed(() => {
   const p = progressStore.progress
   if (!p) return false
   if (detectReturnPolicy(p.lastWorkoutDate, today) === 'retest') return true
-  if (p.state.path === 'L') {
-    return needsRetest(p.state.lastRetestDate, p.state.cycleIndex, today, p.lastWorkoutDate)
-  }
-  return false
+  return needsRetest(p.state.lastRetestDate, p.state.cycleIndex, today, p.lastWorkoutDate)
 })
 
 function startWorkout(date?: string) {
@@ -114,7 +107,13 @@ function repeatMissed() {
 }
 
 async function submitRetest() {
-  if (!isValidRepCount(retestReps.value)) {
+  showRetestZeroMessage.value = false
+  if (retestReps.value === 0) {
+    retestError.value = t('onboarding.zeroNotSupported')
+    showRetestZeroMessage.value = true
+    return
+  }
+  if (!isValidTestRepCount(retestReps.value)) {
     retestError.value = t('onboarding.repsInvalid')
     return
   }
@@ -124,8 +123,15 @@ async function submitRetest() {
 }
 
 function onRetestRepsInput(event: Event) {
-  syncRepInput(event, (value) => {
+  showRetestZeroMessage.value = false
+  syncTestRepInput(event, (value) => {
     retestReps.value = value
+    if (value === 0) {
+      retestError.value = t('onboarding.zeroNotSupported')
+      showRetestZeroMessage.value = true
+    } else {
+      retestError.value = ''
+    }
   })
 }
 
@@ -174,8 +180,8 @@ async function reduceAnchor() {
           id="retest-reps"
           v-model.number="retestReps"
           type="number"
-          min="0"
-          max="100"
+          min="1"
+          :max="REP_COUNT_MAX"
           step="1"
           inputmode="numeric"
           :placeholder="t('onboarding.repsPlaceholder')"
@@ -185,6 +191,10 @@ async function reduceAnchor() {
       </label>
       <p v-if="retestError" class="sub error">{{ retestError }}</p>
       <p class="sub hint">{{ t('onboarding.testHint') }}</p>
+      <div v-if="showRetestZeroMessage" class="panel zero-panel">
+        <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
+        <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
+      </div>
       <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
       <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
     </section>

@@ -18,8 +18,8 @@
     "levels": {
       "title": "Entry test and levels",
       "body": [
-        "On your first session you do strict pull-ups to failure. The count is M. If M is zero, you enter Path 0 with eccentric and assisted work. Otherwise the app stores M as your anchor M* and assigns a level.",
-        "Levels are display labels for the statistics screen. They never change the math. M = 0 maps to Path 0, M from 1 to 4 to L1 Beginner, M from 5 to 9 to L2 Base, M from 10 to 19 to L3 Intermediate, and M of 20 or more to L4 Advanced.",
+        "On your first session you do strict pull-ups to failure. The count is M. The app requires at least one rep (M ≥ 1). It stores M as your anchor M* and assigns a level.",
+        "Levels are display labels for the statistics screen. They never change the math. M from 1 to 4 maps to L1 Beginner, M from 5 to 9 to L2 Base, M from 10 to 19 to L3 Intermediate, and M of 20 or more to L4 Advanced.",
         "The label only helps you read the progress charts. Set targets always come from the generator rule and your current anchor, never from the level name."
       ]
     },
@@ -76,15 +76,7 @@
       "body": [
         "The default rest between sets is three minutes. Presets offer 90 seconds and five minutes, and you can adjust in 15-second steps during a workout.",
         "For strength work at 50 to 90% of max, three to five minutes of rest allows more reps across multiple sets than short rest [20]. Trained lifters need more than two minutes to maximize strength gains [21]. In one squat study, one-minute rests cut reps from 7.7 to 2.2 by set four, while five-minute rests held them at 7.4 to 4.7 [22].",
-        "For hypertrophy, the benefit of resting beyond 90 seconds is unclear. A 2024 Bayesian meta-analysis found no meaningful difference above 90 seconds [23]. A 2025 preprint argues that long rest does not beat short rest for hypertrophy, though it still favors long rest for strength [24]. Since our goal is rep-max performance, three minutes stays the default. Path 0 uses 90 seconds to three minutes between sets."
-      ]
-    },
-    "path0": {
-      "title": "Path 0: starting from zero pull-ups",
-      "body": [
-        "If your max test comes back zero, you follow a 12-step path in three phases of four workouts each, at three sessions per week.",
-        "Steps 1 to 4: scapular pulls, three sets of eight, plus hangs, three sets starting at 20 seconds with five seconds added each step. Steps 5 to 8: negative pull-ups, three sets with a three to five second lowering, plus assisted pull-ups, three sets of six. Steps 9 to 12: negatives, three sets of six, plus assisted pull-ups, three sets of eight. Then you retest and enter L1 if you can manage at least one rep.",
-        "Eccentric training has the strongest evidence for building strength when your concentric max is limited [25][26]. Eccentric-only work beats concentric-only work for eccentric strength, but concentric strength needs concentric practice too [27]. In one 12-week trial, a program with controlled eccentric tempo raised the pull-up max from 2.1 to 7.8 [28]. Scapular pulls and hang progressions have no direct RCTs. Those phases come from coaching practice and are marked as extrapolation."
+        "For hypertrophy, the benefit of resting beyond 90 seconds is unclear. A 2024 Bayesian meta-analysis found no meaningful difference above 90 seconds [23]. A 2025 preprint argues that long rest does not beat short rest for hypertrophy, though it still favors long rest for strength [24]. Since our goal is rep-max performance, three minutes stays the default."
       ]
     },
     "skips": {
@@ -107,7 +99,8 @@
       "title": "Honest limits",
       "body": [
         "No RCT has tested this exact progression scheme in pull-ups. Most of the supporting evidence is transferred from other exercises or muscle groups.",
-        "The four-plus-one max-set structure, the hang and scapular phases of Path 0, and the skip-reschedule policy are project extrapolations, not replicated trial findings.",
+        "The four-plus-one max-set structure and the skip-reschedule policy are project extrapolations, not replicated trial findings.",
+        "The app is for people who can do at least one strict pull-up. If you cannot pull up yet, build that first elsewhere and come back.",
         "The literature disagrees on some details. Frequency at matched volume [9][35], autoregulation versus fixed loading [5][6], and long versus short rest for hypertrophy [23][24] all have conflicting papers. We picked conservative defaults aimed at rep-max gains and noted the disputes where they matter."
       ]
     }
@@ -117,7 +110,7 @@
     "items": [
       {
         "name": "Levels from test result M",
-        "formula": "M=0 → Path 0; 1-4 → L1; 5-9 → L2; 10-19 → L3; 20+ → L4",
+        "formula": "1-4 → L1; 5-9 → L2; 10-19 → L3; 20+ → L4 (minimum M=1)",
         "example": "M=7 → L2 Base",
         "note": "Labels only; steps come from M* and k."
       },
@@ -144,12 +137,6 @@
         "formula": "M*' = max(best final set in cycle, M* - 1)",
         "example": "Best final = 8, M*=7 → M*' = 8",
         "note": "Performance-based anchor update."
-      },
-      {
-        "name": "Path 0 phases",
-        "formula": "Steps 1-4: scap pulls + hangs | 5-8: negatives + assist | 9-12: heavier negatives + assist",
-        "example": "Hang duration +5 s per step in phase 1",
-        "note": "Eccentric evidence [25][26][27]; phase 1 scap and hang extrapolated."
       },
       {
         "name": "Cycle length and retest",

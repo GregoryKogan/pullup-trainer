@@ -48,7 +48,7 @@ async function changeRest(delta: number) {
   const s = settings.value
   if (!s) return
   await settingsStore.update({
-    restDurationSeconds: clampRestSeconds(s.restDurationSeconds + delta, false),
+    restDurationSeconds: clampRestSeconds(s.restDurationSeconds + delta),
   })
 }
 

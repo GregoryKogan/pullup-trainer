@@ -39,7 +39,7 @@ describe('export', () => {
   it('exports backup format', () => {
     const out = exportBackup(defaultSettings(), null, [sample], '1.0.0')
     expect(out.format).toBe('pullup-trainer.backup')
-    expect(out.schemaVersion).toBe(2)
+    expect(out.schemaVersion).toBe(3)
     expect(validateBackup(out)).toBe(true)
     expect('customPrograms' in out).toBe(false)
   })
@@ -57,7 +57,19 @@ describe('export', () => {
     ).toBeNull()
   })
 
-  it('migrateBackupProgress strips source from v1 builtin progress', () => {
+  it('migrateBackupProgress rejects P0 legacy progress', () => {
+    expect(
+      migrateBackupProgress({
+        frequencyDays: 3,
+        weekdays: ['mon', 'wed', 'fri'],
+        schedule: [{ date: '2026-08-01', stepRef: 1 }],
+        lastWorkoutDate: null,
+        state: { path: 'P0', path0Step: 1, failStreak: 0 },
+      }),
+    ).toBeNull()
+  })
+
+  it('migrateBackupProgress strips path from legacy L state', () => {
     const migrated = migrateBackupProgress({
       source: 'builtin',
       frequencyDays: 3,
@@ -65,7 +77,6 @@ describe('export', () => {
       schedule: [{ date: '2026-08-01', stepRef: 1 }],
       lastWorkoutDate: null,
       state: {
-        path: 'L',
         anchor: 7,
         level: 'L2',
         cycleIndex: 0,
@@ -99,6 +110,6 @@ describe('export', () => {
     }
     const normalized = normalizeImportedBackup(legacy)
     expect(normalized?.activeProgress).toBeNull()
-    expect(normalized?.schemaVersion).toBe(2)
+    expect(normalized?.schemaVersion).toBe(3)
   })
 })

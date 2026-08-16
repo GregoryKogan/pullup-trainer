@@ -8,7 +8,7 @@ import { toIsoOffset } from '@/utils/dates'
 
 export const HISTORY_FORMAT = 'pullup-trainer.history'
 export const BACKUP_FORMAT = 'pullup-trainer.backup'
-export const SCHEMA_VERSION = 2
+export const SCHEMA_VERSION = 3
 
 export interface HistoryExport {
   format: typeof HISTORY_FORMAT
@@ -127,15 +127,23 @@ export function migrateBackupProgress(raw: unknown): ActiveProgress | null {
   if (!raw || typeof raw !== 'object') return null
   const p = raw as Record<string, unknown>
   if (p.source === 'custom') return null
+  let progress: ActiveProgress | null = null
   if (p.source === 'builtin') {
     const rest = { ...p }
     delete rest.source
-    return rest as unknown as ActiveProgress
+    progress = rest as unknown as ActiveProgress
+  } else if ('state' in p && 'frequencyDays' in p && 'weekdays' in p && 'schedule' in p) {
+    progress = p as unknown as ActiveProgress
   }
-  if ('state' in p && 'frequencyDays' in p && 'weekdays' in p && 'schedule' in p) {
-    return p as unknown as ActiveProgress
+  if (!progress) return null
+  const state = progress.state as unknown as Record<string, unknown>
+  if (state.path === 'P0') return null
+  if ('path' in state) {
+    const rest = { ...state }
+    delete rest.path
+    progress = { ...progress, state: rest as unknown as ActiveProgress['state'] }
   }
-  return null
+  return progress
 }
 
 export function normalizeImportedBackup(data: unknown): BackupExport | null {

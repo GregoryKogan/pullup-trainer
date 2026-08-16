@@ -3,7 +3,6 @@ import type {
   PlannedSet,
   WorkoutResult,
   BuiltinLState,
-  Path0State,
 } from './types'
 import { daysBetween } from '@/utils/dates'
 
@@ -76,18 +75,6 @@ export function applyBuiltinLResult(
     failStreak: 0,
     cycleBestMax: 0,
   }
-}
-
-export function applyPath0Result(state: Path0State, sets: CompletedSet[], planned: PlannedSet[]): Path0State {
-  const result = evaluateWorkout(sets, planned)
-  if (result === 'success') {
-    return {
-      path0Step: Math.min(12, state.path0Step + 1),
-      failStreak: 0,
-      path: 'P0',
-    }
-  }
-  return { ...state, failStreak: state.failStreak + 1 }
 }
 
 export function needsRetest(

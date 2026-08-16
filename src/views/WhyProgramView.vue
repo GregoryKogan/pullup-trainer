@@ -28,7 +28,6 @@ const sections = [
   'workingSets',
   'finalMax',
   'rest',
-  'path0',
   'skips',
   'rejected',
   'limitations',

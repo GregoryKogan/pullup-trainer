@@ -2,8 +2,7 @@ export type SetType = 'reps' | 'max' | 'hold' | 'negative' | 'assisted'
 export type SetUnit = 'reps' | 'seconds'
 export type WorkoutResult = 'success' | 'fail'
 export type LegacyProgramSource = 'builtin' | 'custom'
-export type BuiltinPath = 'L' | 'P0'
-export type Level = 'P0' | 'L1' | 'L2' | 'L3' | 'L4'
+export type Level = 'L1' | 'L2' | 'L3' | 'L4'
 export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type RecordKind = 'workout' | 'test'
@@ -34,7 +33,6 @@ export interface ScheduleSlot {
 }
 
 export interface BuiltinLState {
-  path: 'L'
   anchor: number
   level: Level
   cycleIndex: number
@@ -44,18 +42,12 @@ export interface BuiltinLState {
   cycleBestMax: number
 }
 
-export interface Path0State {
-  path: 'P0'
-  path0Step: number
-  failStreak: number
-}
-
 export interface ActiveProgress {
   frequencyDays: 2 | 3
   weekdays: Weekday[]
   schedule: ScheduleSlot[]
   lastWorkoutDate: string | null
-  state: BuiltinLState | Path0State
+  state: BuiltinLState
 }
 
 export interface WorkoutRecordContextL {
@@ -110,9 +102,7 @@ export interface AppMeta {
 }
 
 export interface StartRecommendation {
-  path: BuiltinPath
-  anchor?: number
-  path0Step?: number
+  anchor: number
   level: Level
   explanationKey: string
   explanationParams: Record<string, number | string>

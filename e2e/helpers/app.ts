@@ -95,7 +95,6 @@ export async function seedBuiltinProgress(page: Page, anchor: number, today: str
               schedule: [{ date: today, stepRef: 1 }],
               lastWorkoutDate: null,
               state: {
-                path: 'L',
                 anchor,
                 level: anchor >= 20 ? 'L4' : anchor >= 10 ? 'L3' : anchor >= 5 ? 'L2' : 'L1',
                 cycleIndex: 0,
@@ -109,7 +108,7 @@ export async function seedBuiltinProgress(page: Page, anchor: number, today: str
           tx.objectStore('appMeta').put({
             id: 'singleton',
             appVersion: '1.0.0',
-            schemaVersion: 2,
+            schemaVersion: 3,
             builtinSeedVersion: 1,
           })
           tx.oncomplete = () => {
@@ -132,62 +131,6 @@ export async function gotoApp(page: Page, path = '/') {
 
 export async function prepareFreshApp(page: Page) {
   await resetApp(page)
-}
-
-export async function seedPath0Progress(page: Page, today: string) {
-  await withOrigin(page)
-  await page.evaluate(
-    async ({ dbName, today }) => {
-      await new Promise<void>((resolve, reject) => {
-        const req = indexedDB.open(dbName)
-        req.onsuccess = () => {
-          const db = req.result
-          const tx = db.transaction(['settings', 'activeProgress', 'workoutRecords', 'appMeta'], 'readwrite')
-          tx.objectStore('settings').put({
-            id: 'singleton',
-            palette: 'p01-volt',
-            themeMode: 'system',
-            restDurationSeconds: 180,
-            restAutoStart: false,
-            restVibrate: false,
-            restNotify: false,
-            language: 'en',
-          })
-          tx.objectStore('activeProgress').put({
-            id: 'singleton',
-            data: {
-              frequencyDays: 3,
-              weekdays: ['mon', 'wed', 'fri'],
-              schedule: [{ date: today, stepRef: 1 }],
-              lastWorkoutDate: null,
-              state: { path: 'P0', path0Step: 1, failStreak: 0 },
-            },
-          })
-          tx.objectStore('appMeta').put({
-            id: 'singleton',
-            appVersion: '1.0.0',
-            schemaVersion: 2,
-            builtinSeedVersion: 1,
-          })
-          tx.oncomplete = () => {
-            db.close()
-            resolve()
-          }
-          tx.onerror = () => reject(tx.error)
-        }
-        req.onerror = () => reject(req.error)
-      })
-    },
-    { dbName: DB_NAME, today },
-  )
-}
-
-export async function preparePath0App(page: Page, today: string) {
-  await resetApp(page)
-  await seedPath0Progress(page, today)
-  await page.reload({ waitUntil: 'networkidle' })
-  await dismissPwaModal(page)
-  await expectHomeReady(page)
 }
 
 export async function prepareSeededApp(page: Page, anchor: number, today: string) {

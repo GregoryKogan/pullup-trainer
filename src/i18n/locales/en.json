@@ -43,7 +43,6 @@
     "shiftBanner": "Missed workout kept. Later dates moved forward.",
     "noProgress": "Complete onboarding to get started",
     "levelAnchor": "Your level: {level} (max {anchor})",
-    "path0Step": "Starting path · step {step}",
     "streakWeeks": "{n} wk",
     "repeatMissed": "Repeat missed workout",
     "aboutLink": "About",
@@ -54,7 +53,6 @@
     "retestReduce": "Easier plan (−10%)"
   },
   "levels": {
-    "P0": "Starting path",
     "L1": "Beginner",
     "L2": "Base",
     "L3": "Intermediate",
@@ -66,19 +64,22 @@
     "introBody": "Build pull-up strength step by step. First, a quick max test. Then a simple plan. Works offline.",
     "testTitle": "Max rep test",
     "testBody": "Do as many strict pull-ups as you can. Enter the number.",
-    "testHint": "Can't do a pull-up yet? Enter 0.",
+    "testHint": "Minimum is 1 strict pull-up.",
     "repsLabel": "How many pull-ups?",
     "repsDecrease": "Decrease reps",
     "repsIncrease": "Increase reps",
-    "repsPlaceholder": "0",
+    "repsPlaceholder": "1",
     "recommendTitle": "Your starting point",
     "recommend": {
-      "p0": "You start on the starting path: scap pulls, hangs, negatives, and assisted reps — until your first full pull-up.",
       "l": "Level: {level}. Your max is {m} pull-ups. Your first cycle starts at step 1."
     },
     "accept": "Start program",
     "override": "Change max",
-    "repsInvalid": "Enter 0 or more pull-ups."
+    "repsInvalid": "Enter 1 or more pull-ups.",
+    "cannotDoPullupsLink": "Can't do a pull-up yet?",
+    "cannotDoPullupsTitle": "Not ready yet",
+    "cannotDoPullupsBody": "This app is for people who can do at least one strict pull-up. Come back when you can — we'll be here.",
+    "zeroNotSupported": "Enter at least 1 pull-up, or tap the link below if you can't do any yet."
   },
   "workout": {
     "setOf": "Set {current} of {total}",

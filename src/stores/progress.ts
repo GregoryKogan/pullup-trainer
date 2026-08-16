@@ -1,12 +1,24 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
-import type { ActiveProgress, BuiltinLState, Path0State, Weekday, WorkoutRecord } from '@/domain/types'
+import type { ActiveProgress, BuiltinLState, Weekday, WorkoutRecord } from '@/domain/types'
 import { buildBuiltinScheduleSlots } from '@/domain/schedule'
 import { levelFromM } from '@/domain/levels'
 import { loadProgress, saveProgress, loadAllRecords, addRecord } from '@/db/repositories/progress'
 import { todayLocal } from '@/utils/dates'
 
 const DEFAULT_WEEKDAYS: Weekday[] = ['mon', 'wed', 'fri']
+
+function createState(m: number, today: string): BuiltinLState {
+  return {
+    anchor: m,
+    level: levelFromM(m),
+    cycleIndex: 0,
+    stepInCycle: 1,
+    failStreak: 0,
+    lastRetestDate: today,
+    cycleBestMax: 0,
+  }
+}
 
 export const useProgressStore = defineStore('progress', () => {
   const progress = shallowRef<ActiveProgress | null>(null)
@@ -22,35 +34,14 @@ export const useProgressStore = defineStore('progress', () => {
   }
 
   async function initFromTest(m: number) {
+    if (m < 1) return
     const today = todayLocal()
-    if (m <= 0) {
-      const state: Path0State = { path: 'P0', path0Step: 1, failStreak: 0 }
-      progress.value = {
-        frequencyDays: 3,
-        weekdays: DEFAULT_WEEKDAYS,
-        schedule: buildBuiltinScheduleSlots(today, 1, 12, 3, DEFAULT_WEEKDAYS),
-        lastWorkoutDate: null,
-        state,
-      }
-    } else {
-      const level = levelFromM(m)
-      const state: BuiltinLState = {
-        path: 'L',
-        anchor: m,
-        level,
-        cycleIndex: 0,
-        stepInCycle: 1,
-        failStreak: 0,
-        lastRetestDate: today,
-        cycleBestMax: 0,
-      }
-      progress.value = {
-        frequencyDays: 3,
-        weekdays: DEFAULT_WEEKDAYS,
-        schedule: buildBuiltinScheduleSlots(today, 1, 8, 3, DEFAULT_WEEKDAYS),
-        lastWorkoutDate: null,
-        state,
-      }
+    progress.value = {
+      frequencyDays: 3,
+      weekdays: DEFAULT_WEEKDAYS,
+      schedule: buildBuiltinScheduleSlots(today, 1, 8, 3, DEFAULT_WEEKDAYS),
+      lastWorkoutDate: null,
+      state: createState(m, today),
     }
     await persist()
   }
@@ -86,41 +77,21 @@ export const useProgressStore = defineStore('progress', () => {
 
   async function applyRetest(m: number) {
     const p = progress.value
-    if (!p) return
+    if (!p || m < 1) return
     const today = todayLocal()
-    if (m <= 0) {
-      progress.value = {
-        frequencyDays: p.frequencyDays,
-        weekdays: p.weekdays,
-        schedule: buildBuiltinScheduleSlots(today, 1, 12, p.frequencyDays, p.weekdays),
-        lastWorkoutDate: p.lastWorkoutDate,
-        state: { path: 'P0', path0Step: 1, failStreak: 0 },
-      }
-    } else {
-      const level = levelFromM(m)
-      progress.value = {
-        frequencyDays: p.frequencyDays,
-        weekdays: p.weekdays,
-        schedule: buildBuiltinScheduleSlots(today, 1, 8, p.frequencyDays, p.weekdays),
-        lastWorkoutDate: p.lastWorkoutDate,
-        state: {
-          path: 'L',
-          anchor: m,
-          level,
-          cycleIndex: 0,
-          stepInCycle: 1,
-          failStreak: 0,
-          lastRetestDate: today,
-          cycleBestMax: 0,
-        },
-      }
+    progress.value = {
+      frequencyDays: p.frequencyDays,
+      weekdays: p.weekdays,
+      schedule: buildBuiltinScheduleSlots(today, 1, 8, p.frequencyDays, p.weekdays),
+      lastWorkoutDate: p.lastWorkoutDate,
+      state: createState(m, today),
     }
     await persist()
   }
 
   async function reduceAnchor() {
     const p = progress.value
-    if (!p || p.state.path !== 'L') return
+    if (!p) return
     const anchor = Math.max(1, Math.floor(p.state.anchor * 0.9))
     progress.value = {
       ...p,
