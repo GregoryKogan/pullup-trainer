@@ -443,7 +443,12 @@ onBeforeUnmount(() => {
   background: var(--accent-ink);
 }
 .day.sel {
-  outline: 3px solid var(--accent2);
+  box-shadow:
+    inset 0 0 0 3px var(--accent2),
+    2px 2px 0 var(--shadow);
+}
+.day.out.sel {
+  box-shadow: inset 0 0 0 3px var(--accent2);
 }
 .legend {
   display: flex;
