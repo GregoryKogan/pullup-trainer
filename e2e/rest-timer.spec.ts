@@ -77,4 +77,25 @@ test.describe('Rest timer', () => {
     await page.getByRole('button', { name: /^reset$|^сброс$/i }).click()
     await expect(page.locator('.ring-num')).toHaveText('1:30')
   })
+
+  test('pause stops countdown and resume continues', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: '1:30' }).click()
+    await page.getByRole('button', { name: /auto.?start/i }).click()
+
+    await page.getByRole('navigation').getByRole('link', { name: 'Home' }).click()
+    await startWorkout(page)
+    await page.getByRole('button', { name: /^done$|^готово$/i }).click()
+    await expect(page.locator('.ring-num')).toHaveText('1:30', { timeout: 10_000 })
+
+    const pausedAt = await page.locator('.ring-num').textContent()
+    await page.getByRole('button', { name: /^pause$|^пауза$/i }).click()
+    await page.waitForTimeout(2000)
+    await expect(page.locator('.ring-num')).toHaveText(pausedAt ?? '1:30')
+
+    await page.getByRole('button', { name: /^resume$|^продолжить$/i }).click()
+    await page.waitForTimeout(1500)
+    const afterResume = await page.locator('.ring-num').textContent()
+    expect(afterResume).not.toBe(pausedAt)
+  })
 })

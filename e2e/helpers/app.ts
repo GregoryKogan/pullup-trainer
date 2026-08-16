@@ -97,6 +97,10 @@ export async function completeWorkout(page: Page, maxReps = '8') {
 
 export async function failWorkoutEarly(page: Page) {
   await startWorkout(page)
+  const strayDialog = page.getByRole('alertdialog')
+  if (await strayDialog.isVisible().catch(() => false)) {
+    await page.getByRole('button', { name: /^cancel$|^отмена$/i }).click()
+  }
   await page.getByRole('button', { name: /leave workout|выйти из тренировки/i }).click()
   await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
   await expect(page).toHaveURL(/\/result/)
@@ -320,6 +324,18 @@ export function addDays(isoDate: string, delta: number): string {
   const [y, m, d] = isoDate.split('-').map(Number)
   const date = new Date(y, m - 1, d)
   date.setDate(date.getDate() + delta)
+  const yy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  return `${yy}-${mm}-${dd}`
+}
+
+export function startOfWeek(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  const day = date.getDay()
+  const diff = day === 0 ? -6 : 1 - day
+  date.setDate(date.getDate() + diff)
   const yy = date.getFullYear()
   const mm = String(date.getMonth() + 1).padStart(2, '0')
   const dd = String(date.getDate()).padStart(2, '0')

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
@@ -10,6 +10,7 @@ import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domai
 import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
 
 const { t, locale } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const progressStore = useProgressStore()
 
@@ -17,11 +18,13 @@ const viewMonth = ref(new Date())
 const selectedIndex = ref<number | null>(null)
 const selectedMoveDate = ref<string | null>(null)
 const autoshiftBanner = ref(false)
+const pendingAutoshift = ref(false)
+const pendingShiftedSchedule = ref<import('@/domain/types').ScheduleSlot[] | null>(null)
 const showStartConfirm = ref(false)
 const dayHint = ref('')
 let dayHintTimer: ReturnType<typeof setTimeout> | null = null
 
-const today = todayLocal()
+const today = computed(() => todayLocal())
 const dowKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
 const monthLabel = computed(() =>
@@ -69,15 +72,15 @@ function dayStatus(date: string) {
   if (failedDates.value.has(date)) return 'failed'
   const slotIdx = schedule.value.findIndex((s) => s.date === date)
   if (slotIdx >= 0) {
-    if (date < today && !attemptedDates.value.has(date)) return 'missed'
+    if (date < today.value && !attemptedDates.value.has(date)) return 'missed'
     return 'planned'
   }
-  if (date === today) return 'today'
+  if (date === today.value) return 'today'
   return 'rest'
 }
 
 function isToday(date: string) {
-  return date === today
+  return date === today.value
 }
 
 const sheetOpen = computed(() => selectedIndex.value !== null)
@@ -118,20 +121,31 @@ const selectedSlot = computed(() =>
   selectedIndex.value !== null ? schedule.value[selectedIndex.value] : null,
 )
 
+const dayRecords = computed(() => {
+  const date = selectedSlot.value?.date
+  if (!date) return []
+  return progressStore.records.filter((r) => r.date === date)
+})
+
+function recordSummary(r: (typeof progressStore.records)[0]) {
+  if (r.kind === 'test') return `${r.sets[0]?.done ?? 0} ${t('workout.reps')}`
+  return r.sets.map((s) => s.done).join('·') || '—'
+}
+
 const isMissedSelected = computed(() => {
   if (!selectedSlot.value) return false
-  return selectedSlot.value.date < today && !attemptedDates.value.has(selectedSlot.value.date)
+  return selectedSlot.value.date < today.value && !attemptedDates.value.has(selectedSlot.value.date)
 })
 
 const moveOptions = computed(() =>
-  selectedIndex.value !== null ? getRescheduleOptions(schedule.value, selectedIndex.value, today) : [],
+  selectedIndex.value !== null ? getRescheduleOptions(schedule.value, selectedIndex.value, today.value) : [],
 )
 
 const startTargetDate = computed(() => selectedMoveDate.value ?? selectedSlot.value?.date ?? null)
 
 const isFutureStart = computed(() => {
   const date = startTargetDate.value
-  return date ? date > today : false
+  return date ? date > today.value : false
 })
 
 function prevMonth() {
@@ -171,7 +185,7 @@ async function applyMove() {
     showDayHint(t('calendar.moveUnchanged'))
     return
   }
-  const moved = rescheduleWorkout(schedule.value, selectedIndex.value, selectedMoveDate.value, today)
+  const moved = rescheduleWorkout(schedule.value, selectedIndex.value, selectedMoveDate.value, today.value)
   if (!moved) return
   await progressStore.updateProgress({ ...progressStore.progress, schedule: moved })
   dismissSheet()
@@ -201,21 +215,62 @@ function goToday() {
 
 const AUTOSHIFT_SESSION_KEY = 'pullup-trainer-autoshift-shown'
 
-async function handleMissedAutoshift() {
+function detectPendingAutoshift() {
   if (sessionStorage.getItem(AUTOSHIFT_SESSION_KEY)) return
   const p = progressStore.progress
   if (!p) return
-  const missedIdx = schedule.value.findIndex((s) => s.date < today && !attemptedDates.value.has(s.date))
+  const missedIdx = schedule.value.findIndex((s) => s.date < today.value && !attemptedDates.value.has(s.date))
   if (missedIdx < 0) return
-  const shifted = autoskipMissed(schedule.value, missedIdx, today)
-  await progressStore.updateProgress({ ...p, schedule: shifted })
+  pendingShiftedSchedule.value = autoskipMissed(schedule.value, missedIdx, today.value)
+  pendingAutoshift.value = true
+}
+
+async function applyPendingAutoshift() {
+  const p = progressStore.progress
+  const shifted = pendingShiftedSchedule.value
+  if (!p || !shifted) return
+  await progressStore.updateProgress({ ...p, schedule: shifted.map((s) => ({ ...s })) })
+  pendingAutoshift.value = false
+  pendingShiftedSchedule.value = null
   autoshiftBanner.value = true
   sessionStorage.setItem(AUTOSHIFT_SESSION_KEY, '1')
 }
 
+function dismissPendingAutoshift() {
+  pendingAutoshift.value = false
+  pendingShiftedSchedule.value = null
+  sessionStorage.setItem(AUTOSHIFT_SESSION_KEY, '1')
+}
+
+async function openDayFromQuery(date: string) {
+  const idx = schedule.value.findIndex((s) => s.date === date)
+  if (idx < 0) return
+  const [y, m] = date.split('-').map(Number)
+  viewMonth.value = new Date(y, m - 1, 1)
+  selectedIndex.value = idx
+  selectedMoveDate.value = date
+  await nextTick()
+  sheetDialogRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+}
+
 onMounted(() => {
-  void handleMissedAutoshift()
+  detectPendingAutoshift()
+  const qDate = route.query.date
+  if (typeof qDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(qDate)) {
+    void openDayFromQuery(qDate)
+    router.replace({ name: 'calendar' })
+  }
 })
+
+watch(
+  () => route.query.date,
+  (qDate) => {
+    if (typeof qDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(qDate)) {
+      void openDayFromQuery(qDate)
+      router.replace({ name: 'calendar' })
+    }
+  },
+)
 
 onBeforeUnmount(() => {
   if (dayHintTimer) clearTimeout(dayHintTimer)
@@ -239,6 +294,15 @@ onBeforeUnmount(() => {
         <button type="button" class="today-btn" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </header>
+    <div v-if="pendingAutoshift" class="banner pending-banner">
+      <p>{{ t('calendar.autoshiftPrompt') }}</p>
+      <div class="banner-actions">
+        <button type="button" class="btn accent" data-testid="apply-autoshift" @click.prevent="applyPendingAutoshift">
+          {{ t('calendar.applyAutoshift') }}
+        </button>
+        <button type="button" class="btn ghost" @click="dismissPendingAutoshift">{{ t('common.cancel') }}</button>
+      </div>
+    </div>
     <div v-if="autoshiftBanner" class="banner">{{ t('calendar.autoshiftApplied') }}</div>
     <p v-if="dayHint" class="day-hint" role="status" aria-live="polite">{{ dayHint }}</p>
     <div class="calgrid">
@@ -312,6 +376,19 @@ onBeforeUnmount(() => {
             <AppIcon name="info" />
             {{ t('calendar.shiftNote') }}
           </p>
+          <div v-if="dayRecords.length" class="day-history">
+            <p class="day-history-title">{{ t('calendar.dayHistory') }}</p>
+            <ul>
+              <li v-for="r in dayRecords" :key="r.id ?? r.startedAt">
+                <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
+                <b>{{ recordSummary(r) }}</b>
+                <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
+                  r.result === 'success' ? t('stats.success') : t('stats.partial')
+                }}</span>
+              </li>
+            </ul>
+          </div>
+          <p v-else class="day-history-empty">{{ t('calendar.dayHistoryEmpty') }}</p>
           <div class="btnrow">
             <button
               type="button"
@@ -351,6 +428,64 @@ onBeforeUnmount(() => {
   border: 2px solid var(--line);
   padding: 10px 12px;
   margin-bottom: 12px;
+  font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
+}
+.pending-banner p {
+  margin: 0 0 10px;
+}
+.banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.banner-actions .btn {
+  flex: 1;
+  min-width: 120px;
+  margin-top: 0;
+}
+.day-history {
+  margin: 0 0 14px;
+  padding-top: 8px;
+  border-top: 2px solid var(--line);
+}
+.day-history-title {
+  margin: 0 0 8px;
+  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.day-history ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.day-history li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.day-history li b {
+  flex: 1;
+  text-align: right;
+}
+.day-history .pill {
+  font: 800 0.65rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  padding: 3px 6px;
+  border: 2px solid var(--line);
+  text-transform: uppercase;
+}
+.day-history .pill.ok {
+  color: var(--ok);
+}
+.day-history .pill.part {
+  color: var(--warn);
+}
+.day-history-empty {
+  margin: 0 0 14px;
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }

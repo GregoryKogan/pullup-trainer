@@ -18,6 +18,8 @@ async function bootstrap() {
   const progressStore = useProgressStore()
   await settingsStore.hydrate()
   await progressStore.hydrate()
+  const { ensureAppMeta } = await import('./db/repositories/app-meta')
+  await ensureAppMeta()
   if (settingsStore.settings?.language) {
     setLocale(settingsStore.settings.language)
   } else {

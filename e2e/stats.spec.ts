@@ -47,4 +47,26 @@ test.describe('Stats', () => {
     await expect(page.locator('.hist li').first()).toBeVisible()
     await expect(page.locator('.kpi b').first()).not.toHaveText('0')
   })
+
+  test('weekly volume chart appears after workout', async ({ page }) => {
+    await completeWorkout(page, '8')
+    await page.getByRole('button', { name: /home|главная/i }).click()
+    await page.getByRole('link', { name: 'Stats' }).click()
+
+    await expect(page.getByRole('heading', { name: /weekly volume|объём по неделям/i })).toBeVisible()
+    await expect(page.locator('.chart-wrap svg.chart').nth(1)).toBeVisible()
+  })
+
+  test('month filter narrows history list', async ({ page }) => {
+    await completeWorkout(page, '8')
+    await page.getByRole('button', { name: /home|главная/i }).click()
+    await page.getByRole('link', { name: 'Stats' }).click()
+
+    const month = todayLocal().slice(0, 7)
+    await page.locator('.month-filter').fill(month)
+    await expect(page.locator('.hist li').first()).toBeVisible()
+
+    await page.locator('.month-filter').fill('2020-01')
+    await expect(page.getByText(/no workouts in this month|в этом месяце тренировок нет/i)).toBeVisible()
+  })
 })

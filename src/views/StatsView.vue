@@ -55,6 +55,7 @@ const levelInfo = computed(() => {
 
 const historyLimit = 10
 const showAllHistory = ref(false)
+const historyMonthFilter = ref('')
 const isNarrow = ref(false)
 let narrowMq: MediaQueryList | null = null
 
@@ -87,11 +88,20 @@ function chartX(index: number, count: number, start = 30, end = 330) {
   return start + (index * (end - start)) / (count - 1)
 }
 
+const filteredRecords = computed(() => {
+  if (!historyMonthFilter.value) return progressStore.records
+  return progressStore.records.filter((r) => r.date.startsWith(historyMonthFilter.value))
+})
+
 const history = computed(() =>
-  showAllHistory.value ? progressStore.records : progressStore.records.slice(0, historyLimit),
+  showAllHistory.value ? filteredRecords.value : filteredRecords.value.slice(0, historyLimit),
 )
 
-const hasMoreHistory = computed(() => progressStore.records.length > historyLimit)
+const hasMoreHistory = computed(() => filteredRecords.value.length > historyLimit)
+
+const historyFilterEmpty = computed(
+  () => historyMonthFilter.value.length > 0 && filteredRecords.value.length === 0,
+)
 
 function chartY(value: number, max: number) {
   if (max <= 0) return 130
@@ -254,7 +264,20 @@ function exportHistoryJson() {
     </section>
     <section class="sec page-bottom">
       <h4>{{ t('stats.history') }}</h4>
-      <ul class="hist">
+      <label class="filter-label">
+        <span>{{ t('stats.filterMonth') }}</span>
+        <input
+          v-model="historyMonthFilter"
+          type="text"
+          class="month-filter"
+          inputmode="numeric"
+          pattern="\\d{4}-\\d{2}"
+          maxlength="7"
+          :placeholder="t('stats.filterPlaceholder')"
+        />
+      </label>
+      <p v-if="historyFilterEmpty" class="sub chart-empty">{{ t('stats.filterEmpty') }}</p>
+      <ul v-else class="hist">
         <li v-for="r in history" :key="r.id ?? r.startedAt">
           <div class="date">
             <b>{{ formatShortDate(r.date, locale) }}</b>
@@ -394,6 +417,23 @@ function exportHistoryJson() {
 }
 .history-toggle {
   margin-bottom: 8px;
+}
+.filter-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
+}
+.month-filter {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font: 700 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .level-info {
   margin: 6px 0 0;

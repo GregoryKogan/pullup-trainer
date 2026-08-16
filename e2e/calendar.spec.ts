@@ -27,6 +27,28 @@ test.describe('Calendar', () => {
     await expect(page.getByRole('button', { name: 'Move' })).toBeVisible()
   })
 
+  test('start now navigates to workout', async ({ page }) => {
+    await page.getByRole('link', { name: 'Calendar' }).click()
+    const dayNum = String(new Date().getDate())
+    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: /start now|начать/i }).click()
+    await expect(page).toHaveURL(/\/workout/)
+  })
+
+  test('day history lists completed workout', async ({ page }) => {
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      schedule: [{ date: today, stepRef: 1 }],
+      workoutRecords: [{ date: today, result: 'success' }],
+    })
+    await page.getByRole('link', { name: 'Calendar' }).click()
+    const dayNum = String(new Date().getDate())
+    await page.getByRole('button', { name: new RegExp(`${dayNum}, (planned|done)`, 'i') }).click()
+    await expect(page.getByText(/day history|история дня/i)).toBeVisible()
+    await expect(page.locator('.day-history li').first()).toBeVisible()
+  })
+
   test('shows hint for unscheduled day', async ({ page }) => {
     await page.getByRole('link', { name: 'Calendar' }).click()
 

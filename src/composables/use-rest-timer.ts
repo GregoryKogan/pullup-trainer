@@ -3,13 +3,19 @@ import { onUnmounted, shallowRef } from 'vue'
 export function useRestTimer(onFinish: () => void) {
   const remaining = shallowRef(0)
   const total = shallowRef(0)
+  const paused = shallowRef(false)
   const minSeconds = shallowRef(0)
   const maxSeconds = shallowRef(Number.MAX_SAFE_INTEGER)
   let timer: ReturnType<typeof setInterval> | null = null
 
-  function clear() {
+  function clearTimer() {
     if (timer) clearInterval(timer)
     timer = null
+  }
+
+  function clear() {
+    clearTimer()
+    paused.value = false
   }
 
   function clampSeconds(seconds: number) {
@@ -24,19 +30,26 @@ export function useRestTimer(onFinish: () => void) {
     }
   }
 
-  function start(seconds: number) {
-    clear()
-    const clamped = clampSeconds(seconds)
-    total.value = clamped
-    remaining.value = clamped
+  function tick() {
+    clearTimer()
     timer = setInterval(() => {
       if (remaining.value <= 0) {
-        clear()
+        clearTimer()
+        paused.value = false
         onFinish()
         return
       }
       remaining.value--
     }, 1000)
+  }
+
+  function start(seconds: number) {
+    clearTimer()
+    paused.value = false
+    const clamped = clampSeconds(seconds)
+    total.value = clamped
+    remaining.value = clamped
+    if (clamped > 0) tick()
   }
 
   function adjust(delta: number) {
@@ -45,14 +58,28 @@ export function useRestTimer(onFinish: () => void) {
 
   function reset() {
     remaining.value = total.value
+    if (!paused.value && total.value > 0) tick()
   }
 
   function skip() {
-    clear()
+    clearTimer()
+    paused.value = false
     remaining.value = 0
+  }
+
+  function pause() {
+    if (!timer || paused.value || remaining.value <= 0) return
+    clearTimer()
+    paused.value = true
+  }
+
+  function resume() {
+    if (!paused.value || remaining.value <= 0) return
+    paused.value = false
+    tick()
   }
 
   onUnmounted(clear)
 
-  return { remaining, total, start, adjust, reset, skip, clear, setBounds }
+  return { remaining, total, paused, start, adjust, reset, skip, pause, resume, clear, setBounds }
 }

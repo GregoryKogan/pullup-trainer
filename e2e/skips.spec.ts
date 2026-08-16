@@ -23,9 +23,11 @@ test.describe('Skip policy', () => {
     })
 
     await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
-    await expect(page.getByText(/Missed workout moved|пропущенная тренировка/i)).toBeVisible({
+    await expect(page.getByText(/shift later dates|сдвинуть следующие/i)).toBeVisible({
       timeout: 5000,
     })
+    await page.getByTestId('apply-autoshift').click()
+    await expect(page.getByTestId('apply-autoshift')).toHaveCount(0)
 
     const progress = await readProgress(page)
     const schedule = progress?.schedule as { date: string; stepRef: number }[]

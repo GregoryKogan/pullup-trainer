@@ -110,6 +110,10 @@
     "exitTitle": "Leave workout?",
     "exitLabel": "Leave workout",
     "exitWarn": "Leaving counts as fail.",
+    "skipSet": "Skip set",
+    "skipSetTitle": "Skip this set?",
+    "skipSetWarn": "Skipping any set counts as fail.",
+    "reschedule": "Move workout",
     "resultSuccess": "Workout complete",
     "resultFail": "Workout incomplete",
     "resultVolume": "{done} of {planned} planned",
@@ -143,6 +147,10 @@
     "repeatMissed": "Repeat missed",
     "closeSheet": "Close",
     "autoshiftApplied": "Missed workout moved forward in your plan.",
+    "autoshiftPrompt": "A planned workout was missed. Shift later dates forward?",
+    "applyAutoshift": "Shift plan",
+    "dayHistory": "Day history",
+    "dayHistoryEmpty": "No workouts logged on this day yet.",
     "notScheduled": "This day has no workout planned.",
     "moveUnchanged": "Pick a different date to move this workout.",
     "nextMonth": "Next month",
@@ -174,7 +182,10 @@
     "showLess": "Show less",
     "success": "Done",
     "noStreak": "—",
-    "chartEmpty": "Complete more workouts to see the chart."
+    "chartEmpty": "Complete more workouts to see the chart.",
+    "filterMonth": "Filter by month",
+    "filterPlaceholder": "YYYY-MM",
+    "filterEmpty": "No workouts in this month."
   },
   "settings": {
     "title": "Settings",

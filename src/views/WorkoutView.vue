@@ -36,6 +36,7 @@ const settingsStore = useSettingsStore()
 
 const showFewer = ref(false)
 const showExitConfirm = ref(false)
+const showSkipSetConfirm = ref(false)
 const loadFailed = ref(false)
 const fewerValue = ref(0)
 const maxDoneValue = ref(0)
@@ -203,6 +204,20 @@ function finishSet(done: number) {
   if (workoutStore.isComplete()) finishWorkout()
 }
 
+function skipSet() {
+  showSkipSetConfirm.value = true
+}
+
+function confirmSkipSet() {
+  showSkipSetConfirm.value = false
+  workoutStore.completeSet(0)
+  finishWorkout()
+}
+
+function goReschedule() {
+  router.push({ name: 'calendar', query: { date: workoutDate() } })
+}
+
 async function openFewer() {
   const set = currentSet.value
   fewerValue.value = set?.planned ?? 0
@@ -311,6 +326,13 @@ function confirmExit() {
       <span class="sr-only">{{ headerA11yLabel }}</span>
       <time class="clock" aria-hidden="true">{{ formatTime(elapsed) }}</time>
     </div>
+    <div
+      v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning && !showFewer"
+      class="top-actions"
+    >
+      <button type="button" class="btn ghost compact" @click="skipSet">{{ t('workout.skipSet') }}</button>
+      <button type="button" class="btn ghost compact" @click="goReschedule">{{ t('workout.reschedule') }}</button>
+    </div>
     <p id="workout-exit-hint" class="sr-only">{{ t('workout.exitWarn') }}</p>
     <SetCardsRow :sets="setCards" />
     <div class="workout-stage">
@@ -330,12 +352,15 @@ function confirmExit() {
         v-if="workoutStore.restRunning"
         :remaining="restTimer.remaining.value"
         :total="restTimer.total.value"
+        :paused="restTimer.paused.value"
         :min-seconds="restMin"
         :max-seconds="restMax"
         :label="t('workout.rest')"
         @minus="restTimer.adjust(-15)"
         @plus="restTimer.adjust(15)"
         @reset="restTimer.reset()"
+        @pause="restTimer.pause()"
+        @resume="restTimer.resume()"
         @skip="workoutStore.restRunning = false"
         @preset="applyRestPreset"
       />
@@ -388,6 +413,13 @@ function confirmExit() {
       :message="t('workout.exitWarn')"
       @confirm="confirmExit"
       @cancel="showExitConfirm = false"
+    />
+    <ConfirmPanel
+      :visible="showSkipSetConfirm"
+      :title="t('workout.skipSetTitle')"
+      :message="t('workout.skipSetWarn')"
+      @confirm="confirmSkipSet"
+      @cancel="showSkipSetConfirm = false"
     />
   </div>
   <div v-else-if="loadFailed" class="panel load-error">
@@ -453,6 +485,18 @@ function confirmExit() {
 }
 .clock {
   font: 800 0.8rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.top-actions {
+  display: flex;
+  gap: 8px;
+  margin: -6px 0 10px;
+}
+.top-actions .compact {
+  flex: 1;
+  min-height: 44px;
+  margin-top: 0;
+  font-size: 0.68rem;
+  padding: 0 8px;
 }
 .workout-hero .kicker {
   margin-bottom: 14px;

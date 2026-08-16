@@ -126,6 +126,49 @@ if (!formulaExamples.includes('N_1…N_6 = 5,6,7,8,8,8')) {
   errors.push('Science copy missing N_k series example for M*=7')
 }
 
+const requiredSections = [
+  'overview',
+  'levels',
+  'algorithm',
+  'progression',
+  'frequency',
+  'volume',
+  'workingSets',
+  'finalMax',
+  'rest',
+  'skips',
+  'rejected',
+  'limitations',
+]
+for (const key of requiredSections) {
+  if (!en.sections[key]?.title || !en.sections[key]?.body?.length) {
+    errors.push(`EN missing section: ${key}`)
+  }
+  if (!ru.sections[key]?.title || !ru.sections[key]?.body?.length) {
+    errors.push(`RU missing section: ${key}`)
+  }
+}
+
+if (en.formulas.items.length !== 6) {
+  errors.push(`Expected 6 formula items, got ${en.formulas.items.length}`)
+}
+if (ru.formulas.items.length !== 6) {
+  errors.push(`RU formula count ${ru.formulas.items.length} !== 6`)
+}
+
+const allowedBadges = new Set(['confirmed', 'single', 'extrapolation'])
+for (const src of en.sources) {
+  if (!allowedBadges.has(src.badge)) errors.push(`Source [${src.id}] invalid badge: ${src.badge}`)
+  if (!src.url?.startsWith('https://')) errors.push(`Source [${src.id}] URL must be https`)
+}
+
+for (const src of en.sources) {
+  const ruSrc = ru.sources.find((s) => s.id === src.id)
+  if (!ruSrc) continue
+  if (src.url !== ruSrc.url) errors.push(`Source [${src.id}] URL differs EN/RU`)
+  if (src.badge !== ruSrc.badge) errors.push(`Source [${src.id}] badge differs EN/RU`)
+}
+
 if (errors.length) {
   console.error('Science crosswalk FAILED:\n')
   for (const e of errors) console.error(`  - ${e}`)

@@ -12,10 +12,12 @@ const props = withDefaults(
     remaining: number
     total: number
     label: string
+    paused?: boolean
     minSeconds?: number
     maxSeconds?: number
   }>(),
   {
+    paused: false,
     minSeconds: REST_MIN_SECONDS,
     maxSeconds: REST_MAX_SECONDS,
   },
@@ -26,6 +28,8 @@ const emit = defineEmits<{
   plus: []
   reset: []
   skip: []
+  pause: []
+  resume: []
   preset: [seconds: number]
 }>()
 
@@ -105,6 +109,24 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
         <button type="button" class="mini skip-btn" @click="emit('skip')">
           <AppIcon name="arrow-right" :size="15" />
           {{ $t('workout.skipRest') }}
+        </button>
+        <button
+          v-if="total > 0 && !paused"
+          type="button"
+          class="mini reset-btn"
+          @click="emit('pause')"
+        >
+          <AppIcon name="pause" :size="15" />
+          {{ $t('workout.pause') }}
+        </button>
+        <button
+          v-else-if="total > 0 && paused"
+          type="button"
+          class="mini reset-btn"
+          @click="emit('resume')"
+        >
+          <AppIcon name="play" :size="15" />
+          {{ $t('workout.resume') }}
         </button>
         <button v-if="total > 0" type="button" class="mini reset-btn" @click="emit('reset')">
           <AppIcon name="reset" :size="15" />
