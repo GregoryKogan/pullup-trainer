@@ -31,8 +31,16 @@ const monthLabel = computed(() =>
   }),
 )
 
-const completedDates = computed(
+const successDates = computed(
   () => new Set(progressStore.records.filter((r) => r.kind === 'workout' && r.result === 'success').map((r) => r.date)),
+)
+
+const attemptedDates = computed(
+  () => new Set(progressStore.records.filter((r) => r.kind === 'workout').map((r) => r.date)),
+)
+
+const failedDates = computed(
+  () => new Set(progressStore.records.filter((r) => r.kind === 'workout' && r.result === 'fail').map((r) => r.date)),
 )
 
 const schedule = computed(() => progressStore.progress?.schedule ?? [])
@@ -57,10 +65,11 @@ const calendarDays = computed(() => {
 })
 
 function dayStatus(date: string) {
-  if (completedDates.value.has(date)) return 'done'
+  if (successDates.value.has(date)) return 'done'
+  if (failedDates.value.has(date)) return 'failed'
   const slotIdx = schedule.value.findIndex((s) => s.date === date)
   if (slotIdx >= 0) {
-    if (date < today && !completedDates.value.has(date)) return 'missed'
+    if (date < today && !attemptedDates.value.has(date)) return 'missed'
     return 'planned'
   }
   if (date === today) return 'today'
@@ -111,7 +120,7 @@ const selectedSlot = computed(() =>
 
 const isMissedSelected = computed(() => {
   if (!selectedSlot.value) return false
-  return selectedSlot.value.date < today && !completedDates.value.has(selectedSlot.value.date)
+  return selectedSlot.value.date < today && !attemptedDates.value.has(selectedSlot.value.date)
 })
 
 const moveOptions = computed(() =>
@@ -138,13 +147,15 @@ function dayAriaLabel(date: string, day: number) {
   const statusKey =
     status === 'done'
       ? 'calendar.done'
-      : status === 'missed'
-        ? 'calendar.missed'
-        : status === 'planned'
-          ? 'calendar.planned'
-          : status === 'today'
-            ? 'calendar.todayLegend'
-            : ''
+      : status === 'failed'
+        ? 'calendar.failed'
+        : status === 'missed'
+          ? 'calendar.missed'
+          : status === 'planned'
+            ? 'calendar.planned'
+            : status === 'today'
+              ? 'calendar.todayLegend'
+              : ''
   const statusText = statusKey ? t(statusKey) : ''
   return statusText ? `${day}, ${statusText}` : String(day)
 }
@@ -194,7 +205,7 @@ async function handleMissedAutoshift() {
   if (sessionStorage.getItem(AUTOSHIFT_SESSION_KEY)) return
   const p = progressStore.progress
   if (!p) return
-  const missedIdx = schedule.value.findIndex((s) => s.date < today && !completedDates.value.has(s.date))
+  const missedIdx = schedule.value.findIndex((s) => s.date < today && !attemptedDates.value.has(s.date))
   if (missedIdx < 0) return
   const shifted = autoskipMissed(schedule.value, missedIdx, today)
   await progressStore.updateProgress({ ...p, schedule: shifted })
@@ -246,11 +257,13 @@ onBeforeUnmount(() => {
       >
         {{ cell.day }}
         <span v-if="dayStatus(cell.date) === 'done'" class="day-icon"><AppIcon name="check" /></span>
+        <span v-else-if="dayStatus(cell.date) === 'failed'" class="day-icon"><AppIcon name="x" /></span>
         <span v-else-if="dayStatus(cell.date) === 'missed'" class="day-icon"><AppIcon name="x" /></span>
       </button>
     </div>
     <div class="legend page-bottom">
       <span><i class="dot done" aria-hidden="true" />{{ t('calendar.done') }}</span>
+      <span><i class="dot failed" aria-hidden="true" />{{ t('calendar.failed') }}</span>
       <span><i class="dot missed" aria-hidden="true" />{{ t('calendar.missed') }}</span>
       <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
       <span><i class="dot today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
@@ -395,6 +408,11 @@ onBeforeUnmount(() => {
 .day.done {
   border-color: var(--ok);
 }
+.day.failed {
+  border-color: var(--warn);
+  color: var(--ink);
+  background: var(--card);
+}
 .day.missed {
   border-color: var(--muted);
   color: var(--muted);
@@ -407,6 +425,9 @@ onBeforeUnmount(() => {
 }
 .day.done .day-icon {
   color: var(--ok);
+}
+.day.failed .day-icon {
+  color: var(--warn);
 }
 .day.missed .day-icon {
   color: var(--muted);
@@ -473,6 +494,10 @@ onBeforeUnmount(() => {
 }
 .dot.done {
   border-color: var(--ok);
+}
+.dot.failed {
+  border-color: var(--warn);
+  background: var(--card);
 }
 .dot.missed {
   border-color: var(--muted);

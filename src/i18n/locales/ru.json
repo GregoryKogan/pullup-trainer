@@ -134,6 +134,7 @@
   "calendar": {
     "title": "Календарь",
     "done": "Сделано",
+    "failed": "Попытка",
     "missed": "Пропуск",
     "planned": "План",
     "todayLegend": "Сегодня",

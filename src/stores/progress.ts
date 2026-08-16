@@ -80,12 +80,25 @@ export const useProgressStore = defineStore('progress', () => {
     const p = progress.value
     if (!p || m < 1) return
     const today = todayLocal()
+    const stepRef = p.state.stepInCycle
     progress.value = {
       frequencyDays: p.frequencyDays,
       weekdays: p.weekdays,
-      schedule: buildBuiltinScheduleSlots(today, 1, 8, p.frequencyDays, p.weekdays),
+      schedule: buildBuiltinScheduleSlots(
+        today,
+        stepRef,
+        Math.max(p.schedule.length, 8),
+        p.frequencyDays,
+        p.weekdays,
+      ),
       lastWorkoutDate: p.lastWorkoutDate,
-      state: createState(m, today),
+      state: {
+        ...p.state,
+        anchor: m,
+        level: levelFromM(m),
+        lastRetestDate: today,
+        lastRetestCycleIndex: p.state.cycleIndex,
+      },
     }
     await persist()
   }
@@ -112,10 +125,10 @@ export const useProgressStore = defineStore('progress', () => {
   function getMissedSlot() {
     if (!progress.value) return null
     const today = todayLocal()
-    const completed = new Set(
-      records.value.filter((r) => r.kind === 'workout' && r.result === 'success').map((r) => r.date),
+    const attempted = new Set(
+      records.value.filter((r) => r.kind === 'workout').map((r) => r.date),
     )
-    const idx = progress.value.schedule.findIndex((s) => s.date < today && !completed.has(s.date))
+    const idx = progress.value.schedule.findIndex((s) => s.date < today && !attempted.has(s.date))
     if (idx < 0) return null
     return { ...progress.value.schedule[idx], index: idx }
   }

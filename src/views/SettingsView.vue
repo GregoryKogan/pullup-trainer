@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, toRaw } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
@@ -13,10 +13,8 @@ import { formatTime } from '@/utils/dates'
 import { clampRestSeconds } from '@/utils/workout-display'
 import { downloadJson } from '@/utils/platform'
 import { db } from '@/db/database'
-import { saveSettings } from '@/db/repositories/settings'
-import { saveProgress } from '@/db/repositories/progress'
 import { setLocale } from '@/i18n'
-import type { ThemeMode, Weekday } from '@/domain/types'
+import type { ThemeMode, Weekday, WorkoutRecord } from '@/domain/types'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -157,14 +155,34 @@ async function confirmImport() {
   pendingImport.value = null
   if (!data) return
   try {
-    await saveSettings(data.settings)
-    await saveProgress(data.activeProgress)
-    await db.workoutRecords.clear()
-    for (const r of data.history) {
-      await db.workoutRecords.add(r as never)
-    }
+    const plain = JSON.parse(JSON.stringify(toRaw(data))) as BackupExport
+    const settings = { ...plain.settings, id: 'singleton' as const }
+    const activeProgress = plain.activeProgress
+    const history = plain.history
+    await db.transaction('rw', db.settings, db.activeProgress, db.workoutRecords, async () => {
+      await db.settings.put(settings)
+      await db.activeProgress.put({ id: 'singleton', data: activeProgress })
+      await db.workoutRecords.clear()
+      for (const r of history) {
+        const record: WorkoutRecord = {
+          date: r.date,
+          startedAt: r.startedAt,
+          durationSeconds: r.durationSeconds,
+          kind: r.kind,
+          program: r.program,
+          programName: r.programName,
+          result: r.result,
+          sets: r.sets.map((s) => ({ ...s, planned: s.planned ?? 0 })),
+          totals: r.totals,
+        }
+        if (r.finishedAt) record.finishedAt = r.finishedAt
+        if (r.context) record.context = r.context
+        await db.workoutRecords.add(record)
+      }
+    })
     await settingsStore.hydrate()
     await progressStore.hydrate()
+    setLocale(settings.language)
     importMessage.value = t('settings.importSuccess')
   } catch {
     importMessage.value = t('settings.importError')

@@ -19,6 +19,16 @@ test.describe('Retest prompts', () => {
     await expect(page.getByRole('button', { name: /retest max|новый тест/i })).toBeVisible()
   })
 
+  test('does not show retest prompt within 14-day break', async ({ page }) => {
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      lastWorkoutDate: addDays(today, -10),
+      state: { cycleIndex: 1 },
+    })
+    await expect(page.getByRole('button', { name: /retest max|новый тест/i })).toHaveCount(0)
+  })
+
   test('shows retest prompt after two completed cycles', async ({ page }) => {
     await prepareProgress(page, {
       anchor: 7,
@@ -34,17 +44,32 @@ test.describe('Retest prompts', () => {
       anchor: 7,
       today,
       lastWorkoutDate: addDays(today, -15),
+      state: { cycleIndex: 2, stepInCycle: 4 },
     })
     await page.getByRole('button', { name: /retest max|новый тест/i }).click()
     await page.locator('#retest-reps').fill('9')
     await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
 
     const progress = await readProgress(page)
-    const state = progress?.state as { anchor: number }
+    const state = progress?.state as { anchor: number; cycleIndex: number; stepInCycle: number }
     expect(state.anchor).toBe(9)
+    expect(state.cycleIndex).toBe(2)
+    expect(state.stepInCycle).toBe(4)
 
     const records = (await readRecords(page)) as { kind: string; sets: { done: number }[] }[]
     const testRecord = records.find((r) => r.kind === 'test')
     expect(testRecord?.sets[0]?.done).toBe(9)
+  })
+
+  test('reduce anchor applies roughly 10% cut', async ({ page }) => {
+    await prepareProgress(page, {
+      anchor: 10,
+      today,
+      lastWorkoutDate: addDays(today, -15),
+    })
+    await page.getByRole('button', { name: /easier plan|легче|−10%|-10%/i }).click()
+    const progress = await readProgress(page)
+    const state = progress?.state as { anchor: number }
+    expect(state.anchor).toBe(9)
   })
 })

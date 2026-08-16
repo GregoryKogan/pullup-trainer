@@ -24,6 +24,7 @@ export interface SeedOptions {
   state?: SeedState
   language?: 'en' | 'ru'
   restDurationSeconds?: number
+  workoutRecords?: { date: string; result: 'success' | 'fail'; stepInCycle?: number }[]
 }
 
 async function withOrigin(page: Page) {
@@ -101,21 +102,14 @@ export async function failWorkoutEarly(page: Page) {
   await expect(page).toHaveURL(/\/result/)
 }
 
-export async function failWorkoutShortSet(page: Page, maxReps = '8') {
+export async function failWorkoutFinalShort(page: Page, maxReps: string) {
   await startWorkout(page)
-
-  await page.getByRole('button', { name: /log different|другой результат|другой/i }).click()
-  await page.locator('#fewer-input').fill('1')
-  await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
-  await clearRestGate(page)
-
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 4; i++) {
     await page.getByRole('button', { name: /^done$|^готово$/i }).click()
     await clearRestGate(page)
   }
-
   await page.locator('#max-done-input').fill(maxReps)
-  await page.getByRole('button', { name: /^done$|^готово$/i }).click()
+  await page.locator('.max-done').getByRole('button', { name: /^done$|^готово$/i }).click()
 }
 
 export async function assertSetTargets(page: Page, targets: number[]) {
@@ -229,6 +223,27 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
             schemaVersion: 3,
             builtinSeedVersion: 1,
           })
+          tx.objectStore('workoutRecords').clear()
+          for (const rec of payload.workoutRecords) {
+            tx.objectStore('workoutRecords').add({
+              date: rec.date,
+              startedAt: `${rec.date}T10:00:00+03:00`,
+              finishedAt: `${rec.date}T10:30:00+03:00`,
+              durationSeconds: 1800,
+              kind: 'workout',
+              program: 'builtin',
+              programName: 'Pull-up Trainer',
+              context: {
+                level: 'L2',
+                anchor: payload.state.anchor,
+                cycleIndex: payload.state.cycleIndex,
+                stepInCycle: rec.stepInCycle ?? payload.state.stepInCycle,
+              },
+              result: rec.result,
+              sets: [],
+              totals: { volumeReps: 0, maxSetReps: 0, holdSeconds: 0 },
+            })
+          }
           tx.oncomplete = () => {
             db.close()
             resolve()
@@ -248,6 +263,7 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
         schedule: options.schedule ?? [{ date: today, stepRef }],
         lastWorkoutDate: options.lastWorkoutDate ?? null,
         state,
+        workoutRecords: options.workoutRecords ?? [],
       },
     },
   )
@@ -302,6 +318,54 @@ export function addDays(isoDate: string, delta: number): string {
   const mm = String(date.getMonth() + 1).padStart(2, '0')
   const dd = String(date.getDate()).padStart(2, '0')
   return `${yy}-${mm}-${dd}`
+}
+
+export async function seedWorkoutRecord(
+  page: Page,
+  record: {
+    date: string
+    result: 'success' | 'fail'
+    stepInCycle?: number
+    anchor?: number
+  },
+) {
+  await withOrigin(page)
+  await page.evaluate(
+    async ({ dbName, rec }) => {
+      await new Promise<void>((resolve, reject) => {
+        const req = indexedDB.open(dbName)
+        req.onsuccess = () => {
+          const db = req.result
+          const tx = db.transaction('workoutRecords', 'readwrite')
+          tx.objectStore('workoutRecords').add({
+            date: rec.date,
+            startedAt: `${rec.date}T10:00:00+03:00`,
+            finishedAt: `${rec.date}T10:30:00+03:00`,
+            durationSeconds: 1800,
+            kind: 'workout',
+            program: 'builtin',
+            programName: 'Pull-up Trainer',
+            context: {
+              level: 'L2',
+              anchor: rec.anchor ?? 7,
+              cycleIndex: 0,
+              stepInCycle: rec.stepInCycle ?? 1,
+            },
+            result: rec.result,
+            sets: [],
+            totals: { volumeReps: 0, maxSetReps: 0, holdSeconds: 0 },
+          })
+          tx.oncomplete = () => {
+            db.close()
+            resolve()
+          }
+          tx.onerror = () => reject(tx.error)
+        }
+        req.onerror = () => reject(req.error)
+      })
+    },
+    { dbName: DB_NAME, rec: record },
+  )
 }
 
 export async function setLanguageRu(page: Page) {

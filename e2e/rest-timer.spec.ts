@@ -32,4 +32,32 @@ test.describe('Rest timer', () => {
 
     await expect(page.locator('.ring-num')).toHaveText('1:30', { timeout: 10_000 })
   })
+
+  test('in-workout ±15s adjusts rest countdown', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: '1:30' }).click()
+    await page.getByRole('button', { name: /auto.?start/i }).click()
+
+    await page.getByRole('navigation').getByRole('link', { name: 'Home' }).click()
+    await startWorkout(page)
+    await page.getByRole('button', { name: /^done$|^готово$/i }).click()
+    await expect(page.locator('.ring-num')).toHaveText('1:30', { timeout: 10_000 })
+
+    await page.getByRole('button', { name: /\+15 sec|\+15 с/i }).click()
+    await expect(page.locator('.ring-num')).toHaveText('1:45')
+  })
+
+  test('in-workout preset changes rest countdown', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: '1:30' }).click()
+    await page.getByRole('button', { name: /auto.?start/i }).click()
+
+    await page.getByRole('navigation').getByRole('link', { name: 'Home' }).click()
+    await startWorkout(page)
+    await page.getByRole('button', { name: /^done$|^готово$/i }).click()
+    await expect(page.locator('.ring-num')).toHaveText('1:30', { timeout: 10_000 })
+
+    await page.locator('.rest-dock .presets button', { hasText: '5:00' }).click()
+    await expect(page.locator('.ring-num')).toHaveText('5:00')
+  })
 })

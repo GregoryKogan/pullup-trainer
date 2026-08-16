@@ -134,6 +134,7 @@
   "calendar": {
     "title": "Calendar",
     "done": "Done",
+    "failed": "Attempted",
     "missed": "Missed",
     "planned": "Planned",
     "todayLegend": "Today",
