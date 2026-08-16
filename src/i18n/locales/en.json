@@ -136,7 +136,7 @@
     "missed": "Missed",
     "planned": "Planned",
     "todayLegend": "Today",
-    "shiftNote": "All following workouts shift by the same offset.",
+    "shiftNote": "Other planned workouts move by the same number of days.",
     "startNow": "Start now",
     "repeatMissed": "Repeat missed",
     "closeSheet": "Close",

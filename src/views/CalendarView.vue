@@ -295,7 +295,7 @@ onBeforeUnmount(() => {
               {{ formatDisplayDate(opt, locale) }}
             </button>
           </div>
-          <p id="calendar-sheet-desc" class="sub shift-note">
+          <p id="calendar-sheet-desc" class="shift-note">
             <AppIcon name="info" />
             {{ t('calendar.shiftNote') }}
           </p>
@@ -415,10 +415,15 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  margin: 10px 0 14px;
+  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
 }
 .shift-note svg {
   flex: 0 0 auto;
-  margin-top: 1px;
+  width: 13px;
+  height: 13px;
+  margin-top: 2px;
 }
 .day.planned::after {
   content: '';
@@ -480,7 +485,7 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin: 10px 0;
+  margin-top: 8px;
 }
 .opt {
   min-height: 46px;
@@ -528,7 +533,6 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: 90;
-  background: color-mix(in srgb, var(--ink) 45%, transparent);
   display: flex;
   align-items: flex-end;
   justify-content: center;
