@@ -258,10 +258,6 @@ async function reduceAnchor() {
       </section>
     </div>
 
-    <div class="links page-bottom">
-      <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
-      <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
-    </div>
     <ConfirmPanel
       :visible="showStartConfirm"
       :title="t('common.earlyStartTitle')"
@@ -349,20 +345,6 @@ async function reduceAnchor() {
   background: var(--bg);
   color: var(--ink);
   padding: 0 12px;
-}
-.links {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 8px;
-  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  text-transform: uppercase;
-}
-.links a {
-  color: var(--ink);
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 4px;
 }
 .opens-on {
   margin: 4px 0 0;
