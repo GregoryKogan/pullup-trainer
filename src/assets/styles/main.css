@@ -453,14 +453,19 @@ select:focus-visible,
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, var(--shadow) 60%, transparent);
   z-index: 100;
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
 
-[data-theme$='-light'] .modal-overlay {
+.modal-overlay,
+.sheet-backdrop {
+  background: color-mix(in srgb, var(--shadow) 60%, transparent);
+}
+
+[data-theme$='-light'] .modal-overlay,
+[data-theme$='-light'] .sheet-backdrop {
   background: color-mix(in srgb, var(--ink) 65%, transparent);
 }
 
