@@ -22,9 +22,9 @@ test.describe('Calendar', () => {
   test('shows hint for unscheduled day', async ({ page }) => {
     await page.getByRole('link', { name: 'Calendar' }).click()
 
-    await page.getByRole('button', { name: '16' }).click()
+    await page.locator('.calgrid button.day.rest:not(.out)').first().click()
 
-    await expect(page.getByText(/no workout planned|не запланирована/i)).toBeVisible()
+    await expect(page.getByRole('status')).toContainText(/no workout planned|не запланирована/i)
   })
 
   test('legend today dot stays small', async ({ page }) => {
