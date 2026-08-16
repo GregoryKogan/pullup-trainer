@@ -190,7 +190,7 @@
     "frequency3": "3× / week",
     "frequency2": "2× / week",
     "weekdays": "Weekdays",
-    "weekdaysLimit": "Pick {n} days",
+    "weekdaysLimit": "Pick {n} day | Pick {n} days",
     "importError": "Invalid backup file",
     "importSuccess": "Backup restored",
     "importConfirm": "Replace all local data with this backup?",

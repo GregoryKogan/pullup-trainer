@@ -190,7 +190,7 @@
     "frequency3": "3× / нед",
     "frequency2": "2× / нед",
     "weekdays": "Дни",
-    "weekdaysLimit": "Выбери {n} дней",
+    "weekdaysLimit": "Выбери {n} дней | Выбери {n} день | Выбери {n} дня | Выбери {n} дней",
     "importError": "Неверный файл бэкапа",
     "importSuccess": "Бэкап восстановлен",
     "importConfirm": "Заменить все локальные данные этим бэкапом?",

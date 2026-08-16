@@ -306,7 +306,7 @@ async function confirmReset() {
           </button>
         </span>
       </div>
-      <p class="sub">{{ t('settings.weekdaysLimit', { n: scheduleProgress.frequencyDays }) }}</p>
+      <p class="sub">{{ t('settings.weekdaysLimit', scheduleProgress.frequencyDays) }}</p>
       <div class="setrow last">
         <span class="k">{{ t('settings.weekdays') }}</span>
         <span class="weekdays">
@@ -319,7 +319,7 @@ async function confirmReset() {
             :disabled="isWeekdayDisabled(day)"
             :aria-disabled="isWeekdayDisabled(day)"
             :aria-pressed="scheduleProgress.weekdays.includes(day)"
-            :title="isWeekdayDisabled(day) ? t('settings.weekdaysLimit', { n: scheduleProgress.frequencyDays }) : undefined"
+            :title="isWeekdayDisabled(day) ? t('settings.weekdaysLimit', scheduleProgress.frequencyDays) : undefined"
             @click="toggleWeekday(day)"
           >
             {{ t(`calendar.dow.${day}`) }}
