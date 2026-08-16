@@ -8,6 +8,7 @@ import {
   detectReturnPolicy,
   getMissedSlots,
   findScheduleSlotIndex,
+  getRescheduleOptions,
 } from './schedule'
 import { addDays, formatLocalDate, parseLocalDate } from '@/utils/dates'
 
@@ -47,7 +48,7 @@ describe('schedule', () => {
       { date: '2026-08-06', stepRef: 1 },
       { date: '2026-08-09', stepRef: 1 },
     ]
-    const moved = rescheduleWorkout(schedule, 1, '2026-08-07')
+    const moved = rescheduleWorkout(schedule, 1, '2026-08-07', '2026-08-01')
     expect(moved).not.toBeNull()
     expect(moved![1].date).toBe('2026-08-07')
     expect(moved![2].date).toBe('2026-08-10')
@@ -58,7 +59,29 @@ describe('schedule', () => {
       { date: '2026-08-03', stepRef: 1 },
       { date: '2026-08-06', stepRef: 1 },
     ]
-    expect(rescheduleWorkout(schedule, 1, '2026-08-04')).toBeNull()
+    expect(rescheduleWorkout(schedule, 1, '2026-08-04', '2026-08-01')).toBeNull()
+  })
+
+  it('rejects reschedule to a past date', () => {
+    const schedule = [
+      { date: '2026-08-10', stepRef: 1 },
+      { date: '2026-08-16', stepRef: 1 },
+      { date: '2026-08-20', stepRef: 1 },
+    ]
+    expect(rescheduleWorkout(schedule, 1, '2026-08-14', '2026-08-16')).toBeNull()
+  })
+
+  it('getRescheduleOptions excludes past dates', () => {
+    const schedule = [
+      { date: '2026-08-10', stepRef: 1 },
+      { date: '2026-08-16', stepRef: 1 },
+      { date: '2026-08-20', stepRef: 1 },
+    ]
+    const options = getRescheduleOptions(schedule, 1, '2026-08-16')
+    expect(options).not.toContain('2026-08-14')
+    expect(options).not.toContain('2026-08-15')
+    expect(options).toContain('2026-08-16')
+    expect(options).toContain('2026-08-17')
   })
 
   it('autoskip preserves intervals on tail', () => {

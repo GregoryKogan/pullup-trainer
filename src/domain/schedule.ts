@@ -82,14 +82,15 @@ export function rescheduleWorkout(
   schedule: ScheduleSlot[],
   slotIndex: number,
   newDate: string,
+  today: string,
 ): ScheduleSlot[] | null {
   if (slotIndex < 0 || slotIndex >= schedule.length) return null
+  if (daysBetween(today, newDate) < 0) return null
   const prevDate = slotIndex > 0 ? schedule[slotIndex - 1].date : null
   const nextDate = slotIndex < schedule.length - 1 ? schedule[slotIndex + 1].date : null
 
   if (prevDate && daysBetween(prevDate, newDate) < 2) return null
   if (nextDate && daysBetween(newDate, nextDate) < 0) return null
-  if (prevDate && daysBetween(prevDate, newDate) < 2) return null
 
   const oldDate = schedule[slotIndex].date
   const delta = daysBetween(oldDate, newDate)
@@ -142,6 +143,7 @@ export function detectReturnPolicy(lastWorkoutDate: string | null, today: string
 export function getRescheduleOptions(
   schedule: ScheduleSlot[],
   slotIndex: number,
+  today: string,
 ): string[] {
   if (slotIndex < 0 || slotIndex >= schedule.length) return []
   const prevDate = slotIndex > 0 ? schedule[slotIndex - 1].date : null
@@ -150,6 +152,7 @@ export function getRescheduleOptions(
   const options: string[] = []
   for (let d = -3; d <= 3; d++) {
     const candidate = addDays(current, d)
+    if (daysBetween(today, candidate) < 0) continue
     if (prevDate && daysBetween(prevDate, candidate) < 2) continue
     if (nextDate && daysBetween(candidate, nextDate) < 0) continue
     options.push(candidate)

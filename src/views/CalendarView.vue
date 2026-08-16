@@ -115,7 +115,7 @@ const isMissedSelected = computed(() => {
 })
 
 const moveOptions = computed(() =>
-  selectedIndex.value !== null ? getRescheduleOptions(schedule.value, selectedIndex.value) : [],
+  selectedIndex.value !== null ? getRescheduleOptions(schedule.value, selectedIndex.value, today) : [],
 )
 
 const startTargetDate = computed(() => selectedMoveDate.value ?? selectedSlot.value?.date ?? null)
@@ -160,7 +160,7 @@ async function applyMove() {
     showDayHint(t('calendar.moveUnchanged'))
     return
   }
-  const moved = rescheduleWorkout(schedule.value, selectedIndex.value, selectedMoveDate.value)
+  const moved = rescheduleWorkout(schedule.value, selectedIndex.value, selectedMoveDate.value, today)
   if (!moved) return
   await progressStore.updateProgress({ ...progressStore.progress, schedule: moved })
   dismissSheet()
