@@ -113,7 +113,20 @@ onMounted(() => {
   text-transform: uppercase;
   margin: 12px 0;
 }
+.result .sub {
+  margin: 0 0 16px;
+  font: 800 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
 .btnrow {
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.btnrow .btn {
+  width: 100%;
 }
 </style>
