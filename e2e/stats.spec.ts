@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { prepareSeededApp, todayLocal } from './helpers/app'
+import { prepareSeededApp, todayLocal, completeWorkout } from './helpers/app'
 import path from 'node:path'
 import fs from 'node:fs'
 import os from 'node:os'
@@ -34,5 +34,17 @@ test.describe('Stats', () => {
     }
     expect(raw.format).toBe('pullup-trainer.history')
     expect(Array.isArray(raw.records)).toBe(true)
+  })
+
+  // E1–E5: charts and history populate after a completed workout
+  test('shows max chart and history after workout', async ({ page }) => {
+    await completeWorkout(page, '8')
+    await page.getByRole('button', { name: /home|главная/i }).click()
+    await page.getByRole('link', { name: 'Stats' }).click()
+
+    await expect(page.locator('.chart-wrap svg.chart').first()).toBeVisible()
+    await expect(page.getByText(/complete more workouts/i)).toHaveCount(0)
+    await expect(page.locator('.hist li').first()).toBeVisible()
+    await expect(page.locator('.kpi b').first()).not.toHaveText('0')
   })
 })

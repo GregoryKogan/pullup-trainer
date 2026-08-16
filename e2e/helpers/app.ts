@@ -279,6 +279,12 @@ export async function prepareFreshApp(page: Page) {
   await resetApp(page)
 }
 
+export async function prepareFreshAppKeepPwa(page: Page) {
+  await page.goto('.')
+  await clearAppState(page)
+  await page.reload()
+}
+
 export async function prepareSeededApp(page: Page, anchor: number, today: string) {
   await resetApp(page)
   await seedBuiltinProgress(page, anchor, today)

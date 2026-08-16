@@ -19,4 +19,12 @@ test.describe('Absent features', () => {
     await startWorkout(page)
     await expect(page.getByText(/\bRPE\b|\bRIR\b|запас повторений/i)).toHaveCount(0)
   })
+
+  // L: excluded monetization and audio UI
+  test('has no monetization or audio prompts', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await expect(page.getByText(/subscribe|premium|donate|реклам|подписк/i)).toHaveCount(0)
+    await page.getByRole('link', { name: 'Home' }).click()
+    await expect(page.locator('audio')).toHaveCount(0)
+  })
 })

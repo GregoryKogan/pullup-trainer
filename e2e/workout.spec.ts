@@ -24,7 +24,16 @@ test.describe('Workout', () => {
     await page.getByRole('button', { name: 'Start' }).click()
     await clearRestGate(page)
     await page.getByRole('button', { name: /leave workout|выйти из тренировки/i }).click()
+    await expect(page.getByRole('alertdialog')).toContainText(/leave workout|выйти/i)
     await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
     await expect(page.locator('.status-kicker')).toContainText(/incomplete|не завершена/i)
+  })
+
+  // C7/C8: progress label and session clock visible during workout
+  test('shows set progress and elapsed clock', async ({ page }) => {
+    await page.getByRole('button', { name: 'Start' }).click()
+    await clearRestGate(page)
+    await expect(page.locator('.top-progress')).toContainText(/set|подход/i)
+    await expect(page.locator('.clock')).toBeVisible()
   })
 })

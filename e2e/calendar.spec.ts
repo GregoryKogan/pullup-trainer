@@ -127,4 +127,47 @@ test.describe('Calendar', () => {
     }
     expect(gapDays(schedule[0].date, schedule[1].date)).toBeGreaterThanOrEqual(3)
   })
+
+  // D6: month navigation and today button
+  test('month navigation changes displayed month', async ({ page }) => {
+    await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+    await expect(page).toHaveURL(/\/calendar/)
+    const monthHeading = page.locator('.calendar-wrap .head h1')
+    const before = await monthHeading.textContent()
+    await page.getByRole('button', { name: /next month|следующий месяц/i }).click()
+    const after = await monthHeading.textContent()
+    expect(after).not.toBe(before)
+    await page.getByRole('button', { name: /today|сегодня/i }).click()
+  })
+
+  // D2: moving one workout shifts all subsequent schedule dates
+  test('move cascades delta to subsequent workouts', async ({ page }) => {
+    const slot1 = today
+    const slot2 = addDays(today, 2)
+    const slot3 = addDays(today, 4)
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      schedule: [
+        { date: slot1, stepRef: 1 },
+        { date: slot2, stepRef: 2 },
+        { date: slot3, stepRef: 3 },
+      ],
+      state: { stepInCycle: 1 },
+    })
+    await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+
+    const dayNum = String(new Date().getDate())
+    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    const target = addDays(slot1, 1)
+    const targetDay = String(Number(target.split('-')[2]))
+    await page.locator('.opt').filter({ hasText: new RegExp(targetDay) }).first().click()
+    await page.getByRole('button', { name: 'Move' }).click()
+
+    const progress = await readProgress(page)
+    const schedule = progress?.schedule as { date: string; stepRef: number }[]
+    expect(schedule[0]?.date).toBe(target)
+    expect(schedule[1]?.date).toBe(addDays(slot2, 1))
+    expect(schedule[2]?.date).toBe(addDays(slot3, 1))
+  })
 })

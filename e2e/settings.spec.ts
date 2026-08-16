@@ -22,4 +22,37 @@ test.describe('Settings', () => {
     await page.getByRole('button', { name: '2× / week' }).click()
     await expect(page.getByRole('button', { name: '2× / week' })).toHaveAttribute('aria-pressed', 'true')
   })
+
+  // F1: 14 theme palettes available
+  test('palette select offers P01 through P14', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    const options = page.locator('#palette-select option')
+    await expect(options).toHaveCount(14)
+  })
+
+  // F2: system theme mode
+  test('system theme mode can be selected', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: 'System' }).click()
+    await expect(page.getByRole('button', { name: 'System' })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  // F4: vibrate and notify toggles
+  test('rest vibrate and notify toggles work', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    const vibrate = page.getByRole('button', { name: 'Vibrate' })
+    const notify = page.getByRole('button', { name: 'Notify' })
+    await vibrate.click()
+    await notify.click()
+    await expect(vibrate).toHaveAttribute('aria-pressed', 'true')
+    await expect(notify).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  // F3: reset all data with confirmation
+  test('reset all clears progress and returns to onboarding', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: /reset all data/i }).click()
+    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
+    await expect(page).toHaveURL(/\/onboarding/)
+  })
 })

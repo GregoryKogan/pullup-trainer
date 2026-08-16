@@ -92,7 +92,8 @@
       "body": [
         "Daily high-frequency training without rest days conflicts with the recovery data. Strength typically returns within two days, so hard sessions should be at least 48 hours apart [11].",
         "Very high weekly volumes without a deload or a performance gate run into the dose-response ceiling and raise the risk of overuse [1][2]. Rest-pause protocols have RCT support on bench press and curls, but not on pull-ups [33]. With a fixed bodyweight load, the main rest-pause benefit, more reps at the same external load, matters less.",
-        "The interface has no RPE or reps-in-reserve scale. Novices misjudge their reserve by more than one rep on average [34]. The app uses an objective pass or fail gate instead."
+        "The interface has no RPE or reps-in-reserve scale. Novices misjudge their reserve by more than one rep on average [34]. The app uses an objective pass or fail gate instead.",
+        "Eccentric-only progressions for people who cannot pull up yet are supported in the literature [25][26][27][28], but this app is for users who can already do at least one strict pull-up."
       ]
     },
     "limitations": {

@@ -37,4 +37,19 @@ test.describe('Onboarding', () => {
     await expect(input).toHaveValue('1')
     await expect(page.getByRole('button', { name: /decrease reps/i })).toBeDisabled()
   })
+
+  // B4: user can override recommended max before starting program
+  test('override lets user re-enter max before start', async ({ page }) => {
+    await page.getByRole('button', { name: 'Next' }).click()
+    await page.locator('#onboarding-reps').fill('5')
+    await page.getByRole('button', { name: 'Next' }).click()
+
+    await page.getByRole('button', { name: 'Change max' }).click()
+    await page.locator('#onboarding-reps').fill('9')
+    await page.getByRole('button', { name: 'Next' }).click()
+    await page.getByRole('button', { name: 'Start program' }).click()
+    await dismissPwaModal(page)
+
+    await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
+  })
 })
