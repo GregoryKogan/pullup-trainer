@@ -86,16 +86,21 @@ const planned = computed(() => workoutStore.active?.planned ?? [])
 const current = computed(() => workoutStore.active?.currentIndex ?? 0)
 const currentSet = computed(() => planned.value[current.value])
 
-const stepLabel = computed(() => {
+const setProgressLabel = computed(() =>
+  t('workout.setOf', { current: current.value + 1, total: planned.value.length }),
+)
+
+const headerA11yLabel = computed(() => {
   const p = progressStore.progress
-  if (!p) return ''
+  const setLabel = setProgressLabel.value
+  if (!p) return setLabel
   if (p.source === 'builtin' && p.state.path === 'L') {
-    return `${t('home.stepProgress', { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 })} · `
+    return `${t('home.stepProgress', { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 })} · ${setLabel}`
   }
   if (p.source === 'builtin' && p.state.path === 'P0') {
-    return `${t('home.path0Step', { step: p.state.path0Step })} · `
+    return `${t('home.path0Step', { step: p.state.path0Step })} · ${setLabel}`
   }
-  return ''
+  return setLabel
 })
 
 const fewerLabelKey = computed(() => {
@@ -398,10 +403,9 @@ function confirmExit() {
       >
         <AppIcon name="x" :size="18" />
       </button>
-      <span class="step">
-        {{ stepLabel }}{{ t('workout.setOf', { current: current + 1, total: planned.length }) }}
-      </span>
-      <span class="clock">{{ formatTime(elapsed) }}</span>
+      <p class="top-progress" aria-hidden="true">{{ setProgressLabel }}</p>
+      <span class="sr-only">{{ headerA11yLabel }}</span>
+      <time class="clock" aria-hidden="true">{{ formatTime(elapsed) }}</time>
     </div>
     <p id="workout-exit-hint" class="sr-only">{{ t('workout.exitWarn') }}</p>
     <SetCardsRow :sets="setCards" />
@@ -532,17 +536,16 @@ function confirmExit() {
   justify-content: space-between;
   padding: 2px 0 14px;
 }
-.step {
+.top-progress {
   flex: 1;
   min-width: 0;
+  margin: 0;
   text-align: center;
   padding: 0 8px;
-  font: 700 0.72rem/1.25 ui-monospace, 'SF Mono', Menlo, monospace;
-  color: var(--muted);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font: 800 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 .clock {
   font: 800 0.8rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
