@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PULL-UP — айдентика: логотип, иконки, фоны</title>
+<style>
+  :root { --volt:#b4ff00; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; background:#111; color:#eee; padding:40px 32px 80px; }
+  h1 { font-size:22px; letter-spacing:3px; text-transform:uppercase; margin-bottom:6px; }
+  h2 { font-size:13px; letter-spacing:2.5px; text-transform:uppercase; color:var(--volt); margin:44px 0 18px; }
+  .sub { color:#888; font-size:13px; margin-bottom:8px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:16px; }
+  .card { border-radius:8px; padding:18px; border:1px solid #333; }
+  .dark { background:#171717; }
+  .light { background:#f5f5f0; color:#111; border-color:#ddd; }
+  .card .label { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:#777; margin-top:10px; }
+  .light .label { color:#999; }
+  .card img { width:100%; max-height:150px; object-fit:contain; color:var(--volt); }
+  .row { display:flex; flex-wrap:wrap; gap:16px; }
+  .tile { width:64px; height:64px; display:flex; align-items:center; justify-content:center; border-radius:8px; }
+  .tile img { width:26px; height:26px; color:var(--volt); }
+  .dark .tile { background:#171717; border:1px solid #333; }
+  .light .tile { background:#f5f5f0; border:1px solid #ddd; }
+  .light .tile img { color:#111; }
+  .icon-app { width:96px; height:96px; border-radius:22px; display:flex; align-items:center; justify-content:center; background:#171717; border:1px solid #333; }
+  .icon-app img { width:74px; height:74px; color:var(--volt); }
+  .light.icon-app { background:#f5f5f0; }
+  .light.icon-app img { color:#111; }
+  .swatch { width:120px; height:120px; border-radius:8px; background-repeat:repeat; border:1px solid #333; background-color:#f5f5f0; }
+</style>
+</head>
+<body>
+<h1>PULL-UP</h1>
+<div class="sub">Логотип и библиотека иконок · Poster / Swiss · один цвет, currentColor</div>
+
+<h2>01 · Логотип — mark-01 (hang, wide grip)</h2>
+<div class="grid">
+  <div class="card dark"><img src="identity/custom/mark-01-v1-square-vlegs.svg" alt=""><div class="label">Знак — тёмный фон</div></div>
+  <div class="card light"><img src="identity/custom/mark-01-v1-square-vlegs.svg" alt=""><div class="label">Знак — светлый фон</div></div>
+  <div class="card dark" style="display:flex;align-items:center;justify-content:center;"><div class="icon-app"><img src="identity/custom/mark-01-v1-square-vlegs.svg" alt=""></div><div class="label">В квадрате иконки приложения</div></div>
+</div>
+
+<h2>02 · Иконки подтягиваний (авторские, custom-pullup)</h2>
+<div class="row">
+  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/pull-up.svg" alt=""></div></div>
+  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/dead-hang.svg" alt=""></div></div>
+  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/bar.svg" alt=""></div></div>
+  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/above-bar.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/pull-up.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/dead-hang.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/bar.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/above-bar.svg" alt=""></div></div>
+</div>
+
+<h2>03 · Иконки UI (Lucide, ISC)</h2>
+<div class="row" id="lucide"></div>
+
+<h2>04 · Фоновые паттерны</h2>
+<div class="row" id="patterns"></div>
+
+<script>
+  const lucide = ['activity','award','biceps-flexed','calendar-days','flame','heart-pulse','medal','repeat','target','timer','trending-up','trophy','zap'];
+  const patterns = ['swiss-grid','halftone-dots','diagonal-hatch','pullup-bars'];
+  const row1 = document.getElementById('lucide');
+  lucide.forEach(n => {
+    const wrap = document.createElement('div'); wrap.className = 'dark';
+    wrap.innerHTML = `<div class="tile"><img src="icons-ui/lucide/${n}.svg" alt="${n}"></div>`;
+    row1.appendChild(wrap);
+  });
+  const row2 = document.getElementById('patterns');
+  patterns.forEach(n => {
+    const s = document.createElement('div'); s.className = 'swatch';
+    s.style.backgroundImage = `url('backgrounds/custom/${n}.svg')`;
+    row2.appendChild(s);
+  });
+</script>
+</body>
+</html>
