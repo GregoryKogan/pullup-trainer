@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "node scripts/sync-pwa-icons.mjs && vue-tsc -b && vite build",
+    "sync:icons": "node scripts/sync-pwa-icons.mjs",
     "preview": "vite preview",
     "typecheck": "vue-tsc -b --noEmit",
     "lint": "eslint . --max-warnings 0",
