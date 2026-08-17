@@ -607,6 +607,10 @@ onBeforeUnmount(() => {
 .day.today {
   background: var(--accent);
   color: var(--accent-ink);
+  border-color: var(--line);
+}
+.day.today .day-icon {
+  color: var(--accent-ink);
 }
 .day.planned.today::after {
   background: var(--accent-ink);
