@@ -9,6 +9,8 @@ import { downloadJson } from '@/utils/platform'
 import AppIcon from '@/components/icons/AppIcon.vue'
 import IconTrendingUp from '@/components/icons/lucide/IconTrendingUp.vue'
 import IconActivity from '@/components/icons/lucide/IconActivity.vue'
+import IconFlame from '@/components/icons/lucide/IconFlame.vue'
+import IconPullUp from '@/components/icons/pullup/IconPullUp.vue'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatShortDate, todayLocal } from '@/utils/dates'
 import {
@@ -125,15 +127,24 @@ function exportHistoryJson() {
     <div class="kpis">
       <div class="kpi">
         <b>{{ maxReps[maxReps.length - 1]?.value ?? 0 }}</b>
-        <span>{{ t('stats.maxReps') }}</span>
+        <span class="kpi-label">
+          <IconTrendingUp :size="14" class="kpi-icon" />
+          {{ t('stats.maxReps') }}
+        </span>
       </div>
       <div class="kpi">
         <b>{{ totalVolume }}</b>
-        <span>{{ t('stats.totalReps') }}</span>
+        <span class="kpi-label">
+          <IconPullUp :size="14" class="kpi-icon" />
+          {{ t('stats.totalReps') }}
+        </span>
       </div>
       <div class="kpi">
         <b class="streak-num">{{ streakWeeks }}</b>
-        <span>{{ t('stats.weeklyStreakLabel') }}</span>
+        <span class="kpi-label">
+          <IconFlame :size="14" class="kpi-icon" />
+          {{ t('stats.weeklyStreakLabel') }}
+        </span>
       </div>
     </div>
     <section class="sec">
@@ -330,9 +341,17 @@ function exportHistoryJson() {
 .kpi .streak-num {
   font-size: 1.7rem;
 }
-.kpi span {
+.kpi-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   font: 700 0.68rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+}
+.kpi-icon {
+  flex-shrink: 0;
+  color: var(--accent);
 }
 @media (max-width: 420px) {
   .kpis {
