@@ -8,6 +8,9 @@ import { useProgressStore } from './stores/progress'
 import { APP_SHORT_NAME } from '@/constants/app-brand'
 import { syncAppBranding } from '@/utils/app-branding'
 import './assets/styles/main.css'
+import { installZoomPrevention } from '@/utils/prevent-zoom'
+
+installZoomPrevention()
 
 async function bootstrap() {
   const app = createApp(App)
