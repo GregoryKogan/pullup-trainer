@@ -240,7 +240,10 @@
   "about": {
     "kicker": "Pull-up Trainer",
     "title": "About",
-    "body": "Pull-up Trainer is a free local-first PWA. No accounts, no ads, no cloud.",
+    "body": "I got tired of low-quality apps in this category, packed with ads and in-app purchases, so I made my own. It is free, with no ads, no accounts, and no cloud — everything runs locally on your device. The app is built as a PWA.",
+    "repo": "GitHub repository",
+    "contactsTitle": "Contacts",
+    "authorName": "Gregory Koganovsky",
     "whyLink": "Why this program",
     "sourcesLink": "Open research sources",
     "version": "Version {v}",
