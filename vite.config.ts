@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-32.png', 'icon-180.png'],
+      includeAssets: ['icon-32.png', 'icon-180.png', 'sounds/set-start-go.wav'],
       manifest: {
         id: '/pullup-trainer/',
         name: APP_NAME,
@@ -29,7 +29,7 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/pullup-trainer/index.html',
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,wav}'],
       },
     }),
   ],

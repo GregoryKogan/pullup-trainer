@@ -12,6 +12,7 @@ import { APP_VERSION, REST_MAX_SECONDS, REST_MIN_SECONDS, REST_PRESET_SECONDS } 
 import { formatTime } from '@/utils/dates'
 import { clampRestSeconds } from '@/utils/workout-display'
 import { downloadJson } from '@/utils/platform'
+import { requestNotificationPermission } from '@/composables/use-rest-signals'
 import { db } from '@/db/database'
 import { setLocale } from '@/i18n'
 import type { ThemeMode, Weekday, WorkoutRecord } from '@/domain/types'
@@ -60,16 +61,12 @@ async function toggleAutoStart() {
   await settingsStore.update({ restAutoStart: !s.restAutoStart })
 }
 
-async function toggleVibrate() {
-  const s = settings.value
-  if (!s) return
-  await settingsStore.update({ restVibrate: !s.restVibrate })
-}
-
 async function toggleNotify() {
   const s = settings.value
   if (!s) return
-  await settingsStore.update({ restNotify: !s.restNotify })
+  const next = !s.restNotify
+  await settingsStore.update({ restNotify: next })
+  if (next) await requestNotificationPermission()
 }
 
 async function setMode(mode: ThemeMode) {
@@ -269,20 +266,7 @@ async function confirmReset() {
           <i />
         </button>
       </div>
-      <div class="setrow">
-        <span class="k">{{ t('settings.vibrate') }}</span>
-        <button
-          type="button"
-          class="sw"
-          :class="{ on: settings.restVibrate }"
-          :aria-label="t('settings.vibrate')"
-          :aria-pressed="settings.restVibrate"
-          @click="toggleVibrate"
-        >
-          <i />
-        </button>
-      </div>
-      <div class="setrow">
+      <div class="setrow last">
         <span class="k">{{ t('settings.notify') }}</span>
         <button
           type="button"
@@ -295,11 +279,7 @@ async function confirmReset() {
           <i />
         </button>
       </div>
-      <div class="setrow last">
-        <span class="k">{{ t('settings.signal') }}</span>
-        <span class="v signal-value"><AppIcon name="vibrate" /><b>{{ t('settings.signalValue') }}</b></span>
-      </div>
-      <p class="sub">{{ t('settings.noSound') }}</p>
+      <p class="sub">{{ t('settings.notifyHint') }}</p>
     </section>
     <section v-if="scheduleProgress" class="sec">
       <h4>{{ t('settings.frequency') }}</h4>
@@ -498,8 +478,5 @@ select {
 }
 .sub.ok {
   color: var(--ok);
-}
-.signal-value {
-  gap: 6px;
 }
 </style>

@@ -235,7 +235,6 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
             themeMode: 'system',
             restDurationSeconds: payload.restDurationSeconds,
             restAutoStart: false,
-            restVibrate: false,
             restNotify: false,
             language: payload.language,
           })

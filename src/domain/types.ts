@@ -90,7 +90,6 @@ export interface AppSettings {
   themeMode: ThemeMode
   restDurationSeconds: number
   restAutoStart: boolean
-  restVibrate: boolean
   restNotify: boolean
   language: 'en' | 'ru'
 }

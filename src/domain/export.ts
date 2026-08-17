@@ -161,7 +161,7 @@ export function normalizeImportedBackup(data: unknown): BackupExport | null {
       schemaVersion: d.schemaVersion,
       exportedAt: d.exportedAt ?? toIsoOffset(new Date()),
       appVersion: d.appVersion ?? '1.0.0',
-      settings: d.settings,
+      settings: normalizeSettings(d.settings),
       activeProgress: migrateBackupProgress(d.activeProgress),
       history: d.history ?? [],
     }
@@ -171,7 +171,7 @@ export function normalizeImportedBackup(data: unknown): BackupExport | null {
     schemaVersion: SCHEMA_VERSION,
     exportedAt: d.exportedAt ?? toIsoOffset(new Date()),
     appVersion: d.appVersion ?? '1.0.0',
-    settings: d.settings,
+    settings: normalizeSettings(d.settings),
     activeProgress: migrateBackupProgress(d.activeProgress),
     history: d.history ?? [],
   }
@@ -189,6 +189,35 @@ export function validateHistory(data: unknown): data is HistoryExport {
   return d.format === HISTORY_FORMAT && typeof d.schemaVersion === 'number'
 }
 
+export function normalizeSettings(raw: unknown): AppSettings {
+  const defaults = defaultSettings()
+  if (!raw || typeof raw !== 'object') return defaults
+  const s = raw as Record<string, unknown>
+  const hasNotify = typeof s.restNotify === 'boolean'
+  const hasVibrate = typeof s.restVibrate === 'boolean'
+  let restNotify = defaults.restNotify
+  if (hasNotify && hasVibrate) {
+    restNotify = Boolean(s.restNotify || s.restVibrate)
+  } else if (hasNotify) {
+    restNotify = s.restNotify as boolean
+  } else if (hasVibrate) {
+    restNotify = s.restVibrate as boolean
+  }
+  return {
+    id: 'singleton',
+    palette: typeof s.palette === 'string' ? s.palette : defaults.palette,
+    themeMode:
+      s.themeMode === 'light' || s.themeMode === 'dark' || s.themeMode === 'system'
+        ? s.themeMode
+        : defaults.themeMode,
+    restDurationSeconds:
+      typeof s.restDurationSeconds === 'number' ? s.restDurationSeconds : defaults.restDurationSeconds,
+    restAutoStart: typeof s.restAutoStart === 'boolean' ? s.restAutoStart : defaults.restAutoStart,
+    restNotify,
+    language: s.language === 'ru' ? 'ru' : defaults.language,
+  }
+}
+
 export function defaultSettings(): AppSettings {
   return {
     id: 'singleton',
@@ -196,7 +225,6 @@ export function defaultSettings(): AppSettings {
     themeMode: 'system',
     restDurationSeconds: 180,
     restAutoStart: true,
-    restVibrate: true,
     restNotify: true,
     language: 'en',
   }

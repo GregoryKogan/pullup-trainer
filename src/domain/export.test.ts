@@ -5,6 +5,7 @@ import {
   validateBackup,
   migrateBackupProgress,
   normalizeImportedBackup,
+  normalizeSettings,
   defaultSettings,
   SCHEMA_VERSION,
 } from './export'
@@ -140,5 +141,15 @@ describe('export', () => {
     const normalized = normalizeImportedBackup(backup)
     expect(normalized?.activeProgress?.state.lastRetestCycleIndex).toBe(0)
     expect(normalized?.activeProgress?.state.anchor).toBe(7)
+  })
+
+  it('normalizeSettings merges legacy vibrate and notify flags', () => {
+    expect(
+      normalizeSettings({ ...defaultSettings(), restNotify: false, restVibrate: true }).restNotify,
+    ).toBe(true)
+    expect(
+      normalizeSettings({ ...defaultSettings(), restNotify: false, restVibrate: false }).restNotify,
+    ).toBe(false)
+    expect(normalizeSettings({ ...defaultSettings(), restVibrate: true }).restNotify).toBe(true)
   })
 })

@@ -37,14 +37,11 @@ test.describe('Settings', () => {
     await expect(page.getByRole('button', { name: 'System' })).toHaveAttribute('aria-pressed', 'true')
   })
 
-  // F4: vibrate and notify toggles
-  test('rest vibrate and notify toggles work', async ({ page }) => {
+  // F4: notify toggle
+  test('rest notify toggle works', async ({ page }) => {
     await page.getByRole('link', { name: 'Settings' }).click()
-    const vibrate = page.getByRole('button', { name: 'Vibrate' })
     const notify = page.getByRole('button', { name: 'Notify' })
-    await vibrate.click()
     await notify.click()
-    await expect(vibrate).toHaveAttribute('aria-pressed', 'true')
     await expect(notify).toHaveAttribute('aria-pressed', 'true')
   })
 

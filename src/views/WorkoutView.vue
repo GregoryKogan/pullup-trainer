@@ -19,7 +19,7 @@ import {
 } from '@/domain/progression'
 import { advanceScheduleAfterWorkout, findScheduleSlotIndex, hasWorkoutRecord } from '@/domain/schedule'
 import { useRestTimer } from '@/composables/use-rest-timer'
-import { requestNotificationPermission, signalRestEnd } from '@/composables/use-rest-signals'
+import { requestNotificationPermission, signalRestEnd, unlockRestSound } from '@/composables/use-rest-signals'
 import { todayLocal, toIsoOffset, formatTime } from '@/utils/dates'
 import {
   clampRestSeconds,
@@ -57,7 +57,6 @@ const restMax = REST_MAX_SECONDS
 const restTimer = useRestTimer(async () => {
   const s = settingsStore.settings
   await signalRestEnd(
-    s?.restVibrate ?? true,
     s?.restNotify ?? true,
     t('workout.restCompleteTitle'),
     t('workout.restCompleteBody'),
@@ -163,7 +162,9 @@ async function ensureSession() {
 
 onMounted(async () => {
   restTimer.setBounds(restMin, restMax)
-  await requestNotificationPermission()
+  if (settingsStore.settings?.restNotify ?? true) {
+    await requestNotificationPermission()
+  }
   await ensureSession()
   startedAt.value = new Date()
   elapsedTimer = setInterval(() => {
@@ -209,6 +210,7 @@ watch(
 )
 
 function finishSet(done: number) {
+  void unlockRestSound()
   workoutStore.completeSet(done)
   showFewer.value = false
   if (workoutStore.isComplete()) finishWorkout()
@@ -224,6 +226,7 @@ async function openFewer() {
 }
 
 async function applyRestPreset(seconds: number) {
+  void unlockRestSound()
   const clamped = clampRestSeconds(seconds)
   await settingsStore.update({ restDurationSeconds: clamped })
   restTimer.start(clamped)
