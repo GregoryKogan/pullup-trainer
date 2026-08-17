@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SetCardsRow from '@/components/workout/SetCardsRow.vue'
+import ContourNumber from '@/components/workout/ContourNumber.vue'
 import RestTimerRing from '@/components/workout/RestTimerRing.vue'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
@@ -322,7 +323,12 @@ function confirmExit() {
         <IconPullUp :size="24" class="hero-icon" />
         <p class="kicker">{{ t('workout.doNow') }}</p>
         <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
-        <div class="rep" aria-live="polite" aria-atomic="true">{{ currentSet.planned }}</div>
+        <ContourNumber
+          class="rep"
+          :value="currentSet.planned"
+          aria-live="polite"
+          aria-atomic="true"
+        />
         <p class="sub" aria-live="polite">
           {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
         </p>
@@ -479,18 +485,7 @@ function confirmExit() {
   margin: 0 0 8px;
 }
 .rep {
-  font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: clamp(5rem, min(28vw, 26vh), 9rem);
-  font-weight: 900;
   line-height: 1;
-  color: var(--accent);
-  overflow-wrap: anywhere;
-}
-@supports (-webkit-text-stroke: 2.5px var(--accent)) {
-  .rep {
-    color: transparent;
-    -webkit-text-stroke: 2.5px var(--accent);
-  }
 }
 .fewer input,
 .max-done input {
