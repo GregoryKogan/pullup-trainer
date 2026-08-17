@@ -115,6 +115,7 @@
     "resultVolume": "{done} из {planned} по плану",
     "resultNext": "Далее: шаг {step}",
     "resultRetry": "Повтори этот шаг в следующий раз.",
+    "resultNextDate": "Следующая тренировка: {date}",
     "volume": "{n} повторений",
     "focusReps": "повт · подход {n}",
     "focusSeconds": "сек · подход {n}",
@@ -127,9 +128,6 @@
       "negative": "Негатив",
       "assisted": "Ассист"
     }
-  },
-  "result": {
-    "tryAgain": "Попробовать снова"
   },
   "calendar": {
     "title": "Календарь",
@@ -150,6 +148,7 @@
     "notScheduled": "На этот день тренировка не запланирована.",
     "moveUnchanged": "Выбери другую дату для переноса.",
     "moveBlockedActive": "Заверши или выйди из тренировки, чтобы перенести этот день.",
+    "attemptedLocked": "Тренировка на этот день уже записана.",
     "nextMonth": "Следующий месяц",
     "prevMonth": "Предыдущий месяц",
     "dow": {

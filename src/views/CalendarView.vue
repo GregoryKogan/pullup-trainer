@@ -16,6 +16,7 @@ const progressStore = useProgressStore()
 const workoutStore = useWorkoutSessionStore()
 
 const viewMonth = ref(new Date())
+const selectedDate = ref<string | null>(null)
 const selectedIndex = ref<number | null>(null)
 const selectedMoveDate = ref<string | null>(null)
 const autoshiftBanner = ref(false)
@@ -84,13 +85,18 @@ function isToday(date: string) {
   return date === today.value
 }
 
-const sheetOpen = computed(() => selectedIndex.value !== null)
+const sheetOpen = computed(() => selectedDate.value !== null)
+
+const isReadOnlySheet = computed(
+  () => selectedDate.value !== null && attemptedDates.value.has(selectedDate.value),
+)
 
 const { panelRef: sheetDialogRef } = useModalA11y(sheetOpen, {
   onEscape: () => dismissSheet(),
 })
 
 function dismissSheet() {
+  selectedDate.value = null
   selectedIndex.value = null
   selectedMoveDate.value = null
 }
@@ -105,8 +111,19 @@ function showDayHint(message: string) {
 }
 
 async function selectDay(date: string) {
+  if (attemptedDates.value.has(date)) {
+    selectedDate.value = date
+    selectedIndex.value = null
+    selectedMoveDate.value = null
+    dayHint.value = ''
+    await nextTick()
+    sheetDialogRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    return
+  }
+
   const idx = schedule.value.findIndex((s) => s.date === date)
   if (idx >= 0) {
+    selectedDate.value = date
     selectedIndex.value = idx
     selectedMoveDate.value = date
     dayHint.value = ''
@@ -123,7 +140,7 @@ const selectedSlot = computed(() =>
 )
 
 const dayRecords = computed(() => {
-  const date = selectedSlot.value?.date
+  const date = selectedDate.value
   if (!date) return []
   return progressStore.records.filter((r) => r.date === date)
 })
@@ -297,7 +314,7 @@ onBeforeUnmount(() => {
         class="day"
         :class="[
           dayStatus(cell.date),
-          { out: !cell.inMonth, sel: selectedMoveDate === cell.date, today: isToday(cell.date) },
+          { out: !cell.inMonth, sel: selectedDate === cell.date, today: isToday(cell.date) },
         ]"
         :aria-label="dayAriaLabel(cell.date, cell.day)"
         @click="selectDay(cell.date)"
@@ -317,7 +334,7 @@ onBeforeUnmount(() => {
     </div>
     <Teleport to="body">
       <div
-        v-if="selectedIndex !== null"
+        v-if="selectedDate !== null"
         class="sheet-backdrop"
         role="presentation"
         @click.self="dismissSheet"
@@ -329,10 +346,10 @@ onBeforeUnmount(() => {
           aria-modal="true"
           tabindex="-1"
           :aria-labelledby="'calendar-sheet-title'"
-          :aria-describedby="'calendar-sheet-desc'"
+          :aria-describedby="isReadOnlySheet ? 'calendar-sheet-locked' : 'calendar-sheet-desc'"
         >
           <div class="sheet-head">
-            <h4 id="calendar-sheet-title">{{ formatDisplayDate(selectedSlot?.date ?? '', locale) }}</h4>
+            <h4 id="calendar-sheet-title">{{ formatDisplayDate(selectedDate ?? '', locale) }}</h4>
             <button
               type="button"
               class="iconbtn sheet-close"
@@ -342,55 +359,79 @@ onBeforeUnmount(() => {
               <AppIcon name="x" />
             </button>
           </div>
-          <div v-if="!moveBlocked" class="optrow">
-            <button
-              v-for="opt in moveOptions"
-              :key="opt"
-              type="button"
-              class="opt"
-              :class="{ on: selectedMoveDate === opt }"
-              :aria-pressed="selectedMoveDate === opt"
-              @click="selectedMoveDate = opt"
-            >
-              {{ formatDisplayDate(opt, locale) }}
-            </button>
-          </div>
-          <p v-else id="calendar-sheet-desc" class="shift-note move-blocked">
-            <AppIcon name="info" />
-            {{ t('calendar.moveBlockedActive') }}
-          </p>
-          <p v-if="!moveBlocked" id="calendar-sheet-desc" class="shift-note">
-            <AppIcon name="info" />
-            {{ t('calendar.shiftNote') }}
-          </p>
-          <div v-if="dayRecords.length" class="day-history">
-            <p class="day-history-title">{{ t('calendar.dayHistory') }}</p>
-            <ul>
-              <li v-for="r in dayRecords" :key="r.id ?? r.startedAt">
-                <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
-                <b>{{ recordSummary(r) }}</b>
-                <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
-                  r.result === 'success' ? t('stats.success') : t('stats.partial')
-                }}</span>
-              </li>
-            </ul>
-          </div>
-          <p v-else class="day-history-empty">{{ t('calendar.dayHistoryEmpty') }}</p>
-          <div class="btnrow">
-            <button
-              v-if="!moveBlocked"
-              type="button"
-              class="btn accent"
-              :disabled="moveUnchanged"
-              @click="applyMove"
-            >
-              {{ t('common.move') }}
-            </button>
-            <button type="button" class="btn ghost" @click="startSelected">{{ t('calendar.startNow') }}</button>
-            <button v-if="isMissedSelected" type="button" class="btn ghost" @click="repeatMissed">
-              {{ t('calendar.repeatMissed') }}
-            </button>
-          </div>
+          <template v-if="isReadOnlySheet">
+            <p id="calendar-sheet-locked" class="shift-note">
+              <AppIcon name="info" />
+              {{ t('calendar.attemptedLocked') }}
+            </p>
+            <div v-if="dayRecords.length" class="day-history">
+              <p class="day-history-title">{{ t('calendar.dayHistory') }}</p>
+              <ul>
+                <li v-for="r in dayRecords" :key="r.id ?? r.startedAt">
+                  <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
+                  <b>{{ recordSummary(r) }}</b>
+                  <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
+                    r.result === 'success' ? t('stats.success') : t('stats.partial')
+                  }}</span>
+                </li>
+              </ul>
+            </div>
+            <p v-else class="day-history-empty">{{ t('calendar.dayHistoryEmpty') }}</p>
+            <div class="btnrow">
+              <button type="button" class="btn accent" @click="dismissSheet">{{ t('common.close') }}</button>
+            </div>
+          </template>
+          <template v-else>
+            <div v-if="!moveBlocked" class="optrow">
+              <button
+                v-for="opt in moveOptions"
+                :key="opt"
+                type="button"
+                class="opt"
+                :class="{ on: selectedMoveDate === opt }"
+                :aria-pressed="selectedMoveDate === opt"
+                @click="selectedMoveDate = opt"
+              >
+                {{ formatDisplayDate(opt, locale) }}
+              </button>
+            </div>
+            <p v-else id="calendar-sheet-desc" class="shift-note move-blocked">
+              <AppIcon name="info" />
+              {{ t('calendar.moveBlockedActive') }}
+            </p>
+            <p v-if="!moveBlocked" id="calendar-sheet-desc" class="shift-note">
+              <AppIcon name="info" />
+              {{ t('calendar.shiftNote') }}
+            </p>
+            <div v-if="dayRecords.length" class="day-history">
+              <p class="day-history-title">{{ t('calendar.dayHistory') }}</p>
+              <ul>
+                <li v-for="r in dayRecords" :key="r.id ?? r.startedAt">
+                  <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
+                  <b>{{ recordSummary(r) }}</b>
+                  <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
+                    r.result === 'success' ? t('stats.success') : t('stats.partial')
+                  }}</span>
+                </li>
+              </ul>
+            </div>
+            <p v-else class="day-history-empty">{{ t('calendar.dayHistoryEmpty') }}</p>
+            <div class="btnrow">
+              <button
+                v-if="!moveBlocked"
+                type="button"
+                class="btn accent"
+                :disabled="moveUnchanged"
+                @click="applyMove"
+              >
+                {{ t('common.move') }}
+              </button>
+              <button type="button" class="btn ghost" @click="startSelected">{{ t('calendar.startNow') }}</button>
+              <button v-if="isMissedSelected" type="button" class="btn ghost" @click="repeatMissed">
+                {{ t('calendar.repeatMissed') }}
+              </button>
+            </div>
+          </template>
         </div>
       </div>
     </Teleport>

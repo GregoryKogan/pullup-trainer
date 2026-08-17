@@ -145,6 +145,29 @@ test.describe('Calendar', () => {
     await expect(page.locator('.day.missed').first()).toHaveCount(0)
   })
 
+  test('failed workout day opens read-only sheet', async ({ page }) => {
+    const failDate = addDays(today, -2)
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      schedule: [
+        { date: addDays(today, 2), stepRef: 1 },
+      ],
+    })
+    await seedWorkoutRecord(page, { date: failDate, result: 'fail' })
+    await page.reload({ waitUntil: 'networkidle' })
+    await dismissPwaModal(page)
+    await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+
+    const failDay = String(Number(failDate.split('-')[2]))
+    await page.getByRole('button', { name: new RegExp(`${failDay}, attempted|попытка`, 'i') }).click()
+
+    await expect(page.getByRole('button', { name: /move|перенести/i })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /start now|начать/i })).toHaveCount(0)
+    await expect(page.getByText(/already logged|уже записана/i)).toBeVisible()
+    await expect(page.getByText(/day history|история дня/i)).toBeVisible()
+  })
+
   test('2x frequency builds schedule with at least 72h gaps', async ({ page }) => {
     await page.getByRole('navigation').getByRole('link', { name: 'Settings' }).click()
     await page.getByRole('button', { name: /2×\s*\/\s*week|2×\s*\/\s*нед/i }).click()

@@ -115,6 +115,7 @@
     "resultVolume": "{done} of {planned} planned",
     "resultNext": "Next: step {step}",
     "resultRetry": "Try this step again next time.",
+    "resultNextDate": "Next workout: {date}",
     "volume": "{n} reps total",
     "focusReps": "reps · set {n}",
     "focusSeconds": "sec · set {n}",
@@ -127,9 +128,6 @@
       "negative": "Negative",
       "assisted": "Assisted"
     }
-  },
-  "result": {
-    "tryAgain": "Try again"
   },
   "calendar": {
     "title": "Calendar",
@@ -150,6 +148,7 @@
     "notScheduled": "This day has no workout planned.",
     "moveUnchanged": "Pick a different date to move this workout.",
     "moveBlockedActive": "Finish or leave the workout before moving this day.",
+    "attemptedLocked": "This workout is already logged.",
     "nextMonth": "Next month",
     "prevMonth": "Previous month",
     "dow": {

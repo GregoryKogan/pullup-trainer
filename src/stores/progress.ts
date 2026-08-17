@@ -54,7 +54,11 @@ export const useProgressStore = defineStore('progress', () => {
 
   function getNextSlot() {
     if (!progress.value) return null
-    return progress.value.schedule[0] ?? null
+    const attempted = new Set(
+      records.value.filter((r) => r.kind === 'workout').map((r) => r.date),
+    )
+    const slot = progress.value.schedule.find((s) => !attempted.has(s.date))
+    return slot ?? null
   }
 
   async function updateProgress(data: ActiveProgress) {

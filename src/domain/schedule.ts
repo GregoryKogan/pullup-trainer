@@ -1,4 +1,4 @@
-import type { ScheduleSlot, Weekday, ReturnPolicy } from './types'
+import type { ScheduleSlot, Weekday, ReturnPolicy, WorkoutRecord } from './types'
 import { addDays, daysBetween, parseLocalDate, formatLocalDate } from '@/utils/dates'
 
 const WEEKDAY_INDEX: Record<Weekday, number> = {
@@ -160,6 +160,24 @@ export function getRescheduleOptions(
   return options
 }
 
+export function hasWorkoutRecord(records: WorkoutRecord[], date: string): boolean {
+  return records.some((r) => r.kind === 'workout' && r.date === date)
+}
+
+function appendNextScheduleSlot(
+  result: ScheduleSlot[],
+  lastDate: string,
+  stepRef: number,
+  frequencyDays: 2 | 3,
+  weekdays: Weekday[],
+): ScheduleSlot[] {
+  const minGap = frequencyDays === 3 ? 2 : 3
+  let cursor = addDays(lastDate, minGap)
+  cursor = nextWeekdayOnOrAfter(cursor, weekdays)
+  result.push({ date: cursor, stepRef })
+  return result
+}
+
 export function advanceScheduleAfterWorkout(
   schedule: ScheduleSlot[],
   slotIndex: number,
@@ -168,18 +186,41 @@ export function advanceScheduleAfterWorkout(
   frequencyDays: 2 | 3,
   weekdays: Weekday[],
 ): ScheduleSlot[] {
+  if (slotIndex < 0 || slotIndex >= schedule.length) return [...schedule]
+
   const result = [...schedule]
-  if (success && slotIndex === 0 && result.length > 0) {
+
+  if (success) {
+    if (slotIndex !== 0) return result
     result.shift()
     if (result.length === 0) {
-      const lastDate = schedule[0]?.date ?? formatLocalDate(new Date())
-      const minGap = frequencyDays === 3 ? 2 : 3
-      let cursor = addDays(lastDate, minGap)
-      cursor = nextWeekdayOnOrAfter(cursor, weekdays)
-      result.push({ date: cursor, stepRef: nextStepRef })
-    } else {
-      result[0] = { ...result[0], stepRef: nextStepRef }
+      return appendNextScheduleSlot(
+        result,
+        schedule[0]?.date ?? formatLocalDate(new Date()),
+        nextStepRef,
+        frequencyDays,
+        weekdays,
+      )
     }
+    result[0] = { ...result[0], stepRef: nextStepRef }
+    return result
   }
+
+  if (slotIndex === 0) {
+    const consumedStepRef = result[0].stepRef
+    result.shift()
+    if (result.length === 0) {
+      return appendNextScheduleSlot(
+        result,
+        schedule[0]?.date ?? formatLocalDate(new Date()),
+        consumedStepRef,
+        frequencyDays,
+        weekdays,
+      )
+    }
+    return result
+  }
+
+  result.splice(slotIndex, 1)
   return result
 }

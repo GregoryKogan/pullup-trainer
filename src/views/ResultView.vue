@@ -3,12 +3,15 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useWorkoutSessionStore } from '@/stores/workout-session'
+import { useProgressStore } from '@/stores/progress'
+import { formatDisplayDate } from '@/utils/dates'
 import AppIcon from '@/components/icons/AppIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const workoutStore = useWorkoutSessionStore()
+const progressStore = useProgressStore()
 
 function parseNum(value: unknown): number {
   const n = Number(value ?? 0)
@@ -30,12 +33,7 @@ const nextStep = computed(() => {
   return route.query.next
 })
 
-const retryDate = computed(() => summary.value?.date ?? (typeof route.query.date === 'string' ? route.query.date : null))
-
-function retryWorkout() {
-  if (retryDate.value) router.push(`/workout/${retryDate.value}`)
-  else router.push('/workout')
-}
+const nextSlotDate = computed(() => progressStore.getNextSlot()?.date ?? null)
 
 const statusRef = ref<HTMLElement | null>(null)
 
@@ -63,11 +61,11 @@ onMounted(() => {
       <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', { n: volume }) }}</p>
       <p v-if="success && nextStep" class="sub">{{ t('workout.resultNext', { step: nextStep }) }}</p>
       <p v-else-if="!success" class="sub">{{ t('workout.resultRetry') }}</p>
+      <p v-if="!success && nextSlotDate" class="sub next-date">
+        {{ t('workout.resultNextDate', { date: formatDisplayDate(nextSlotDate, locale) }) }}
+      </p>
       <div class="btnrow">
         <button type="button" class="btn accent" @click="router.push('/')">{{ t('nav.home') }}</button>
-        <button v-if="!success && retryDate" type="button" class="btn accent" @click="retryWorkout">
-          {{ t('result.tryAgain') }}
-        </button>
         <button v-if="!success" type="button" class="btn ghost" @click="router.push('/calendar')">
           {{ t('nav.calendar') }}
         </button>
@@ -118,6 +116,9 @@ onMounted(() => {
   font: 800 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+.next-date {
+  margin-top: -8px;
 }
 .btnrow {
   flex-direction: column;

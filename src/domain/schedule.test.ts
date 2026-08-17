@@ -7,7 +7,10 @@ import {
   getMissedSlots,
   findScheduleSlotIndex,
   getRescheduleOptions,
+  advanceScheduleAfterWorkout,
+  hasWorkoutRecord,
 } from './schedule'
+import type { WorkoutRecord } from './types'
 import { addDays, formatLocalDate, parseLocalDate } from '@/utils/dates'
 
 const WEEKDAYS = ['mon', 'wed', 'fri'] as const
@@ -114,5 +117,49 @@ describe('schedule', () => {
     const iso = formatLocalDate(d)
     expect(iso).toBe('2026-08-15')
     expect(addDays(iso, 1)).toBe('2026-08-16')
+  })
+
+  it('hasWorkoutRecord ignores tests', () => {
+    const records = [
+      { kind: 'test', date: '2026-08-03' },
+      { kind: 'workout', date: '2026-08-06' },
+    ] as WorkoutRecord[]
+    expect(hasWorkoutRecord(records, '2026-08-03')).toBe(false)
+    expect(hasWorkoutRecord(records, '2026-08-06')).toBe(true)
+  })
+
+  it('advanceScheduleAfterWorkout on success shifts slot 0 and updates stepRef', () => {
+    const schedule = [
+      { date: '2026-08-03', stepRef: 1 },
+      { date: '2026-08-06', stepRef: 1 },
+      { date: '2026-08-09', stepRef: 1 },
+    ]
+    const next = advanceScheduleAfterWorkout(schedule, 0, true, 2, 3, [...WEEKDAYS])
+    expect(next).toHaveLength(2)
+    expect(next[0].date).toBe('2026-08-06')
+    expect(next[0].stepRef).toBe(2)
+  })
+
+  it('advanceScheduleAfterWorkout on fail shifts slot 0 and keeps stepRef', () => {
+    const schedule = [
+      { date: '2026-08-03', stepRef: 2 },
+      { date: '2026-08-06', stepRef: 2 },
+      { date: '2026-08-09', stepRef: 2 },
+    ]
+    const next = advanceScheduleAfterWorkout(schedule, 0, false, 2, 3, [...WEEKDAYS])
+    expect(next).toHaveLength(2)
+    expect(next[0].date).toBe('2026-08-06')
+    expect(next[0].stepRef).toBe(2)
+  })
+
+  it('advanceScheduleAfterWorkout on fail removes early-start slot', () => {
+    const schedule = [
+      { date: '2026-08-03', stepRef: 2 },
+      { date: '2026-08-06', stepRef: 2 },
+      { date: '2026-08-09', stepRef: 2 },
+    ]
+    const next = advanceScheduleAfterWorkout(schedule, 1, false, 2, 3, [...WEEKDAYS])
+    expect(next).toHaveLength(2)
+    expect(next.map((s) => s.date)).toEqual(['2026-08-03', '2026-08-09'])
   })
 })

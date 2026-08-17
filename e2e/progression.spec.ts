@@ -6,6 +6,8 @@ import {
   failWorkoutFinalShort,
   readProgress,
   todayLocal,
+  addDays,
+  dismissPwaModal,
 } from './helpers/app'
 
 test.describe('Progression', () => {
@@ -21,12 +23,55 @@ test.describe('Progression', () => {
     expect(schedule[0]?.stepRef).toBe(2)
   })
 
-  test('fail keeps the same stepRef', async ({ page }) => {
-    await prepareProgress(page, { anchor: 7, today, stepRef: 2 })
+  test('fail advances schedule date but keeps stepRef', async ({ page }) => {
+    const nextDate = addDays(today, 2)
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      stepRef: 2,
+      schedule: [
+        { date: today, stepRef: 2 },
+        { date: nextDate, stepRef: 2 },
+      ],
+    })
     await failWorkoutEarly(page)
     const progress = await readProgress(page)
-    const schedule = progress?.schedule as { stepRef: number }[]
+    const schedule = progress?.schedule as { date: string; stepRef: number }[]
+    expect(schedule[0]?.date).toBe(nextDate)
     expect(schedule[0]?.stepRef).toBe(2)
+  })
+
+  test('logged workout date cannot be restarted', async ({ page }) => {
+    await prepareProgress(page, { anchor: 7, today, stepRef: 2 })
+    await failWorkoutEarly(page)
+    await page.goto(`workout/${today}`)
+    await dismissPwaModal(page)
+    await expect(page.getByText(/could not load|не удалось загрузить/i)).toBeVisible()
+  })
+
+  test('two fails trigger deload anchor 7 to 6', async ({ page }) => {
+    const nextDate = addDays(today, 2)
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      stepRef: 3,
+      state: { stepInCycle: 3 },
+      schedule: [
+        { date: today, stepRef: 3 },
+        { date: nextDate, stepRef: 3 },
+      ],
+    })
+    await failWorkoutEarly(page)
+    await page.getByRole('button', { name: /home|главная/i }).click()
+    await page.getByRole('button', { name: /start early|начать раньше/i }).click()
+    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
+    await page.getByRole('button', { name: /leave workout|выйти из тренировки/i }).click()
+    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
+    await expect(page).toHaveURL(/\/result/)
+    const progress = await readProgress(page)
+    const state = progress?.state as { anchor: number; failStreak: number }
+    expect(state.anchor).toBe(6)
+    expect(state.failStreak).toBe(0)
   })
 
   test('fail only on final set below N_k keeps step', async ({ page }) => {
@@ -42,24 +87,6 @@ test.describe('Progression', () => {
     const state = progress?.state as { stepInCycle: number; failStreak: number }
     expect(state.stepInCycle).toBe(3)
     expect(state.failStreak).toBe(1)
-  })
-
-  test('two fails trigger deload anchor 7 to 6', async ({ page }) => {
-    await prepareProgress(page, {
-      anchor: 7,
-      today,
-      stepRef: 3,
-      state: { stepInCycle: 3 },
-    })
-    await failWorkoutEarly(page)
-    await page.getByRole('button', { name: /try again|ещё раз|повтор/i }).click()
-    await page.getByRole('button', { name: /leave workout|выйти из тренировки/i }).click()
-    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
-    await expect(page).toHaveURL(/\/result/)
-    const progress = await readProgress(page)
-    const state = progress?.state as { anchor: number; failStreak: number }
-    expect(state.anchor).toBe(6)
-    expect(state.failStreak).toBe(0)
   })
 
   test('two fails trigger deload anchor 3 to 2', async ({ page }) => {

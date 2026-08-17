@@ -14,7 +14,7 @@ test.describe('Result', () => {
     await expect(page.getByRole('navigation', { name: /main navigation|основная навигация/i })).toBeVisible()
   })
 
-  test('fail shows try again', async ({ page }) => {
+  test('fail shows next workout hint without retry', async ({ page }) => {
     await page.getByRole('button', { name: 'Start' }).click()
     await clearRestGate(page)
 
@@ -32,7 +32,9 @@ test.describe('Result', () => {
     await page.getByRole('button', { name: 'Done' }).click()
 
     await expect(page.locator('.status-kicker')).toContainText(/incomplete|не завершена/i)
-    await expect(page.getByRole('button', { name: /try again|попробовать снова/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /try again|попробовать снова/i })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /home|главная/i })).toBeVisible()
+    await expect(page.locator('.next-date')).toBeVisible()
   })
 
   test('redirects home without result context', async ({ page }) => {

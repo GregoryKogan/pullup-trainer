@@ -17,7 +17,7 @@ import {
   computeTotals,
   evaluateWorkout,
 } from '@/domain/progression'
-import { advanceScheduleAfterWorkout, findScheduleSlotIndex } from '@/domain/schedule'
+import { advanceScheduleAfterWorkout, findScheduleSlotIndex, hasWorkoutRecord } from '@/domain/schedule'
 import { useRestTimer } from '@/composables/use-rest-timer'
 import { requestNotificationPermission, signalRestEnd } from '@/composables/use-rest-signals'
 import { todayLocal, toIsoOffset, formatTime } from '@/utils/dates'
@@ -131,6 +131,10 @@ async function loadSession() {
     return
   }
   const date = workoutDate()
+  if (hasWorkoutRecord(progressStore.records, date)) {
+    loadFailed.value = true
+    return
+  }
   const planned = resolvePlanned()
   if (!planned.length) {
     loadFailed.value = true

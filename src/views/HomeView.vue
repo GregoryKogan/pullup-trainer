@@ -31,6 +31,9 @@ const today = todayLocal()
 const nextSlot = computed(() => progressStore.getNextSlot())
 const missedSlot = computed(() => progressStore.getMissedSlot())
 const isWorkoutToday = computed(() => nextSlot.value?.date === today)
+const canStartToday = computed(
+  () => isWorkoutToday.value && nextSlot.value !== null,
+)
 
 const setsPreview = computed(() => {
   const p = progressStore.progress
@@ -239,10 +242,10 @@ async function reduceAnchor() {
       </p>
       <p v-if="levelInfo" class="sub">{{ levelInfo }}</p>
       <button
-        v-if="isWorkoutToday"
+        v-if="canStartToday"
         type="button"
         class="btn accent"
-        @click="startWorkout(nextSlot.date)"
+        @click="startWorkout(nextSlot!.date)"
       >
         {{ t('common.start') }}
         <AppIcon name="arrow-right" />
