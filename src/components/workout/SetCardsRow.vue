@@ -16,12 +16,12 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const setsRow = ref<HTMLElement | null>(null)
+const setsRowScroll = ref<HTMLElement | null>(null)
 const showScrollHint = ref(false)
 let resizeObserver: ResizeObserver | null = null
 
 function updateScrollHint() {
-  showScrollHint.value = rowNeedsScroll(setsRow.value)
+  showScrollHint.value = rowNeedsScroll(setsRowScroll.value)
 }
 
 watch(
@@ -34,7 +34,7 @@ onMounted(() => {
   nextTick(updateScrollHint)
   if (typeof ResizeObserver === 'undefined') return
   resizeObserver = new ResizeObserver(() => updateScrollHint())
-  if (setsRow.value) resizeObserver.observe(setsRow.value)
+  if (setsRowScroll.value) resizeObserver.observe(setsRowScroll.value)
 })
 
 onBeforeUnmount(() => {
@@ -44,17 +44,19 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="sets-wrap">
-    <div ref="setsRow" class="setsrow" :aria-label="t('workout.setsRow')">
-      <div
-        v-for="(s, i) in sets"
-        :key="i"
-        class="s"
-        :class="{ done: s.doneFlag, now: s.current }"
-        :aria-label="t('workout.setLabel', { n: i + 1 })"
-        :aria-current="s.current ? 'step' : undefined"
-      >
-        <span v-if="s.doneFlag" class="check"><AppIcon name="check" :size="12" /></span>
-        <b>{{ s.done ?? s.planned }}</b>
+    <div ref="setsRowScroll" class="setsrow-scroll" :aria-label="t('workout.setsRow')">
+      <div class="setsrow">
+        <div
+          v-for="(s, i) in sets"
+          :key="i"
+          class="s"
+          :class="{ done: s.doneFlag, now: s.current }"
+          :aria-label="t('workout.setLabel', { n: i + 1 })"
+          :aria-current="s.current ? 'step' : undefined"
+        >
+          <span v-if="s.doneFlag" class="check"><AppIcon name="check" :size="12" /></span>
+          <b>{{ s.done ?? s.planned }}</b>
+        </div>
       </div>
     </div>
     <p v-if="showScrollHint" class="scroll-hint">{{ t('workout.setsScrollHint') }}</p>
@@ -64,15 +66,22 @@ onBeforeUnmount(() => {
 <style scoped>
 .sets-wrap {
   margin-bottom: 16px;
-}
-.setsrow {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+}
+.setsrow-scroll {
+  width: max-content;
+  max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
   padding-bottom: 2px;
+}
+.setsrow {
+  display: flex;
+  gap: 8px;
 }
 .setsrow .s {
   flex: 0 0 62px;

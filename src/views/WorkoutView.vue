@@ -26,6 +26,7 @@ import {
   focusSubtitleKey,
   setTypeLabelKey,
 } from '@/utils/workout-display'
+import { blockRepFractionKey, clampRepCount, syncRepInput } from '@/utils/reps-input'
 import { REST_MAX_SECONDS } from '@/constants/app'
 import type { PlannedSet, ActiveProgress } from '@/domain/types'
 
@@ -90,6 +91,11 @@ const maxDoneLimit = computed(() => {
   if (!set || set.type !== 'max') return 0
   return set.planned + 20
 })
+
+const fewerAtMin = computed(() => fewerValue.value <= 0)
+const fewerAtMax = computed(() => fewerValue.value >= maxDoneValue.value)
+const maxDoneAtMin = computed(() => maxDoneInput.value <= 0)
+const maxDoneAtMax = computed(() => maxDoneInput.value >= maxDoneLimit.value)
 
 const setCards = computed(() =>
   planned.value.map((p, i) => ({
@@ -225,6 +231,22 @@ async function openFewer() {
   document.getElementById('fewer-input')?.focus()
 }
 
+function adjustFewer(delta: number) {
+  fewerValue.value = clampRepCount(fewerValue.value + delta, maxDoneValue.value, 0)
+}
+
+function adjustMaxDone(delta: number) {
+  maxDoneInput.value = clampRepCount(maxDoneInput.value + delta, maxDoneLimit.value, 0)
+}
+
+function onFewerInput(event: Event) {
+  syncRepInput(event, (value) => { fewerValue.value = value }, maxDoneValue.value, 0)
+}
+
+function onMaxDoneInput(event: Event) {
+  syncRepInput(event, (value) => { maxDoneInput.value = value }, maxDoneLimit.value, 0)
+}
+
 async function applyRestPreset(seconds: number) {
   void unlockRestSound()
   const clamped = clampRestSeconds(seconds)
@@ -333,18 +355,33 @@ function confirmExit() {
         class="workout-hero"
       >
         <IconPullUp :size="24" class="hero-icon" />
-        <p class="kicker">{{ t('workout.doNow') }}</p>
-        <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
-        <ContourNumber
-          class="rep"
-          :value="currentSet.planned"
-          aria-live="polite"
-          aria-atomic="true"
-        />
-        <p class="sub" aria-live="polite">
-          {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
-        </p>
-        <p v-if="currentSet.type === 'max'" class="sub hint">{{ t('workout.maxDoneHint', { min: currentSet.planned }) }}</p>
+        <template v-if="currentSet.type === 'max'">
+          <p class="kicker">{{ t('workout.maxSetKicker') }}</p>
+          <p class="sub max-instruction">{{ t('workout.maxSetInstruction') }}</p>
+          <p class="min-label">{{ t('workout.maxSetMinLabel') }}</p>
+          <ContourNumber
+            class="rep"
+            :value="currentSet.planned"
+            aria-live="polite"
+            aria-atomic="true"
+          />
+          <span class="sr-only">
+            {{ t('workout.maxSetA11y', { min: currentSet.planned, n: current + 1 }) }}
+          </span>
+        </template>
+        <template v-else>
+          <p class="kicker">{{ t('workout.doNow') }}</p>
+          <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
+          <ContourNumber
+            class="rep"
+            :value="currentSet.planned"
+            aria-live="polite"
+            aria-atomic="true"
+          />
+          <p class="sub" aria-live="polite">
+            {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
+          </p>
+        </template>
       </div>
       <RestTimerRing
         v-if="workoutStore.restRunning"
@@ -368,14 +405,40 @@ function confirmExit() {
       >
         <div v-if="currentSet.type === 'max'" class="max-done panel">
           <label class="fewer-label" for="max-done-input">{{ t('workout.maxDoneLabel') }}</label>
-          <input
-            id="max-done-input"
-            v-model.number="maxDoneInput"
-            type="number"
-            min="0"
-            :max="maxDoneLimit"
-            :aria-label="t('workout.maxDoneLabel')"
-          />
+          <div class="rep-stepper">
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: maxDoneAtMin }"
+              :aria-label="t('onboarding.repsDecrease')"
+              :disabled="maxDoneAtMin"
+              @click="adjustMaxDone(-1)"
+            >
+              <AppIcon name="minus" />
+            </button>
+            <input
+              id="max-done-input"
+              v-model.number="maxDoneInput"
+              type="number"
+              min="0"
+              :max="maxDoneLimit"
+              step="1"
+              inputmode="numeric"
+              :aria-label="t('workout.maxDoneLabel')"
+              @keydown="blockRepFractionKey"
+              @input="onMaxDoneInput"
+            />
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: maxDoneAtMax }"
+              :aria-label="t('onboarding.repsIncrease')"
+              :disabled="maxDoneAtMax"
+              @click="adjustMaxDone(1)"
+            >
+              <AppIcon name="plus" />
+            </button>
+          </div>
           <button type="button" class="btn accent" @click="finishSet(maxDoneInput)">
             {{ t('workout.doneMax') }}
           </button>
@@ -390,14 +453,40 @@ function confirmExit() {
       <div v-if="showFewer" class="workout-dock">
         <div class="fewer panel">
           <label class="fewer-label" :for="'fewer-input'">{{ t(fewerLabelKey) }}</label>
-          <input
-            id="fewer-input"
-            v-model.number="fewerValue"
-            type="number"
-            min="0"
-            :max="maxDoneValue"
-            :aria-label="t(fewerLabelKey)"
-          />
+          <div class="rep-stepper">
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: fewerAtMin }"
+              :aria-label="t('onboarding.repsDecrease')"
+              :disabled="fewerAtMin"
+              @click="adjustFewer(-1)"
+            >
+              <AppIcon name="minus" />
+            </button>
+            <input
+              id="fewer-input"
+              v-model.number="fewerValue"
+              type="number"
+              min="0"
+              :max="maxDoneValue"
+              step="1"
+              inputmode="numeric"
+              :aria-label="t(fewerLabelKey)"
+              @keydown="blockRepFractionKey"
+              @input="onFewerInput"
+            />
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: fewerAtMax }"
+              :aria-label="t('onboarding.repsIncrease')"
+              :disabled="fewerAtMax"
+              @click="adjustFewer(1)"
+            >
+              <AppIcon name="plus" />
+            </button>
+          </div>
           <div class="btnrow">
             <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
             <button type="button" class="btn outline" @click="showFewer = false">{{ t('common.cancel') }}</button>
@@ -490,6 +579,17 @@ function confirmExit() {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+.max-instruction {
+  margin: 0 0 18px;
+  max-width: 22em;
+}
+.min-label {
+  margin: 0 0 6px;
+  font: 800 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .type-tag {
   font: 800 0.65rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   text-transform: uppercase;
@@ -499,22 +599,31 @@ function confirmExit() {
 .rep {
   line-height: 1;
 }
-.fewer input,
-.max-done input {
-  width: 100%;
+.rep-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.rep-stepper input {
+  flex: 1;
+  min-width: 0;
   min-height: 50px;
-  font-size: 1.5rem;
+  font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   border: 2px solid var(--line);
   padding: 8px 12px;
   background: var(--bg);
   color: var(--ink);
-  margin-bottom: 12px;
+  text-align: center;
+}
+.rep-step {
+  flex: 0 0 50px;
+  width: 50px;
+  min-height: 50px;
+  font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .max-done {
   margin-bottom: 0;
-}
-.hint {
-  margin: 8px 0 0;
 }
 .fewer-label {
   display: block;
