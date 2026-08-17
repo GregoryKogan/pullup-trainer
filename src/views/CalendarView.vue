@@ -418,10 +418,16 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .head {
+  flex-wrap: nowrap;
   align-items: flex-start;
+}
+.head > div:first-child {
+  flex: 1;
+  min-width: 0;
 }
 .head h1 {
   font-size: clamp(1.2rem, 5vw, 1.5rem);
+  overflow-wrap: anywhere;
 }
 .banner {
   background: var(--card);
@@ -501,7 +507,8 @@ onBeforeUnmount(() => {
 .nav {
   display: flex;
   gap: 7px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
   justify-content: flex-end;
 }
 .today-btn {

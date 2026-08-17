@@ -162,6 +162,25 @@ test.describe('Calendar', () => {
     await page.getByRole('button', { name: /today|сегодня/i }).click()
   })
 
+  test('month nav controls stay on one row while paging months', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+    await expect(page).toHaveURL(/\/calendar/)
+
+    const nav = page.locator('.calendar-wrap .head .nav')
+    const positions: { top: number; left: number }[] = []
+
+    for (let i = 0; i < 12; i++) {
+      const box = await nav.boundingBox()
+      expect(box).not.toBeNull()
+      positions.push({ top: box!.y, left: box!.x })
+      await page.getByRole('button', { name: /next month|следующий месяц/i }).click()
+    }
+
+    const tops = positions.map((p) => p.top)
+    expect(Math.max(...tops) - Math.min(...tops)).toBeLessThan(2)
+  })
+
   // D2: moving one workout shifts all subsequent schedule dates
   test('move cascades delta to subsequent workouts', async ({ page }) => {
     const slot1 = today
