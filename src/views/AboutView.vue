@@ -13,8 +13,7 @@ const router = useRouter()
 <template>
   <div class="page">
     <div class="subpage-head">
-      <header class="head about-head">
-        <IconMark :size="36" class="about-mark" />
+      <header class="head">
         <div>
           <p class="kicker">{{ t('about.kicker') }}</p>
           <h1>{{ t('about.title') }}</h1>
@@ -24,6 +23,9 @@ const router = useRouter()
         <AppIcon name="chev-left" />
         {{ t('common.back') }}
       </button>
+      <div class="about-mark-wrap">
+        <IconMark :size="88" class="about-mark" />
+      </div>
     </div>
     <section class="panel">
       <p>{{ t('about.body') }}</p>
@@ -38,14 +40,12 @@ const router = useRouter()
 </template>
 
 <style scoped>
-.about-head {
+.about-mark-wrap {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  justify-content: center;
+  padding: 4px 0 8px;
 }
 .about-mark {
-  flex-shrink: 0;
   color: var(--accent);
-  margin-top: 4px;
 }
 </style>
