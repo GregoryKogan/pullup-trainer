@@ -72,6 +72,34 @@ export async function clearRestGate(page: Page) {
   }
 }
 
+export async function seedActiveWorkoutSession(page: Page, date: string) {
+  await startWorkout(page, date)
+  await expect(page.locator('.top-progress')).toContainText(/set|подход/i)
+  await page.evaluate(() => {
+    const root = document.querySelector('#app') as HTMLElement & {
+      __vue_app__?: { _context: { provides: Record<string | symbol, unknown> } }
+    }
+    const app = root?.__vue_app__
+    if (!app) throw new Error('Vue app not found')
+
+    for (const key of Object.getOwnPropertySymbols(app._context.provides)) {
+      const candidate = app._context.provides[key]
+      if (
+        candidate &&
+        typeof candidate === 'object' &&
+        'push' in candidate &&
+        'currentRoute' in candidate
+      ) {
+        ;(candidate as { push: (to: { name: string }) => Promise<void> }).push({ name: 'calendar' })
+        return
+      }
+    }
+    throw new Error('Router not found')
+  })
+  await page.waitForURL(/\/calendar/)
+  await dismissPwaModal(page)
+}
+
 export async function startWorkout(page: Page, date?: string) {
   const start = page.getByRole('button', { name: /^start$|^начать$|^start now$/i })
   if (await start.isVisible().catch(() => false)) {

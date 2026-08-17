@@ -110,10 +110,6 @@
     "exitTitle": "Leave workout?",
     "exitLabel": "Leave workout",
     "exitWarn": "Leaving counts as fail.",
-    "skipSet": "Skip set",
-    "skipSetTitle": "Skip this set?",
-    "skipSetWarn": "Skipping any set counts as fail.",
-    "reschedule": "Move workout",
     "resultSuccess": "Workout complete",
     "resultFail": "Workout incomplete",
     "resultVolume": "{done} of {planned} planned",
@@ -153,6 +149,7 @@
     "dayHistoryEmpty": "No workouts logged on this day yet.",
     "notScheduled": "This day has no workout planned.",
     "moveUnchanged": "Pick a different date to move this workout.",
+    "moveBlockedActive": "Finish or leave the workout before moving this day.",
     "nextMonth": "Next month",
     "prevMonth": "Previous month",
     "dow": {

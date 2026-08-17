@@ -37,20 +37,10 @@ test.describe('Workout', () => {
     await expect(page.locator('.clock')).toBeVisible()
   })
 
-  test('skip set counts as fail', async ({ page }) => {
+  test('does not show skip set or move workout actions', async ({ page }) => {
     await page.getByRole('button', { name: 'Start' }).click()
     await clearRestGate(page)
-    await page.getByRole('button', { name: /^skip set$|^пропустить подход$/i }).click()
-    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
-    await expect(page.locator('.status-kicker')).toContainText(/incomplete|не завершена/i)
-  })
-
-  test('reschedule navigates to calendar with day sheet', async ({ page }) => {
-    await page.getByRole('button', { name: 'Start' }).click()
-    await clearRestGate(page)
-    await page.getByRole('button', { name: /^move workout$|^перенести$/i }).click()
-    await expect(page).toHaveURL(/\/calendar/)
-    await expect(page.getByRole('dialog')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Move' })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^skip set$|^пропустить подход$/i })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /^move workout$|^перенести$/i })).toHaveCount(0)
   })
 })

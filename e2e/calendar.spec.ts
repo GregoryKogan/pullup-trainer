@@ -7,6 +7,7 @@ import {
   dismissPwaModal,
   todayLocal,
   addDays,
+  seedActiveWorkoutSession,
 } from './helpers/app'
 
 test.describe('Calendar', () => {
@@ -74,6 +75,15 @@ test.describe('Calendar', () => {
     await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
 
     await expect(page.getByRole('button', { name: 'Move' })).toBeDisabled()
+  })
+
+  test('move is hidden while workout session is active', async ({ page }) => {
+    await seedActiveWorkoutSession(page, today)
+    const dayNum = String(new Date().getDate())
+    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+
+    await expect(page.getByRole('button', { name: 'Move' })).toHaveCount(0)
+    await expect(page.getByRole('dialog')).toContainText(/finish or leave|заверши или выйди/i)
   })
 
   test('move reschedules when date changes', async ({ page }) => {

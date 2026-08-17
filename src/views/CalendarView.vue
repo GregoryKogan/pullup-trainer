@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
 import { useModalA11y } from '@/composables/use-modal-a11y'
 import { useProgressStore } from '@/stores/progress'
+import { useWorkoutSessionStore } from '@/stores/workout-session'
 import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domain/schedule'
 import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
 
 const { t, locale } = useI18n()
-const route = useRoute()
 const router = useRouter()
 const progressStore = useProgressStore()
+const workoutStore = useWorkoutSessionStore()
 
 const viewMonth = ref(new Date())
 const selectedIndex = ref<number | null>(null)
@@ -179,7 +180,15 @@ const moveUnchanged = computed(() => {
   return selectedMoveDate.value === selectedSlot.value.date
 })
 
+const moveBlocked = computed(() => {
+  const slot = selectedSlot.value
+  const active = workoutStore.active
+  if (!slot || !active) return false
+  return active.date === slot.date && !workoutStore.isComplete()
+})
+
 async function applyMove() {
+  if (moveBlocked.value) return
   if (selectedIndex.value === null || !selectedMoveDate.value || !progressStore.progress) return
   if (moveUnchanged.value) {
     showDayHint(t('calendar.moveUnchanged'))
@@ -242,35 +251,9 @@ function dismissPendingAutoshift() {
   sessionStorage.setItem(AUTOSHIFT_SESSION_KEY, '1')
 }
 
-async function openDayFromQuery(date: string) {
-  const idx = schedule.value.findIndex((s) => s.date === date)
-  if (idx < 0) return
-  const [y, m] = date.split('-').map(Number)
-  viewMonth.value = new Date(y, m - 1, 1)
-  selectedIndex.value = idx
-  selectedMoveDate.value = date
-  await nextTick()
-  sheetDialogRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-}
-
 onMounted(() => {
   detectPendingAutoshift()
-  const qDate = route.query.date
-  if (typeof qDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(qDate)) {
-    void openDayFromQuery(qDate)
-    router.replace({ name: 'calendar' })
-  }
 })
-
-watch(
-  () => route.query.date,
-  (qDate) => {
-    if (typeof qDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(qDate)) {
-      void openDayFromQuery(qDate)
-      router.replace({ name: 'calendar' })
-    }
-  },
-)
 
 onBeforeUnmount(() => {
   if (dayHintTimer) clearTimeout(dayHintTimer)
@@ -359,7 +342,7 @@ onBeforeUnmount(() => {
               <AppIcon name="x" />
             </button>
           </div>
-          <div class="optrow">
+          <div v-if="!moveBlocked" class="optrow">
             <button
               v-for="opt in moveOptions"
               :key="opt"
@@ -372,7 +355,11 @@ onBeforeUnmount(() => {
               {{ formatDisplayDate(opt, locale) }}
             </button>
           </div>
-          <p id="calendar-sheet-desc" class="shift-note">
+          <p v-else id="calendar-sheet-desc" class="shift-note move-blocked">
+            <AppIcon name="info" />
+            {{ t('calendar.moveBlockedActive') }}
+          </p>
+          <p v-if="!moveBlocked" id="calendar-sheet-desc" class="shift-note">
             <AppIcon name="info" />
             {{ t('calendar.shiftNote') }}
           </p>
@@ -391,6 +378,7 @@ onBeforeUnmount(() => {
           <p v-else class="day-history-empty">{{ t('calendar.dayHistoryEmpty') }}</p>
           <div class="btnrow">
             <button
+              v-if="!moveBlocked"
               type="button"
               class="btn accent"
               :disabled="moveUnchanged"
