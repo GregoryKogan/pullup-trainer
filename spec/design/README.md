@@ -5,13 +5,15 @@
 
 ## Структура
 
-| Файл | Назначение |
-|---|---|
-| `poster-design.md` | Спека дизайн-языка: принципы, типографика, компоненты, токены, правила тем |
-| `theme-tokens.css` | Все палитры как CSS custom properties — подключается в приложение |
-| `build-assets.py` | Генератор мокапов, токенов и этого README |
-| `mockups/index.html` | Галерея мокапов |
-| `mockups/poster-*.html` | 14 референсов стиля: 5 экранов × тёмная + светлая темы (не pixel-perfect карта UI — ТЗ §5.1.2) |
+```
+design/
+├── README.md          ← этот файл
+├── poster-design.md   ← спека дизайн-языка
+├── theme-tokens.css   ← все палитры как CSS custom properties — подключается в приложение
+├── build-assets.py    ← генератор мокапов, токенов и этого README
+├── mockups/           ← HTML-мокапы экранов (14 тем + галерея index.html)
+└── assets/            ← графика: логотип, иконки, паттерны (см. assets/README.md)
+```
 
 ## Темы
 
@@ -43,5 +45,8 @@
 4. Все компоненты используют только переменные: `--bg`, `--bg2`, `--card`,
    `--ink`, `--muted`, `--line`, `--accent`, `--accent-ink`, `--accent2`,
    `--ok`, `--warn`, `--bad`, `--shadow`.
+
+Графические ассеты (логотип, иконки, паттерны) лежат в `assets/` — детали
+и лицензии в `assets/README.md`.
 
 Пересборка: `python3 build-assets.py`.

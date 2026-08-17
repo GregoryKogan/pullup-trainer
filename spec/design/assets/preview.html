@@ -35,23 +35,29 @@
 <h1>PULL-UP</h1>
 <div class="sub">Логотип и библиотека иконок · Poster / Swiss · один цвет, currentColor</div>
 
+<h2>00 · Финальный логотип (P01 Volt, тема по умолчанию)</h2>
+<div class="grid">
+  <div class="card" style="background:#2a2a2a;"><img src="logo/icon.svg" alt="" style="width:140px;max-height:140px;"><div class="label">icon — иконка с белой тенью</div></div>
+  <div class="card" style="background:#2a2a2a;"><img src="logo/icon-192.png" alt="" style="width:140px;max-height:140px;"><div class="label">icon-192 — PNG для PWA</div></div>
+</div>
+
 <h2>01 · Логотип — mark-01 (hang, wide grip)</h2>
 <div class="grid">
-  <div class="card dark"><img src="identity/custom/mark-01-v1-square-vlegs.svg" alt=""><div class="label">Знак — тёмный фон</div></div>
-  <div class="card light"><img src="identity/custom/mark-01-v1-square-vlegs.svg" alt=""><div class="label">Знак — светлый фон</div></div>
-  <div class="card dark" style="display:flex;align-items:center;justify-content:center;"><div class="icon-app"><img src="identity/custom/mark-01-v1-square-vlegs.svg" alt=""></div><div class="label">В квадрате иконки приложения</div></div>
+  <div class="card dark"><img src="logo/mark.svg" alt=""><div class="label">Знак — тёмный фон</div></div>
+  <div class="card light"><img src="logo/mark.svg" alt=""><div class="label">Знак — светлый фон</div></div>
+  <div class="card dark" style="display:flex;align-items:center;justify-content:center;"><div class="icon-app"><img src="logo/mark.svg" alt=""></div><div class="label">В квадрате иконки приложения</div></div>
 </div>
 
 <h2>02 · Иконки подтягиваний (авторские, custom-pullup)</h2>
 <div class="row">
-  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/pull-up.svg" alt=""></div></div>
-  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/dead-hang.svg" alt=""></div></div>
-  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/bar.svg" alt=""></div></div>
-  <div class="dark"><div class="tile"><img src="icons-ui/custom-pullup/above-bar.svg" alt=""></div></div>
-  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/pull-up.svg" alt=""></div></div>
-  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/dead-hang.svg" alt=""></div></div>
-  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/bar.svg" alt=""></div></div>
-  <div class="light"><div class="tile"><img src="icons-ui/custom-pullup/above-bar.svg" alt=""></div></div>
+  <div class="dark"><div class="tile"><img src="icons/pullup/pull-up.svg" alt=""></div></div>
+  <div class="dark"><div class="tile"><img src="icons/pullup/dead-hang.svg" alt=""></div></div>
+  <div class="dark"><div class="tile"><img src="icons/pullup/bar.svg" alt=""></div></div>
+  <div class="dark"><div class="tile"><img src="icons/pullup/above-bar.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons/pullup/pull-up.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons/pullup/dead-hang.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons/pullup/bar.svg" alt=""></div></div>
+  <div class="light"><div class="tile"><img src="icons/pullup/above-bar.svg" alt=""></div></div>
 </div>
 
 <h2>03 · Иконки UI (Lucide, ISC)</h2>
@@ -66,13 +72,13 @@
   const row1 = document.getElementById('lucide');
   lucide.forEach(n => {
     const wrap = document.createElement('div'); wrap.className = 'dark';
-    wrap.innerHTML = `<div class="tile"><img src="icons-ui/lucide/${n}.svg" alt="${n}"></div>`;
+    wrap.innerHTML = `<div class="tile"><img src="icons/lucide/${n}.svg" alt="${n}"></div>`;
     row1.appendChild(wrap);
   });
   const row2 = document.getElementById('patterns');
   patterns.forEach(n => {
     const s = document.createElement('div'); s.className = 'swatch';
-    s.style.backgroundImage = `url('backgrounds/custom/${n}.svg')`;
+    s.style.backgroundImage = `url('patterns/${n}.svg')`;
     row2.appendChild(s);
   });
 </script>

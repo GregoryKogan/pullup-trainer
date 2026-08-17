@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <rect x="0" y="0" width="64" height="64" fill="#C6FF3B"/>
+  <g transform="translate(1.5 1.5)">
+    <line x1="9.5" y1="12.06" x2="54.5" y2="12.06" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="square" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="12.06" x2="15.75" y2="22.69" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="12.06" x2="48.25" y2="22.69" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="22.69" x2="29.5" y2="29.56" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="22.69" x2="34.5" y2="29.56" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <rect x="24.88" y="14.940000000000001" width="14.25" height="15.5" fill="#F7F7F0" stroke="none"/>
+    <line x1="32.0" y1="26.94" x2="32.0" y2="47.06" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32.0" y1="47.06" x2="27.0" y2="54.56" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32.0" y1="47.06" x2="37.0" y2="54.56" stroke="#F7F7F0" stroke-width="9.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <line x1="9.5" y1="12.06" x2="54.5" y2="12.06" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="square" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="12.06" x2="15.75" y2="22.69" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="12.06" x2="48.25" y2="22.69" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="22.69" x2="29.5" y2="29.56" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="22.69" x2="34.5" y2="29.56" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <rect x="26.38" y="16.44" width="11.25" height="12.5" fill="#0E0E0B" stroke="none"/>
+    <line x1="32.0" y1="26.94" x2="32.0" y2="47.06" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32.0" y1="47.06" x2="27.0" y2="54.56" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32.0" y1="47.06" x2="37.0" y2="54.56" stroke="#0E0E0B" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+</svg>
