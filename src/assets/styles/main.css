@@ -31,6 +31,7 @@ a {
 }
 
 .app-shell {
+  position: relative;
   min-height: 100dvh;
   height: 100dvh;
   display: flex;
@@ -41,7 +42,23 @@ a {
   overflow: hidden;
 }
 
+.app-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../../../spec/design/assets/patterns/swiss-grid.svg');
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+html:not([data-theme$='-light']) .app-shell::before {
+  filter: invert(1);
+}
+
 .app-main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-height: 0;
   display: flex;
@@ -252,6 +269,8 @@ a {
 }
 
 .tabbar {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   margin: 0 -18px 0;
   background: var(--accent);

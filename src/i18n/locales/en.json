@@ -249,7 +249,8 @@
     "body": "Pull-up Trainer is a free local-first PWA. No accounts, no ads, no cloud.",
     "whyLink": "Why this program",
     "sourcesLink": "Open research sources",
-    "version": "Version {v}"
+    "version": "Version {v}",
+    "iconsCredit": "Icons by Lucide, lucide.dev"
   },
   "why": {
     "kicker": "Research"

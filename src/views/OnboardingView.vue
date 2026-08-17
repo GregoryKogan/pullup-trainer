@@ -17,6 +17,7 @@ import {
   syncTestRepInput,
 } from '@/utils/reps-input'
 import AppIcon from '@/components/icons/AppIcon.vue'
+import IconPullUp from '@/components/icons/pullup/IconPullUp.vue'
 
 const step = ref<'intro' | 'test' | 'recommend'>('intro')
 const reps = ref(1)
@@ -136,7 +137,10 @@ async function accept() {
       <button type="button" class="btn accent" @click="goTest">{{ t('common.next') }}</button>
     </section>
     <section v-else-if="step === 'test'" class="panel">
-      <p class="kicker">{{ t('onboarding.testTitle') }}</p>
+      <div class="test-head">
+        <IconPullUp :size="28" class="test-icon" />
+        <p class="kicker">{{ t('onboarding.testTitle') }}</p>
+      </div>
       <p>{{ t('onboarding.testBody') }}</p>
       <label class="field">
         <span>{{ t('onboarding.repsLabel') }}</span>
@@ -257,6 +261,19 @@ async function accept() {
 .step-dots i.on {
   background: var(--accent);
   border-color: var(--line);
+}
+.test-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.test-head .kicker {
+  margin-bottom: 0;
+}
+.test-icon {
+  flex-shrink: 0;
+  color: var(--accent);
 }
 .lang {
   min-height: 44px;

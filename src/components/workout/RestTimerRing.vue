@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppIcon from '@/components/icons/AppIcon.vue'
+import IconTimer from '@/components/icons/lucide/IconTimer.vue'
 import { REST_PRESET_SECONDS, REST_MAX_SECONDS, REST_MIN_SECONDS } from '@/constants/app'
 import { formatTime } from '@/utils/dates'
 
@@ -68,7 +69,10 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           />
           <text class="ring-num" x="60" y="60" text-anchor="middle" dominant-baseline="central">{{ displayTime }}</text>
         </svg>
-        <p class="ring-lab">{{ total > 0 ? label : t('workout.chooseRest') }}</p>
+        <p class="ring-lab">
+          <IconTimer :size="16" class="ring-icon" />
+          {{ total > 0 ? label : t('workout.chooseRest') }}
+        </p>
       </div>
     </section>
     <section class="rest-dock panel">
@@ -185,11 +189,18 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 }
 .ring-lab {
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font: 700 0.68rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted);
   text-align: center;
+}
+.ring-icon {
+  flex-shrink: 0;
+  color: var(--accent);
 }
 .rest-dock {
   flex-shrink: 0;

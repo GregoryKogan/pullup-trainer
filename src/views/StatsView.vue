@@ -7,6 +7,8 @@ import { exportHistory } from '@/domain/export'
 import { APP_VERSION } from '@/constants/app'
 import { downloadJson } from '@/utils/platform'
 import AppIcon from '@/components/icons/AppIcon.vue'
+import IconTrendingUp from '@/components/icons/lucide/IconTrendingUp.vue'
+import IconActivity from '@/components/icons/lucide/IconActivity.vue'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
 
@@ -153,7 +155,10 @@ function exportHistoryJson() {
       </div>
     </div>
     <section class="sec">
-      <h4>{{ t('stats.maxChart') }}</h4>
+      <h4 class="sec-head">
+        <IconTrendingUp :size="18" class="sec-icon" />
+        {{ t('stats.maxChart') }}
+      </h4>
       <p class="sub">{{ t('stats.maxChartSub') }}</p>
       <p v-if="maxReps.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
       <div v-else class="chart-wrap">
@@ -211,7 +216,10 @@ function exportHistoryJson() {
       </ul>
     </section>
     <section class="sec">
-      <h4>{{ t('stats.weeklyVolume') }}</h4>
+      <h4 class="sec-head">
+        <IconActivity :size="18" class="sec-icon" />
+        {{ t('stats.weeklyVolume') }}
+      </h4>
       <p v-if="weeklyBars.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
       <div v-else class="chart-wrap">
         <svg class="chart" viewBox="0 0 354 148" role="img" :aria-label="t('stats.weeklyVolume')">
@@ -439,5 +447,15 @@ function exportHistoryJson() {
   margin: 6px 0 0;
   font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+}
+.sec-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+.sec-icon {
+  flex-shrink: 0;
+  color: var(--accent);
 }
 </style>

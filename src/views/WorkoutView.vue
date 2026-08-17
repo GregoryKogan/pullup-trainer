@@ -6,6 +6,7 @@ import SetCardsRow from '@/components/workout/SetCardsRow.vue'
 import RestTimerRing from '@/components/workout/RestTimerRing.vue'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
+import IconPullUp from '@/components/icons/pullup/IconPullUp.vue'
 import { useWorkoutSessionStore } from '@/stores/workout-session'
 import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
@@ -340,6 +341,7 @@ function confirmExit() {
         v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning"
         class="workout-hero"
       >
+        <IconPullUp :size="24" class="hero-icon" />
         <p class="kicker">{{ t('workout.doNow') }}</p>
         <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
         <div class="rep" aria-live="polite" aria-atomic="true">{{ currentSet.planned }}</div>
@@ -450,6 +452,10 @@ function confirmExit() {
   justify-content: center;
   text-align: center;
   padding: 12px 0 16px;
+}
+.hero-icon {
+  margin-bottom: 8px;
+  color: var(--accent);
 }
 .workout-dock {
   flex-shrink: 0;

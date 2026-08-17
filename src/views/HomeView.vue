@@ -12,6 +12,10 @@ import { blockRepFractionKey, isValidTestRepCount, syncTestRepInput, REP_COUNT_M
 import { computeTotals } from '@/domain/progression'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
+import IconFlame from '@/components/icons/lucide/IconFlame.vue'
+import IconTarget from '@/components/icons/lucide/IconTarget.vue'
+import IconRepeat from '@/components/icons/lucide/IconRepeat.vue'
+import IconAboveBar from '@/components/icons/pullup/IconAboveBar.vue'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -174,7 +178,7 @@ async function reduceAnchor() {
         <h1 v-else>{{ t('home.title') }}</h1>
       </div>
       <span v-if="streakWeeks > 0" class="chip streak">
-        <AppIcon name="flame" :size="16" />
+        <IconFlame :size="16" />
         {{ t('home.streakWeeks', { n: streakWeeks }) }}
       </span>
     </header>
@@ -185,7 +189,10 @@ async function reduceAnchor() {
     </div>
 
     <section v-if="needsRetestPrompt && !showRetest" class="panel retest">
-      <p class="kicker">{{ t('home.retestTitle') }}</p>
+      <p class="kicker retest-kicker">
+        <IconTarget :size="16" class="kicker-icon" />
+        {{ t('home.retestTitle') }}
+      </p>
       <p class="sub">{{ t('home.retestBody') }}</p>
       <div class="btnrow">
         <button type="button" class="btn accent" @click="showRetest = true">{{ t('home.retestNow') }}</button>
@@ -226,7 +233,8 @@ async function reduceAnchor() {
         <span v-if="setsPreview" class="sets">{{ setsPreview }}</span>
       </div>
       <div class="meter"><i :style="{ width: `${progressPercent}%` }" /></div>
-      <p v-if="cycleInfo" class="sub">
+      <p v-if="cycleInfo" class="sub step-progress">
+        <IconAboveBar :size="16" class="step-icon" />
         {{ t('home.stepProgress', { step: cycleInfo.step, cycle: cycleInfo.cycle }) }}
       </p>
       <p v-if="levelInfo" class="sub">{{ levelInfo }}</p>
@@ -245,6 +253,7 @@ async function reduceAnchor() {
           <AppIcon name="arrow-right" />
         </button>
         <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
+          <IconRepeat :size="17" />
           {{ t('home.repeatMissed') }}
         </button>
         <RouterLink to="/calendar" class="btn ghost calendar-link">{{ t('home.openCalendar') }}</RouterLink>
@@ -357,5 +366,22 @@ async function reduceAnchor() {
 }
 .next .btn {
   text-decoration: none;
+}
+.retest-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.kicker-icon {
+  flex-shrink: 0;
+}
+.step-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.step-icon {
+  flex-shrink: 0;
+  color: var(--accent);
 }
 </style>

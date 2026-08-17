@@ -7,7 +7,6 @@
       <symbol id="icon-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.4" fill="var(--bg)"/><circle cx="15" cy="17" r="2.4" fill="var(--bg)"/></symbol>
       <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.6 9.7 17 19 7.4"/></symbol>
       <symbol id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
-      <symbol id="icon-flame" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3.2c1.9 3.2 4.9 5.1 4.9 8.6a4.9 4.9 0 1 1-9.8 0c0-1.7.9-3.1 1.9-4.4.2 1.2 1.2 1.9 2.5 1.9-.9-1.9-1.2-4.4.5-6.1Z"/></symbol>
       <symbol id="icon-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 9.2a5.8 5.8 0 0 1 11.6 0c0 4.4 1.6 5.6 1.6 5.6H4.6s1.6-1.2 1.6-5.6"/><path d="M10.2 18.6a1.9 1.9 0 0 0 3.6 0"/></symbol>
       <symbol id="icon-pause" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6.6" y="5.4" width="3.6" height="13.2" rx="1"/><rect x="13.8" y="5.4" width="3.6" height="13.2" rx="1"/></symbol>
       <symbol id="icon-play" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></symbol>
