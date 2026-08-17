@@ -5,6 +5,8 @@ import router from './router'
 import { i18n, setLocale } from './i18n'
 import { useSettingsStore } from './stores/settings'
 import { useProgressStore } from './stores/progress'
+import { APP_SHORT_NAME } from '@/constants/app-brand'
+import { syncAppBranding } from '@/utils/app-branding'
 import './assets/styles/main.css'
 
 async function bootstrap() {
@@ -24,7 +26,7 @@ async function bootstrap() {
     setLocale(settingsStore.settings.language)
   } else {
     document.documentElement.lang = 'en'
-    document.title = i18n.global.t('common.appTitle')
+    syncAppBranding(i18n.global.t('common.appTitle'), APP_SHORT_NAME)
   }
 
   app.mount('#app')

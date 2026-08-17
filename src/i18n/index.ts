@@ -3,6 +3,8 @@ import en from './locales/en.json'
 import ru from './locales/ru.json'
 import enScience from './locales/science/en.json'
 import ruScience from './locales/science/ru.json'
+import { APP_SHORT_NAME } from '@/constants/app-brand'
+import { syncAppBranding } from '@/utils/app-branding'
 
 const messages = {
   en: { ...en, science: enScience },
@@ -19,5 +21,5 @@ export const i18n = createI18n({
 export function setLocale(lang: 'en' | 'ru') {
   i18n.global.locale.value = lang
   document.documentElement.lang = lang
-  document.title = i18n.global.t('common.appTitle')
+  syncAppBranding(i18n.global.t('common.appTitle'), APP_SHORT_NAME)
 }

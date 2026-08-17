@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import { APP_NAME, APP_SHORT_NAME } from './src/constants/app-brand'
 
 export default defineConfig({
   base: '/pullup-trainer/',
@@ -11,8 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon-32.png', 'icon-180.png'],
       manifest: {
-        name: 'Pull-up Trainer',
-        short_name: 'Pullups',
+        id: '/pullup-trainer/',
+        name: APP_NAME,
+        short_name: APP_SHORT_NAME,
         description: 'Local-first pull-up training PWA',
         theme_color: '#C6FF3B',
         background_color: '#0E0E0B',

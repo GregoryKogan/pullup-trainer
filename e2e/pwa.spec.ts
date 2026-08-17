@@ -38,4 +38,13 @@ test.describe('PWA install screen', () => {
     await dialog.getByRole('tab', { name: 'iOS' }).click()
     await expect(dialog.getByText('Нажми Поделиться')).toBeVisible()
   })
+
+  test('exposes PWA branding meta tags and manifest link', async ({ page }) => {
+    await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute(
+      'content',
+      'Pull-ups',
+    )
+    await expect(page.locator('meta[name="application-name"]')).toHaveAttribute('content', 'Pull-ups')
+    await expect(page.locator('link[rel="manifest"]')).toHaveCount(1)
+  })
 })
