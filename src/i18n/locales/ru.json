@@ -172,6 +172,8 @@
     "streak": "Серия недель",
     "streakWeeks": "{n} нед.",
     "volume": "Объём",
+    "totalReps": "Всего подтягиваний",
+    "weeklyStreakLabel": "Недель без пропусков",
     "maxChart": "Максимум по датам",
     "maxChartSub": "тесты + лучшие подходы",
     "weeklyVolume": "Объём по неделям",

@@ -128,12 +128,12 @@ function exportHistoryJson() {
         <span>{{ t('stats.maxReps') }}</span>
       </div>
       <div class="kpi">
-        <b class="streak-num">{{ streakWeeks }}</b>
-        <span>{{ streakWeeks > 0 ? t('stats.streakWeeks', { n: streakWeeks }) : t('stats.noStreak') }}</span>
+        <b>{{ totalVolume }}</b>
+        <span>{{ t('stats.totalReps') }}</span>
       </div>
       <div class="kpi">
-        <b>{{ totalVolume }}</b>
-        <span>{{ t('stats.volume') }}</span>
+        <b class="streak-num">{{ streakWeeks }}</b>
+        <span>{{ t('stats.weeklyStreakLabel') }}</span>
       </div>
     </div>
     <section class="sec">

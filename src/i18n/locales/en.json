@@ -172,6 +172,8 @@
     "streak": "Week streak",
     "streakWeeks": "{n} wk",
     "volume": "Volume",
+    "totalReps": "Total pull-ups",
+    "weeklyStreakLabel": "Weeks without gaps",
     "maxChart": "Max reps by date",
     "maxChartSub": "tests + best sets",
     "weeklyVolume": "Weekly volume",
