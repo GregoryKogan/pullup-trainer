@@ -34,6 +34,8 @@ router.beforeEach(async (to) => {
   const progress = useProgressStore()
   if (!progress.progress && progress.records.length === 0) {
     await progress.hydrate()
+  } else if (progress.progress) {
+    await progress.settleIfNeeded()
   }
   const needsOnboarding = !progress.progress
   if (needsOnboarding && !['onboarding', 'about', 'why'].includes(String(to.name))) {

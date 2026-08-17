@@ -1,6 +1,8 @@
 import type { ScheduleSlot, Weekday, ReturnPolicy, WorkoutRecord } from './types'
 import { addDays, daysBetween, parseLocalDate, formatLocalDate } from '@/utils/dates'
 
+export const MIN_REST_DAYS = 2
+
 const WEEKDAY_INDEX: Record<Weekday, number> = {
   mon: 1,
   tue: 2,
@@ -83,13 +85,15 @@ export function rescheduleWorkout(
   slotIndex: number,
   newDate: string,
   today: string,
+  lastWorkoutDate: string | null = null,
 ): ScheduleSlot[] | null {
   if (slotIndex < 0 || slotIndex >= schedule.length) return null
   if (daysBetween(today, newDate) < 0) return null
+  if (lastWorkoutDate && daysBetween(lastWorkoutDate, newDate) < MIN_REST_DAYS) return null
   const prevDate = slotIndex > 0 ? schedule[slotIndex - 1].date : null
   const nextDate = slotIndex < schedule.length - 1 ? schedule[slotIndex + 1].date : null
 
-  if (prevDate && daysBetween(prevDate, newDate) < 2) return null
+  if (prevDate && daysBetween(prevDate, newDate) < MIN_REST_DAYS) return null
   if (nextDate && daysBetween(newDate, nextDate) < 0) return null
 
   const oldDate = schedule[slotIndex].date
@@ -104,30 +108,18 @@ export function rescheduleWorkout(
 
   for (let i = 1; i < result.length; i++) {
     const gap = daysBetween(result[i - 1].date, result[i].date)
-    if (gap < 2) return null
+    if (gap < MIN_REST_DAYS) return null
   }
   return result
 }
 
-export function autoskipMissed(
+export function canStartEarly(
   schedule: ScheduleSlot[],
-  missedIndex: number,
+  slotIndex: number,
   today: string,
-): ScheduleSlot[] {
-  const missed = schedule[missedIndex]
-  const delta = Math.max(1, daysBetween(missed.date, today))
-  return schedule.map((s, i) => {
-    if (i <= missedIndex) return { ...s }
-    return { ...s, date: addDays(s.date, delta) }
-  })
-}
-
-export function getMissedSlots(
-  schedule: ScheduleSlot[],
-  completedDates: Set<string>,
-  today: string,
-): ScheduleSlot[] {
-  return schedule.filter((s) => s.date < today && !completedDates.has(s.date))
+  lastWorkoutDate: string | null,
+): boolean {
+  return rescheduleWorkout(schedule, slotIndex, today, today, lastWorkoutDate) !== null
 }
 
 export function findScheduleSlotIndex(schedule: ScheduleSlot[], date: string): number {
@@ -144,6 +136,7 @@ export function getRescheduleOptions(
   schedule: ScheduleSlot[],
   slotIndex: number,
   today: string,
+  lastWorkoutDate: string | null = null,
 ): string[] {
   if (slotIndex < 0 || slotIndex >= schedule.length) return []
   const prevDate = slotIndex > 0 ? schedule[slotIndex - 1].date : null
@@ -153,7 +146,8 @@ export function getRescheduleOptions(
   for (let d = -3; d <= 3; d++) {
     const candidate = addDays(current, d)
     if (daysBetween(today, candidate) < 0) continue
-    if (prevDate && daysBetween(prevDate, candidate) < 2) continue
+    if (lastWorkoutDate && daysBetween(lastWorkoutDate, candidate) < MIN_REST_DAYS) continue
+    if (prevDate && daysBetween(prevDate, candidate) < MIN_REST_DAYS) continue
     if (nextDate && daysBetween(candidate, nextDate) < 0) continue
     options.push(candidate)
   }

@@ -49,25 +49,50 @@ test.describe('Progression', () => {
     await expect(page.getByText(/could not load|не удалось загрузить/i)).toBeVisible()
   })
 
+  test('early start reschedules next slot to today', async ({ page }) => {
+    const lastDate = addDays(today, -3)
+    const futureDate = addDays(today, 2)
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      lastWorkoutDate: lastDate,
+      schedule: [{ date: futureDate, stepRef: 3 }],
+      workoutRecords: [{ date: lastDate, result: 'success' }],
+      state: { stepInCycle: 3 },
+    })
+    await page.getByRole('button', { name: /start early|начать раньше/i }).click()
+    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
+    await expect(page).toHaveURL(new RegExp(`/workout/${today.replace(/-/g, '\\-')}`))
+    const progress = await readProgress(page)
+    const schedule = progress?.schedule as { date: string }[]
+    expect(schedule[0]?.date).toBe(today)
+  })
+
+  test('early start hidden within 48h of last workout', async ({ page }) => {
+    const yesterday = addDays(today, -1)
+    await prepareProgress(page, {
+      anchor: 7,
+      today,
+      lastWorkoutDate: yesterday,
+      schedule: [{ date: addDays(today, 2), stepRef: 2 }],
+      workoutRecords: [{ date: yesterday, result: 'success' }],
+      state: { stepInCycle: 2 },
+    })
+    await expect(page.getByRole('button', { name: /start early|начать раньше/i })).toHaveCount(0)
+    await expect(page.getByText(/48 hours|48 часов/i)).toBeVisible()
+  })
+
   test('two fails trigger deload anchor 7 to 6', async ({ page }) => {
-    const nextDate = addDays(today, 2)
     await prepareProgress(page, {
       anchor: 7,
       today,
       stepRef: 3,
-      state: { stepInCycle: 3 },
-      schedule: [
-        { date: today, stepRef: 3 },
-        { date: nextDate, stepRef: 3 },
-      ],
+      state: { stepInCycle: 3, failStreak: 1 },
+      schedule: [{ date: today, stepRef: 3 }],
+      lastWorkoutDate: addDays(today, -3),
+      workoutRecords: [{ date: addDays(today, -3), result: 'fail' }],
     })
     await failWorkoutEarly(page)
-    await page.getByRole('button', { name: /home|главная/i }).click()
-    await page.getByRole('button', { name: /start early|начать раньше/i }).click()
-    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
-    await page.getByRole('button', { name: /leave workout|выйти из тренировки/i }).click()
-    await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
-    await expect(page).toHaveURL(/\/result/)
     const progress = await readProgress(page)
     const state = progress?.state as { anchor: number; failStreak: number }
     expect(state.anchor).toBe(6)

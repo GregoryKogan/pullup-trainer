@@ -4,7 +4,7 @@ import { useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useProgressStore } from '@/stores/progress'
 import { session } from '@/domain/session'
-import { detectReturnPolicy } from '@/domain/schedule'
+import { detectReturnPolicy, canStartEarly } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatDisplayDate, startOfWeek, todayLocal, toIsoOffset } from '@/utils/dates'
@@ -14,7 +14,6 @@ import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
 import IconFlame from '@/components/icons/lucide/IconFlame.vue'
 import IconTarget from '@/components/icons/lucide/IconTarget.vue'
-import IconRepeat from '@/components/icons/lucide/IconRepeat.vue'
 import IconAboveBar from '@/components/icons/pullup/IconAboveBar.vue'
 
 const router = useRouter()
@@ -29,10 +28,20 @@ const showRetestZeroMessage = ref(false)
 const today = todayLocal()
 
 const nextSlot = computed(() => progressStore.getNextSlot())
-const missedSlot = computed(() => progressStore.getMissedSlot())
 const isWorkoutToday = computed(() => nextSlot.value?.date === today)
 const canStartToday = computed(
   () => isWorkoutToday.value && nextSlot.value !== null,
+)
+const canStartEarlyToday = computed(() => {
+  const p = progressStore.progress
+  const slot = nextSlot.value
+  if (!p || !slot || slot.date === today) return false
+  const idx = p.schedule.findIndex((s) => s.date === slot.date)
+  if (idx < 0) return false
+  return canStartEarly(p.schedule, idx, today, p.lastWorkoutDate)
+})
+const showRestNotReady = computed(
+  () => nextSlot.value !== null && !isWorkoutToday.value && !canStartEarlyToday.value,
 )
 
 const setsPreview = computed(() => {
@@ -110,13 +119,10 @@ function requestEarlyStart() {
   showStartConfirm.value = true
 }
 
-function confirmEarlyStart() {
+async function confirmEarlyStart() {
   showStartConfirm.value = false
-  if (nextSlot.value) startWorkout(nextSlot.value.date)
-}
-
-function repeatMissed() {
-  if (missedSlot.value) startWorkout(missedSlot.value.date)
+  const ok = await progressStore.applyEarlyStartReschedule()
+  if (ok) startWorkout(today)
 }
 
 async function submitRetest() {
@@ -186,11 +192,6 @@ async function reduceAnchor() {
       </span>
     </header>
 
-    <div v-if="missedSlot" class="banner">
-      <AppIcon name="bell" :size="15" />
-      {{ t('home.shiftBanner') }}
-    </div>
-
     <section v-if="needsRetestPrompt && !showRetest" class="panel retest">
       <p class="kicker retest-kicker">
         <IconTarget :size="16" class="kicker-icon" />
@@ -251,14 +252,11 @@ async function reduceAnchor() {
         <AppIcon name="arrow-right" />
       </button>
       <template v-else>
-        <button type="button" class="btn accent" @click="requestEarlyStart">
+        <button v-if="canStartEarlyToday" type="button" class="btn accent" @click="requestEarlyStart">
           {{ t('home.startEarly') }}
           <AppIcon name="arrow-right" />
         </button>
-        <button v-if="missedSlot" type="button" class="btn ghost" @click="repeatMissed">
-          <IconRepeat :size="17" />
-          {{ t('home.repeatMissed') }}
-        </button>
+        <p v-if="showRestNotReady" class="sub rest-not-ready">{{ t('home.restNotReady') }}</p>
         <RouterLink to="/calendar" class="btn ghost calendar-link">{{ t('home.openCalendar') }}</RouterLink>
       </template>
     </section>
@@ -362,6 +360,11 @@ async function reduceAnchor() {
   background: var(--bg);
   color: var(--ink);
   padding: 0 12px;
+}
+.rest-not-ready {
+  margin: 0 0 8px;
+  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  color: var(--muted);
 }
 .opens-on {
   margin: 4px 0 0;

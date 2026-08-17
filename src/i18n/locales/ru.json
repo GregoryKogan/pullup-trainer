@@ -23,7 +23,7 @@
     "dismiss": "Продолжить в браузере",
     "programName": "Pull-up Trainer",
     "appTitle": "Pull-up Trainer",
-    "earlyStartConfirm": "Начать эту тренировку раньше запланированного дня?"
+    "earlyStartConfirm": "Перенести тренировку на сегодня и начать? Следующие даты сдвинутся на столько же."
   },
   "home": {
     "title": "Твой план",
@@ -35,6 +35,7 @@
     "hideActions": "Скрыть",
     "startEarly": "Начать раньше",
     "earlyStartHint": "Или нажми «Начать раньше».",
+    "restNotReady": "Минимум 48 часов отдыха после последней тренировки.",
     "maxReps": "Максимум",
     "volumeWeek": "Повторов за неделю",
     "planPreview": "План: {sets}",

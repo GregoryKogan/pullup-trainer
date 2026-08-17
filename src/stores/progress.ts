@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 import type { ActiveProgress, BuiltinLState, Weekday, WorkoutRecord } from '@/domain/types'
-import { buildBuiltinScheduleSlots } from '@/domain/schedule'
+import { buildBuiltinScheduleSlots, rescheduleWorkout } from '@/domain/schedule'
+import { settlePastMissedWorkouts } from '@/domain/settlement'
 import { levelFromM } from '@/domain/levels'
 import { loadProgress, saveProgress, loadAllRecords, addRecord } from '@/db/repositories/progress'
 import { todayLocal } from '@/utils/dates'
 
 const DEFAULT_WEEKDAYS: Weekday[] = ['mon', 'wed', 'fri']
+const BUILTIN_PROGRAM_NAME = 'Pull-up Trainer'
 
 function createState(m: number, today: string): BuiltinLState {
   return {
@@ -25,9 +27,28 @@ export const useProgressStore = defineStore('progress', () => {
   const progress = shallowRef<ActiveProgress | null>(null)
   const records = shallowRef<WorkoutRecord[]>([])
 
+  async function settleIfNeeded() {
+    if (!progress.value) return
+    const today = todayLocal()
+    const result = settlePastMissedWorkouts(
+      progress.value,
+      records.value,
+      today,
+      BUILTIN_PROGRAM_NAME,
+    )
+    if (result.newRecords.length === 0) return
+    for (const rec of result.newRecords) {
+      await addRecord(rec)
+    }
+    progress.value = result.progress
+    records.value = [...result.newRecords, ...records.value]
+    await persist()
+  }
+
   async function hydrate() {
     progress.value = await loadProgress()
     records.value = await loadAllRecords()
+    await settleIfNeeded()
   }
 
   async function persist() {
@@ -64,6 +85,21 @@ export const useProgressStore = defineStore('progress', () => {
   async function updateProgress(data: ActiveProgress) {
     progress.value = data
     await persist()
+  }
+
+  async function applyEarlyStartReschedule(): Promise<boolean> {
+    const p = progress.value
+    if (!p) return false
+    const slot = getNextSlot()
+    if (!slot) return false
+    const today = todayLocal()
+    if (slot.date === today) return true
+    const idx = p.schedule.findIndex((s) => s.date === slot.date)
+    if (idx < 0) return false
+    const moved = rescheduleWorkout(p.schedule, idx, today, today, p.lastWorkoutDate)
+    if (!moved) return false
+    await updateProgress({ ...p, schedule: moved })
+    return true
   }
 
   async function updateBuiltinScheduleSettings(frequencyDays: 2 | 3, weekdays: Weekday[]) {
@@ -126,29 +162,19 @@ export const useProgressStore = defineStore('progress', () => {
     await persist()
   }
 
-  function getMissedSlot() {
-    if (!progress.value) return null
-    const today = todayLocal()
-    const attempted = new Set(
-      records.value.filter((r) => r.kind === 'workout').map((r) => r.date),
-    )
-    const idx = progress.value.schedule.findIndex((s) => s.date < today && !attempted.has(s.date))
-    if (idx < 0) return null
-    return { ...progress.value.schedule[idx], index: idx }
-  }
-
   return {
     progress,
     records,
     hydrate,
+    settleIfNeeded,
     initFromTest,
     saveRecord,
     getNextSlot,
     updateProgress,
+    applyEarlyStartReschedule,
     updateBuiltinScheduleSettings,
     applyRetest,
     reduceAnchor,
-    getMissedSlot,
     persist,
   }
 })

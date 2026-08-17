@@ -131,6 +131,11 @@ async function loadSession() {
     return
   }
   const date = workoutDate()
+  const nextSlot = progressStore.getNextSlot()
+  if (!nextSlot || nextSlot.date !== date) {
+    loadFailed.value = true
+    return
+  }
   if (hasWorkoutRecord(progressStore.records, date)) {
     loadFailed.value = true
     return

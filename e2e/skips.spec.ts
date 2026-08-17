@@ -2,41 +2,36 @@ import { test, expect } from '@playwright/test'
 import {
   prepareProgress,
   readProgress,
+  readRecords,
   todayLocal,
   addDays,
 } from './helpers/app'
 
-test.describe('Skip policy', () => {
+test.describe('Missed workout policy', () => {
   const today = todayLocal()
   const missedDate = addDays(today, -3)
 
-  test('autoshift keeps stepRef and moves later dates', async ({ page }) => {
+  test('past missed slot becomes fail record on open', async ({ page }) => {
     await prepareProgress(page, {
       anchor: 7,
       today,
       schedule: [
         { date: missedDate, stepRef: 2 },
-        { date: today, stepRef: 3 },
-        { date: addDays(today, 3), stepRef: 4 },
+        { date: addDays(today, 2), stepRef: 3 },
       ],
       state: { stepInCycle: 2 },
     })
 
-    await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
-    await expect(page.getByText(/shift later dates|сдвинуть следующие/i)).toBeVisible({
-      timeout: 5000,
-    })
-    await page.getByTestId('apply-autoshift').click()
-    await expect(page.getByTestId('apply-autoshift')).toHaveCount(0)
+    const records = (await readRecords(page)) as { date: string; result: string }[]
+    expect(records.some((r) => r.date === missedDate && r.result === 'fail')).toBe(true)
 
     const progress = await readProgress(page)
+    expect(progress?.lastWorkoutDate).toBe(missedDate)
     const schedule = progress?.schedule as { date: string; stepRef: number }[]
-    expect(schedule[0]?.stepRef).toBe(2)
-    expect(schedule[0]?.date).toBe(missedDate)
-    expect(schedule[1]?.date).not.toBe(today)
+    expect(schedule[0]?.date).toBe(addDays(today, 2))
   })
 
-  test('home offers repeat missed workout', async ({ page }) => {
+  test('home does not offer repeat missed workout', async ({ page }) => {
     await prepareProgress(page, {
       anchor: 7,
       today,
@@ -45,10 +40,10 @@ test.describe('Skip policy', () => {
         { date: addDays(today, 2), stepRef: 3 },
       ],
     })
-    await expect(page.getByRole('button', { name: /repeat missed|пропущенную/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /repeat missed|пропущенную/i })).toHaveCount(0)
   })
 
-  test('missed day uses neutral styling', async ({ page }) => {
+  test('settled missed day shows failed styling in calendar', async ({ page }) => {
     await prepareProgress(page, {
       anchor: 7,
       today,
@@ -58,11 +53,7 @@ test.describe('Skip policy', () => {
       ],
     })
     await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
-    await expect(page.locator('.day.missed').first()).toBeVisible({ timeout: 5000 })
-
-    const missedDay = page.locator('.day.missed').first()
-    const borderColor = await missedDay.evaluate((el) => getComputedStyle(el).borderColor)
-    const badColor = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bad').trim())
-    expect(borderColor).not.toContain(badColor || 'rgb(255, 0, 0)')
+    await expect(page.locator('.day.failed').first()).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.day.missed')).toHaveCount(0)
   })
 })

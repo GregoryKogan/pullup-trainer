@@ -23,7 +23,7 @@
     "dismiss": "Continue in browser",
     "programName": "Pull-up Trainer",
     "appTitle": "Pull-up Trainer",
-    "earlyStartConfirm": "Start this workout before its scheduled day?"
+    "earlyStartConfirm": "Move this workout to today and start? Later dates shift by the same amount."
   },
   "home": {
     "title": "Your plan",
@@ -35,6 +35,7 @@
     "hideActions": "Hide actions",
     "startEarly": "Start early",
     "earlyStartHint": "Or tap Start early.",
+    "restNotReady": "At least 48 hours of rest since your last workout.",
     "maxReps": "Max reps",
     "volumeWeek": "Reps this week",
     "planPreview": "Plan: {sets}",

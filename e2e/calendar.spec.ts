@@ -110,9 +110,9 @@ test.describe('Calendar', () => {
         { date: slotDate, stepRef: 2 },
       ],
       state: { stepInCycle: 2 },
+      lastWorkoutDate: prevDate,
       workoutRecords: [{ date: prevDate, result: 'success' }],
     })
-    await page.evaluate(() => sessionStorage.setItem('pullup-trainer-autoshift-shown', '1'))
     await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
 
     const progress = await readProgress(page)

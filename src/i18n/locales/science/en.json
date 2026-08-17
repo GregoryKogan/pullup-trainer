@@ -82,9 +82,9 @@
     "skips": {
       "title": "Missed workouts and returning after a break",
       "body": [
-        "Skipping a scheduled day neither advances nor penalizes your step. The missed workout stays available, and later dates shift forward by the gap while keeping the same spacing between sessions.",
+        "If a scheduled day passes without a logged workout, the app records it as a failed session on the next open. That keeps progression honest and enforces at least 48 hours between any two sessions, including automatic fails.",
         "Strength is maintained for up to about three weeks without training, then decay speeds up [29]. Adolescent athletes lost nothing after three weeks off [30]. A break of two weeks or less: resume the same step. A longer break: take a fresh max test or accept an automatic anchor cut.",
-        "In a large field experiment, flexible scheduling supported long-term exercise habits better than rigid time windows [31]. In relapse-prevention research, guilt after a missed session is linked to worse outcomes [32]. That is why the calendar marks skipped days neutrally, not in red."
+        "Starting early is the same as moving the next workout to today in the calendar: later slots shift by the same delta, and early start is blocked until 48 hours have passed since your last session."
       ]
     },
     "rejected": {

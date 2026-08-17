@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
@@ -7,7 +7,7 @@ import AppIcon from '@/components/icons/AppIcon.vue'
 import { useModalA11y } from '@/composables/use-modal-a11y'
 import { useProgressStore } from '@/stores/progress'
 import { useWorkoutSessionStore } from '@/stores/workout-session'
-import { rescheduleWorkout, autoskipMissed, getRescheduleOptions } from '@/domain/schedule'
+import { rescheduleWorkout, getRescheduleOptions, canStartEarly } from '@/domain/schedule'
 import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
 
 const { t, locale } = useI18n()
@@ -19,9 +19,6 @@ const viewMonth = ref(new Date())
 const selectedDate = ref<string | null>(null)
 const selectedIndex = ref<number | null>(null)
 const selectedMoveDate = ref<string | null>(null)
-const autoshiftBanner = ref(false)
-const pendingAutoshift = ref(false)
-const pendingShiftedSchedule = ref<import('@/domain/types').ScheduleSlot[] | null>(null)
 const showStartConfirm = ref(false)
 const dayHint = ref('')
 let dayHintTimer: ReturnType<typeof setTimeout> | null = null
@@ -73,10 +70,7 @@ function dayStatus(date: string) {
   if (successDates.value.has(date)) return 'done'
   if (failedDates.value.has(date)) return 'failed'
   const slotIdx = schedule.value.findIndex((s) => s.date === date)
-  if (slotIdx >= 0) {
-    if (date < today.value && !attemptedDates.value.has(date)) return 'missed'
-    return 'planned'
-  }
+  if (slotIdx >= 0) return 'planned'
   if (date === today.value) return 'today'
   return 'rest'
 }
@@ -150,20 +144,38 @@ function recordSummary(r: (typeof progressStore.records)[0]) {
   return r.sets.map((s) => s.done).join('·') || '—'
 }
 
-const isMissedSelected = computed(() => {
-  if (!selectedSlot.value) return false
-  return selectedSlot.value.date < today.value && !attemptedDates.value.has(selectedSlot.value.date)
+const nextSlot = computed(() => progressStore.getNextSlot())
+
+const isNextSlotSelected = computed(() => {
+  const slot = selectedSlot.value
+  const next = nextSlot.value
+  return !!slot && !!next && slot.date === next.date
 })
 
-const moveOptions = computed(() =>
-  selectedIndex.value !== null ? getRescheduleOptions(schedule.value, selectedIndex.value, today.value) : [],
-)
+const moveOptions = computed(() => {
+  const p = progressStore.progress
+  if (selectedIndex.value === null || !p) return []
+  return getRescheduleOptions(
+    schedule.value,
+    selectedIndex.value,
+    today.value,
+    p.lastWorkoutDate,
+  )
+})
 
-const startTargetDate = computed(() => selectedMoveDate.value ?? selectedSlot.value?.date ?? null)
+const canStartSelectedNow = computed(() => {
+  const p = progressStore.progress
+  const slot = selectedSlot.value
+  if (!p || !slot || !isNextSlotSelected.value) return false
+  if (slot.date === today.value) return true
+  const idx = p.schedule.findIndex((s) => s.date === slot.date)
+  if (idx < 0) return false
+  return canStartEarly(p.schedule, idx, today.value, p.lastWorkoutDate)
+})
 
-const isFutureStart = computed(() => {
-  const date = startTargetDate.value
-  return date ? date > today.value : false
+const needsEarlyStartConfirm = computed(() => {
+  const slot = selectedSlot.value
+  return !!slot && slot.date > today.value && canStartSelectedNow.value
 })
 
 function prevMonth() {
@@ -179,10 +191,8 @@ function dayAriaLabel(date: string, day: number) {
   const statusKey =
     status === 'done'
       ? 'calendar.done'
-      : status === 'failed'
-        ? 'calendar.failed'
-        : status === 'missed'
-          ? 'calendar.missed'
+        : status === 'failed'
+          ? 'calendar.failed'
           : status === 'planned'
             ? 'calendar.planned'
             : status === 'today'
@@ -211,66 +221,41 @@ async function applyMove() {
     showDayHint(t('calendar.moveUnchanged'))
     return
   }
-  const moved = rescheduleWorkout(schedule.value, selectedIndex.value, selectedMoveDate.value, today.value)
+  const moved = rescheduleWorkout(
+    schedule.value,
+    selectedIndex.value,
+    selectedMoveDate.value,
+    today.value,
+    progressStore.progress.lastWorkoutDate,
+  )
   if (!moved) return
   await progressStore.updateProgress({ ...progressStore.progress, schedule: moved })
   dismissSheet()
 }
 
 function startSelected() {
-  if (isFutureStart.value) {
+  if (!canStartSelectedNow.value) return
+  if (needsEarlyStartConfirm.value) {
     showStartConfirm.value = true
     return
   }
   goStartWorkout()
 }
 
-function goStartWorkout() {
+async function goStartWorkout() {
   showStartConfirm.value = false
-  const date = startTargetDate.value
-  router.push(date ? `/workout/${date}` : '/workout')
-}
-
-function repeatMissed() {
-  if (selectedSlot.value) router.push(`/workout/${selectedSlot.value.date}`)
+  const slot = selectedSlot.value
+  if (!slot || !canStartSelectedNow.value) return
+  if (slot.date > today.value) {
+    const ok = await progressStore.applyEarlyStartReschedule()
+    if (!ok) return
+  }
+  router.push(`/workout/${today.value}`)
 }
 
 function goToday() {
   viewMonth.value = new Date()
 }
-
-const AUTOSHIFT_SESSION_KEY = 'pullup-trainer-autoshift-shown'
-
-function detectPendingAutoshift() {
-  if (sessionStorage.getItem(AUTOSHIFT_SESSION_KEY)) return
-  const p = progressStore.progress
-  if (!p) return
-  const missedIdx = schedule.value.findIndex((s) => s.date < today.value && !attemptedDates.value.has(s.date))
-  if (missedIdx < 0) return
-  pendingShiftedSchedule.value = autoskipMissed(schedule.value, missedIdx, today.value)
-  pendingAutoshift.value = true
-}
-
-async function applyPendingAutoshift() {
-  const p = progressStore.progress
-  const shifted = pendingShiftedSchedule.value
-  if (!p || !shifted) return
-  await progressStore.updateProgress({ ...p, schedule: shifted.map((s) => ({ ...s })) })
-  pendingAutoshift.value = false
-  pendingShiftedSchedule.value = null
-  autoshiftBanner.value = true
-  sessionStorage.setItem(AUTOSHIFT_SESSION_KEY, '1')
-}
-
-function dismissPendingAutoshift() {
-  pendingAutoshift.value = false
-  pendingShiftedSchedule.value = null
-  sessionStorage.setItem(AUTOSHIFT_SESSION_KEY, '1')
-}
-
-onMounted(() => {
-  detectPendingAutoshift()
-})
 
 onBeforeUnmount(() => {
   if (dayHintTimer) clearTimeout(dayHintTimer)
@@ -294,16 +279,6 @@ onBeforeUnmount(() => {
         <button type="button" class="today-btn" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </header>
-    <div v-if="pendingAutoshift" class="banner pending-banner">
-      <p>{{ t('calendar.autoshiftPrompt') }}</p>
-      <div class="banner-actions">
-        <button type="button" class="btn accent" data-testid="apply-autoshift" @click.prevent="applyPendingAutoshift">
-          {{ t('calendar.applyAutoshift') }}
-        </button>
-        <button type="button" class="btn ghost" @click="dismissPendingAutoshift">{{ t('common.cancel') }}</button>
-      </div>
-    </div>
-    <div v-if="autoshiftBanner" class="banner">{{ t('calendar.autoshiftApplied') }}</div>
     <p v-if="dayHint" class="day-hint" role="status" aria-live="polite">{{ dayHint }}</p>
     <div class="calgrid">
       <div v-for="d in dowKeys" :key="d" class="dow">{{ t(`calendar.dow.${d}`) }}</div>
@@ -322,13 +297,11 @@ onBeforeUnmount(() => {
         {{ cell.day }}
         <span v-if="dayStatus(cell.date) === 'done'" class="day-icon"><AppIcon name="check" /></span>
         <span v-else-if="dayStatus(cell.date) === 'failed'" class="day-icon"><AppIcon name="x" /></span>
-        <span v-else-if="dayStatus(cell.date) === 'missed'" class="day-icon"><AppIcon name="x" /></span>
       </button>
     </div>
     <div class="legend page-bottom">
       <span><i class="dot done" aria-hidden="true" />{{ t('calendar.done') }}</span>
       <span><i class="dot failed" aria-hidden="true" />{{ t('calendar.failed') }}</span>
-      <span><i class="dot missed" aria-hidden="true" />{{ t('calendar.missed') }}</span>
       <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
       <span><i class="dot today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
     </div>
@@ -426,9 +399,13 @@ onBeforeUnmount(() => {
               >
                 {{ t('common.move') }}
               </button>
-              <button type="button" class="btn ghost" @click="startSelected">{{ t('calendar.startNow') }}</button>
-              <button v-if="isMissedSelected" type="button" class="btn ghost" @click="repeatMissed">
-                {{ t('calendar.repeatMissed') }}
+              <button
+                v-if="canStartSelectedNow"
+                type="button"
+                class="btn ghost"
+                @click="startSelected"
+              >
+                {{ t('calendar.startNow') }}
               </button>
             </div>
           </template>
