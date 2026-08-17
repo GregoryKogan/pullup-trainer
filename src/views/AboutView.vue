@@ -13,10 +13,6 @@ const router = useRouter()
 <template>
   <div class="page">
     <div class="subpage-head">
-      <button type="button" class="btn ghost" @click="safeBack(router)">
-        <AppIcon name="chev-left" />
-        {{ t('common.back') }}
-      </button>
       <header class="head about-head">
         <IconMark :size="36" class="about-mark" />
         <div>
@@ -24,6 +20,10 @@ const router = useRouter()
           <h1>{{ t('about.title') }}</h1>
         </div>
       </header>
+      <button type="button" class="btn ghost" @click="safeBack(router)">
+        <AppIcon name="chev-left" />
+        {{ t('common.back') }}
+      </button>
     </div>
     <section class="panel">
       <p>{{ t('about.body') }}</p>

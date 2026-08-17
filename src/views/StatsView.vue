@@ -10,31 +10,25 @@ import AppIcon from '@/components/icons/AppIcon.vue'
 import IconTrendingUp from '@/components/icons/lucide/IconTrendingUp.vue'
 import IconActivity from '@/components/icons/lucide/IconActivity.vue'
 import { computeWeeklyStreak } from '@/utils/streak'
-import { formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
+import { formatShortDate, todayLocal } from '@/utils/dates'
+import {
+  buildMaxRepsPoints,
+  buildWeeklyBars,
+  chartX,
+  chartY,
+  shouldShowChartDateLabel,
+  shouldShowChartValueLabel,
+  shouldShowWeeklyValueLabel,
+  sliceForDisplay,
+} from '@/utils/stats-chart'
 
 const { t, locale } = useI18n()
 const progressStore = useProgressStore()
 const settingsStore = useSettingsStore()
 
-const maxReps = computed(() => {
-  const points: { date: string; value: number }[] = []
-  for (const r of [...progressStore.records].reverse()) {
-    let v = r.totals.maxSetReps
-    if (r.kind === 'test') v = r.sets[0]?.done ?? 0
-    if (v > 0) points.push({ date: r.date, value: v })
-  }
-  return points.slice(-6)
-})
+const maxReps = computed(() => buildMaxRepsPoints(progressStore.records))
 
-const weeklyBars = computed(() => {
-  const map = new Map<string, number>()
-  for (const r of progressStore.records) {
-    if (r.kind !== 'workout') continue
-    const w = startOfWeek(r.date)
-    map.set(w, (map.get(w) ?? 0) + r.totals.volumeReps)
-  }
-  return [...map.entries()].slice(-7).map(([week, vol]) => ({ week, vol }))
-})
+const weeklyBars = computed(() => buildWeeklyBars(progressStore.records))
 
 const totalVolume = computed(() =>
   progressStore.records.reduce((s, r) => s + r.totals.volumeReps, 0),
@@ -75,20 +69,13 @@ onBeforeUnmount(() => {
   narrowMq?.removeEventListener('change', updateNarrow)
 })
 
-const displayMaxReps = computed(() => {
-  const pts = maxReps.value
-  return isNarrow.value && pts.length > 4 ? pts.slice(-4) : pts
-})
+const displayMaxReps = computed(() => sliceForDisplay(maxReps.value, isNarrow.value))
 
-const displayWeeklyBars = computed(() => {
-  const bars = weeklyBars.value
-  return isNarrow.value && bars.length > 4 ? bars.slice(-4) : bars
-})
+const displayWeeklyBars = computed(() => sliceForDisplay(weeklyBars.value, isNarrow.value))
 
-function chartX(index: number, count: number, start = 30, end = 330) {
-  if (count <= 1) return (start + end) / 2
-  return start + (index * (end - start)) / (count - 1)
-}
+const displayMaxRepsValues = computed(() => displayMaxReps.value.map((p) => p.value))
+
+const displayWeeklyValues = computed(() => displayWeeklyBars.value.map((b) => b.vol))
 
 const filteredRecords = computed(() => {
   if (!historyMonthFilter.value) return progressStore.records
@@ -104,11 +91,6 @@ const hasMoreHistory = computed(() => filteredRecords.value.length > historyLimi
 const historyFilterEmpty = computed(
   () => historyMonthFilter.value.length > 0 && filteredRecords.value.length === 0,
 )
-
-function chartY(value: number, max: number) {
-  if (max <= 0) return 130
-  return 130 - (value / max) * 100
-}
 
 const maxChartMax = computed(() => Math.max(1, ...maxReps.value.map((p) => p.value)))
 
@@ -195,10 +177,17 @@ function exportHistoryJson() {
               r="5"
               fill="var(--accent)"
             />
-            <text class="chart-label" :x="chartX(i, displayMaxReps.length)" y="148" text-anchor="middle">
+            <text
+              v-if="shouldShowChartDateLabel(i, displayMaxReps.length, isNarrow)"
+              class="chart-label"
+              :x="chartX(i, displayMaxReps.length)"
+              y="148"
+              text-anchor="middle"
+            >
               {{ chartDateLabel(p.date) }}
             </text>
             <text
+              v-if="shouldShowChartValueLabel(i, displayMaxRepsValues, maxChartMax, isNarrow)"
               class="chart-val"
               :x="chartX(i, displayMaxReps.length)"
               :y="chartY(p.value, maxChartMax) - 8"
@@ -249,11 +238,17 @@ function exportHistoryJson() {
               :height="130 - chartY(b.vol, weeklyChartMax)"
               fill="var(--accent)"
             />
-            <text class="chart-label" :x="chartX(i, displayWeeklyBars.length)" y="144" text-anchor="middle">
+            <text
+              v-if="shouldShowChartDateLabel(i, displayWeeklyBars.length, isNarrow)"
+              class="chart-label"
+              :x="chartX(i, displayWeeklyBars.length)"
+              y="144"
+              text-anchor="middle"
+            >
               {{ chartDateLabel(b.week) }}
             </text>
             <text
-              v-if="b.vol > 0"
+              v-if="shouldShowWeeklyValueLabel(i, displayWeeklyValues, weeklyChartMax, isNarrow)"
               class="chart-val"
               :x="chartX(i, displayWeeklyBars.length)"
               :y="chartY(b.vol, weeklyChartMax) - 6"

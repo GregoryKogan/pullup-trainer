@@ -13,6 +13,15 @@ export interface SeedState {
   cycleBestMax?: number
 }
 
+export interface SeedWorkoutRecord {
+  date: string
+  result: 'success' | 'fail'
+  stepInCycle?: number
+  kind?: 'workout' | 'test'
+  totals?: { volumeReps: number; maxSetReps: number; holdSeconds?: number }
+  sets?: { position: number; type: string; unit: string; planned: number; done: number }[]
+}
+
 export interface SeedOptions {
   anchor?: number
   today?: string
@@ -24,7 +33,7 @@ export interface SeedOptions {
   state?: SeedState
   language?: 'en' | 'ru'
   restDurationSeconds?: number
-  workoutRecords?: { date: string; result: 'success' | 'fail'; stepInCycle?: number }[]
+  workoutRecords?: SeedWorkoutRecord[]
 }
 
 async function withOrigin(page: Page) {
@@ -256,12 +265,13 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
           })
           tx.objectStore('workoutRecords').clear()
           for (const rec of payload.workoutRecords) {
+            const totals = rec.totals ?? { volumeReps: 0, maxSetReps: 0, holdSeconds: 0 }
             tx.objectStore('workoutRecords').add({
               date: rec.date,
               startedAt: `${rec.date}T10:00:00+03:00`,
               finishedAt: `${rec.date}T10:30:00+03:00`,
               durationSeconds: 1800,
-              kind: 'workout',
+              kind: rec.kind ?? 'workout',
               program: 'builtin',
               programName: 'Pull-up Trainer',
               context: {
@@ -271,8 +281,12 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
                 stepInCycle: rec.stepInCycle ?? payload.state.stepInCycle,
               },
               result: rec.result,
-              sets: [],
-              totals: { volumeReps: 0, maxSetReps: 0, holdSeconds: 0 },
+              sets: rec.sets ?? [],
+              totals: {
+                volumeReps: totals.volumeReps,
+                maxSetReps: totals.maxSetReps,
+                holdSeconds: totals.holdSeconds ?? 0,
+              },
             })
           }
           tx.oncomplete = () => {
@@ -369,14 +383,55 @@ export function startOfWeek(isoDate: string): string {
   return `${yy}-${mm}-${dd}`
 }
 
+export function buildStatsHistory(today: string, count: number): SeedWorkoutRecord[] {
+  const records: SeedWorkoutRecord[] = []
+  let date = today
+  for (let i = 0; i < count; i++) {
+    const maxSetReps = 5 + (i % 11)
+    const volumeReps = 30 + (i % 31)
+    records.push({
+      date,
+      result: 'success',
+      totals: { volumeReps, maxSetReps, holdSeconds: 0 },
+    })
+    date = addDays(date, -(2 + (i % 2)))
+  }
+  return records
+}
+
+export async function assertNoTextOverlap(
+  page: Page,
+  chartIndex: number,
+  selector: string,
+) {
+  const chart = page.locator('.chart-wrap svg.chart').nth(chartIndex)
+  await expect(chart).toBeVisible()
+  const overlap = await chart.evaluate((svg, sel) => {
+    const els = [...svg.querySelectorAll(sel)]
+    const pad = 2
+    const boxes = els.map((el) => el.getBoundingClientRect())
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i]
+        const b = boxes[j]
+        if (
+          a.left - pad < b.right &&
+          a.right + pad > b.left &&
+          a.top - pad < b.bottom &&
+          a.bottom + pad > b.top
+        ) {
+          return { first: i, second: j }
+        }
+      }
+    }
+    return null
+  }, selector)
+  expect(overlap).toBeNull()
+}
+
 export async function seedWorkoutRecord(
   page: Page,
-  record: {
-    date: string
-    result: 'success' | 'fail'
-    stepInCycle?: number
-    anchor?: number
-  },
+  record: SeedWorkoutRecord & { anchor?: number },
 ) {
   await withOrigin(page)
   await page.evaluate(
@@ -391,7 +446,7 @@ export async function seedWorkoutRecord(
             startedAt: `${rec.date}T10:00:00+03:00`,
             finishedAt: `${rec.date}T10:30:00+03:00`,
             durationSeconds: 1800,
-            kind: 'workout',
+            kind: rec.kind ?? 'workout',
             program: 'builtin',
             programName: 'Pull-up Trainer',
             context: {
@@ -401,8 +456,12 @@ export async function seedWorkoutRecord(
               stepInCycle: rec.stepInCycle ?? 1,
             },
             result: rec.result,
-            sets: [],
-            totals: { volumeReps: 0, maxSetReps: 0, holdSeconds: 0 },
+            sets: rec.sets ?? [],
+            totals: {
+              volumeReps: rec.totals?.volumeReps ?? 0,
+              maxSetReps: rec.totals?.maxSetReps ?? 0,
+              holdSeconds: rec.totals?.holdSeconds ?? 0,
+            },
           })
           tx.oncomplete = () => {
             db.close()

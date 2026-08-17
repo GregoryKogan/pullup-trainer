@@ -87,16 +87,16 @@ const sources = computed(() => {
 <template>
   <div class="science page">
     <div class="subpage-head">
-      <button type="button" class="btn ghost" @click="safeBack(router)">
-        <AppIcon name="chev-left" />
-        {{ t('common.back') }}
-      </button>
       <header class="head">
         <div>
           <p class="kicker">{{ t('why.kicker') }}</p>
           <h1>{{ t('science.title') }}</h1>
         </div>
       </header>
+      <button type="button" class="btn ghost" @click="safeBack(router)">
+        <AppIcon name="chev-left" />
+        {{ t('common.back') }}
+      </button>
     </div>
     <section class="sec">
       <h4>{{ t('science.introTitle') }}</h4>

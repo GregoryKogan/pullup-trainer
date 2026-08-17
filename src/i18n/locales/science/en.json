@@ -12,7 +12,7 @@
       "body": [
         "You begin with a max-rep test. The result becomes your anchor M*, the app's estimate of how many strict pull-ups you can do in a single set. Every workout has five sets. A cycle has six workouts, and each workout is one step with slightly higher targets than the previous one.",
         "Sets 1 to 4 are submaximal: fixed rep counts at 50 to 70% of the anchor. Set 5 is a maximum-effort set with a minimum rep count that rises from step to step. Hit every target and you advance to the next step. Miss any set and you repeat the same step next time.",
-        "The anchor updates after each completed cycle and again at a formal retest every four weeks. At the default three sessions per week, this adds up to 15 hard sets [1][2]. One set per workout goes close to failure and provides the progression signal [3][4]. Advancing depends on actual performance, not on the calendar [5][6]."
+        "The anchor updates after each completed cycle. Every two completed cycles (about four weeks at three sessions per week), the app prompts you for a formal max retest. At the default three sessions per week, this adds up to 15 hard sets [1][2]. One set per workout goes close to failure and provides the progression signal [3][4]. Advancing depends on actual performance, not on the calendar [5][6]."
       ]
     },
     "levels": {
@@ -36,13 +36,13 @@
       "body": [
         "Success means all five sets meet their targets and the final set reaches N_k or more. The next scheduled workout is step k + 1.",
         "Failure means any working set falls short or the final set lands below N_k. The same step repeats on the next workout. Two consecutive failures on one step trigger a deload: the anchor becomes floor(0.9·M*), minimum 1, and the same step is recalculated from the lower anchor. Autoregulated loading performs at least as well as fixed progression in meta-analyses [5], and other reviews find no downside [6]. Trained lifters commonly deload about every five to six weeks [7].",
-        "After six successful steps the cycle ends. The new anchor is M*' = max(best final-set reps in the cycle, M* - 1), and a new cycle starts at step 1. Every two cycles, about four weeks at three sessions per week, you run a full max test and its result becomes the new M*. Repeated max tests do not inflate strength gains on their own [8]. After a break longer than two weeks, the app suggests a retest or an anchor cut of roughly 10%."
+        "After six successful steps the cycle ends. The new anchor is M*' = max(best final-set reps in the cycle, M* - 1), and a new cycle starts at step 1. Every two completed cycles (about four weeks at three sessions per week), the app prompts for a full max test; its result becomes the new M* and keeps your current step. You can also choose the optional easier plan (−10%), which cuts the anchor by about 10% and restarts at step 1. You may start the next workout without retesting. Repeated max tests do not inflate strength gains on their own [8]. After a break longer than two weeks, the app suggests a retest or the optional easier plan."
       ]
     },
     "frequency": {
-      "title": "Frequency: 3 sessions per week, 48 hours apart",
+      "title": "Frequency: 3 sessions per week, 2 calendar days apart",
       "body": [
-        "The default schedule is three non-consecutive days per week, for example Monday, Wednesday, and Friday. Sessions must be at least 48 hours apart.",
+        "The default schedule is three non-consecutive days per week, for example Monday, Wednesday, and Friday. Sessions must be at least two calendar days apart (about 48 hours).",
         "Training a muscle group twice per week beats once per week for hypertrophy in meta-analysis [9]. For upper-body strength, three or more weekly sessions beat one when volume is matched [10]. After a session that lowers strength by no more than 20%, strength is usually restored within about two days [11].",
         "Two sessions per week is a valid option, especially at advanced levels when progress stalls. ACSM guidelines recommend training every major muscle group at least twice per week [12]."
       ]
@@ -66,7 +66,7 @@
     "finalMax": {
       "title": "Final set: maximum with a rising minimum",
       "body": [
-        "Set 5 is always a maximum-effort set with a floor of N_k reps. N_k rises by one each step until it hits the cap M* + 1. Over a full cycle the minimum typically climbs by three reps.",
+        "Set 5 is always a maximum-effort set with a floor of N_k reps. N_k rises by one each step until it hits the cap M* + 1. Over a full cycle the minimum typically climbs by two to five reps, depending on M* and the M*+1 cap.",
         "Muscle size tends to increase as sets end closer to failure, but the effect is small [3][17]. For strength, failure is not required [4][18]. Local muscular endurance gains look similar whether you stop at failure or two reps in reserve [19].",
         "The exact package of four submaximal sets plus one max set has not been tested as a unit in a randomized trial. We assembled it from separate lines of evidence on volume, proximity to failure, and autoregulation. Treat that combination as an extrapolation."
       ]
@@ -74,7 +74,7 @@
     "rest": {
       "title": "Rest between sets: 3 minutes by default",
       "body": [
-        "The default rest between sets is three minutes. Presets offer 90 seconds and five minutes, and you can adjust in 15-second steps during a workout.",
+        "The default rest between sets is three minutes. Presets offer 90 seconds, 3 minutes (default), and 5 minutes, and you can adjust in 15-second steps during a workout.",
         "For strength work at 50 to 90% of max, three to five minutes of rest allows more reps across multiple sets than short rest [20]. Trained lifters need more than two minutes to maximize strength gains [21]. In one squat study, one-minute rests cut reps from 7.7 to 2.2 by set four, while five-minute rests held them at 7.4 to 4.7 [22].",
         "For hypertrophy, the benefit of resting beyond 90 seconds is unclear. A 2024 Bayesian meta-analysis found no meaningful difference above 90 seconds [23]. A 2025 preprint argues that long rest does not beat short rest for hypertrophy, though it still favors long rest for strength [24]. Since our goal is rep-max performance, three minutes stays the default."
       ]
@@ -82,15 +82,16 @@
     "skips": {
       "title": "Missed workouts and returning after a break",
       "body": [
-        "If a scheduled day passes without a logged workout, the app records it as a failed session on the next open. That keeps progression honest and enforces at least 48 hours between any two sessions, including automatic fails.",
-        "Strength is maintained for up to about three weeks without training, then decay speeds up [29]. Adolescent athletes lost nothing after three weeks off [30]. A break of two weeks or less: resume the same step. A longer break: take a fresh max test or accept an automatic anchor cut.",
-        "Starting early is the same as moving the next workout to today in the calendar: later slots shift by the same delta, and early start is blocked until 48 hours have passed since your last session."
+        "If a scheduled day passes without a logged workout, the app records it as a failed session on the next open. That keeps progression honest and enforces at least two calendar days between any two sessions, including automatic fails [32].",
+        "Strength is maintained for up to about three weeks without training, then decay speeds up [29]. Adolescent athletes lost nothing after three weeks off [30]. A break of two weeks or less: resume the same step. A longer break: take a fresh max test or tap the optional easier plan (−10%).",
+        "Starting early is the same as moving the next workout to today in the calendar: later slots shift by the same delta, and early start is blocked until two calendar days have passed since your last session. Calendar reschedule moves a slot within ±3 days, subject to the same rest gaps [31].",
+        "Exiting a workout before completion counts as failure with whatever reps you logged. Missed slots are not made up; the schedule moves on."
       ]
     },
     "rejected": {
       "title": "Patterns we rejected",
       "body": [
-        "Daily high-frequency training without rest days conflicts with the recovery data. Strength typically returns within two days, so hard sessions should be at least 48 hours apart [11].",
+        "Daily high-frequency training without rest days conflicts with the recovery data. Strength typically returns within two days, so hard sessions should be at least two calendar days apart [11].",
         "Very high weekly volumes without a deload or a performance gate run into the dose-response ceiling and raise the risk of overuse [1][2]. Rest-pause protocols have RCT support on bench press and curls, but not on pull-ups [33]. With a fixed bodyweight load, the main rest-pause benefit, more reps at the same external load, matters less.",
         "The interface has no RPE or reps-in-reserve scale. Novices misjudge their reserve by more than one rep on average [34]. The app uses an objective pass or fail gate instead.",
         "Eccentric-only progressions for people who cannot pull up yet are supported in the literature [25][26][27][28], but this app is for users who can already do at least one strict pull-up."
@@ -143,7 +144,7 @@
         "name": "Cycle length and retest",
         "formula": "6 steps × 3 sessions/week ≈ 2 weeks per cycle; retest every 2 cycles ≈ 4 weeks",
         "example": "A formal max test resets M*; retests do not inflate gains [8].",
-        "note": "Frequency [9][10]; recovery gap 48 h [11]."
+        "note": "Frequency [9][10]; recovery gap 2 calendar days [11]."
       }
     ]
   },
