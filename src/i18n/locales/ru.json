@@ -86,7 +86,7 @@
     "setOf": "Подход {current} из {total}",
     "setLabel": "Подход {n}",
     "doNow": "Сделай сейчас",
-    "reps": "повт",
+    "reps": "повторений",
     "doneMax": "Готово",
     "logDifferent": "Другое число",
     "maxDoneLabel": "Сколько сделал?",
@@ -119,7 +119,7 @@
     "resultRetry": "Повтори этот шаг в следующий раз.",
     "resultNextDate": "Следующая тренировка: {date}",
     "volume": "{n} повторений",
-    "focusReps": "повт · подход {n}",
+    "focusReps": "повторения · подход {n}",
     "focusMax": "макс · мин {n}"
   },
   "calendar": {
