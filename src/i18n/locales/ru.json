@@ -87,7 +87,6 @@
     "setLabel": "Подход {n}",
     "doNow": "Сделай сейчас",
     "reps": "повт",
-    "seconds": "сек",
     "doneMax": "Готово",
     "logDifferent": "Другое число",
     "maxDoneLabel": "Сколько сделал?",
@@ -96,7 +95,6 @@
     "maxSetMinLabel": "не меньше",
     "maxSetA11y": "Подход {n} на максимум. Сделай столько подтягиваний, сколько сможешь, но не меньше {min}.",
     "fewerLabelReps": "Сделано повторов",
-    "fewerLabelSeconds": "Сделано секунд",
     "rest": "ОТДЫХ",
     "restHint": "Отдых необязателен — нажми Пропуск",
     "adjustMinus": "−15 сек",
@@ -122,16 +120,7 @@
     "resultNextDate": "Следующая тренировка: {date}",
     "volume": "{n} повторений",
     "focusReps": "повт · подход {n}",
-    "focusSeconds": "сек · подход {n}",
-    "focusMax": "макс · мин {n}",
-    "focusAssisted": "ассист · подход {n}",
-    "setType": {
-      "reps": "Повторы",
-      "max": "Максимум",
-      "hold": "Удержание",
-      "negative": "Негатив",
-      "assisted": "Ассист"
-    }
+    "focusMax": "макс · мин {n}"
   },
   "calendar": {
     "title": "Календарь",

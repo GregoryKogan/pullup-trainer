@@ -29,13 +29,11 @@ export function session(anchor: number, stepInCycle: number) {
     ...working.map((planned, i) => ({
       position: i + 1,
       type: 'reps' as const,
-      unit: 'reps' as const,
       planned,
     })),
     {
       position: 5,
       type: 'max' as const,
-      unit: 'reps' as const,
       planned: nMin,
     },
   ]

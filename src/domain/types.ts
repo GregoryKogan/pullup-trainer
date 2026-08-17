@@ -1,5 +1,4 @@
-export type SetType = 'reps' | 'max' | 'hold' | 'negative' | 'assisted'
-export type SetUnit = 'reps' | 'seconds'
+export type SetType = 'reps' | 'max'
 export type WorkoutResult = 'success' | 'fail'
 export type LegacyProgramSource = 'builtin' | 'custom'
 export type Level = 'L1' | 'L2' | 'L3' | 'L4'
@@ -10,7 +9,6 @@ export type RecordKind = 'workout' | 'test'
 export interface PlannedSet {
   position: number
   type: SetType
-  unit: SetUnit
   planned: number
   label?: string
 }
@@ -22,7 +20,6 @@ export interface WorkoutSession {
 export interface CompletedSet {
   position: number
   type: SetType
-  unit: SetUnit
   planned: number
   done: number
 }
@@ -66,7 +63,6 @@ export interface WorkoutRecordContextP0 {
 export interface WorkoutTotals {
   volumeReps: number
   maxSetReps: number
-  holdSeconds: number
 }
 
 export interface WorkoutRecord {

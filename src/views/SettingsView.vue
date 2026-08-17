@@ -7,7 +7,7 @@ import AppIcon from '@/components/icons/AppIcon.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useProgressStore } from '@/stores/progress'
 import { PALETTE_SLUGS } from '@/utils/theme'
-import { exportBackup, validateBackup, normalizeImportedBackup, defaultSettings, type BackupExport } from '@/domain/export'
+import { exportBackup, validateBackup, normalizeImportedBackup, normalizeImportedSet, normalizeTotals, defaultSettings, type BackupExport } from '@/domain/export'
 import { APP_VERSION, REST_MAX_SECONDS, REST_MIN_SECONDS, REST_PRESET_SECONDS } from '@/constants/app'
 import { formatTime } from '@/utils/dates'
 import { clampRestSeconds } from '@/utils/workout-display'
@@ -169,8 +169,8 @@ async function confirmImport() {
           program: r.program,
           programName: r.programName,
           result: r.result,
-          sets: r.sets.map((s) => ({ ...s, planned: s.planned ?? 0 })),
-          totals: r.totals,
+          sets: r.sets.map((s) => normalizeImportedSet({ ...s, planned: s.planned ?? 0 })),
+          totals: normalizeTotals(r.totals),
         }
         if (r.finishedAt) record.finishedAt = r.finishedAt
         if (r.context) record.context = r.context

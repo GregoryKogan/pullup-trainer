@@ -47,7 +47,6 @@ export const useWorkoutSessionStore = defineStore('workoutSession', () => {
       {
         position: p.position,
         type: p.type,
-        unit: p.unit,
         planned: p.planned,
         done,
       },

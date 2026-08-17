@@ -12,7 +12,7 @@ function workout(date: string): WorkoutRecord {
     programName: 'Pull-up Trainer',
     result: 'success',
     sets: [],
-    totals: { volumeReps: 10, maxSetReps: 5, holdSeconds: 0 },
+    totals: { volumeReps: 10, maxSetReps: 5 },
   }
 }
 

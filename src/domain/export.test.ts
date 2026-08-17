@@ -5,6 +5,8 @@ import {
   validateBackup,
   migrateBackupProgress,
   normalizeImportedBackup,
+  normalizeImportedSet,
+  normalizeTotals,
   normalizeSettings,
   defaultSettings,
   SCHEMA_VERSION,
@@ -23,10 +25,10 @@ describe('export', () => {
     context: { level: 'L2', anchor: 7, cycleIndex: 2, stepInCycle: 3 },
     result: 'success',
     sets: [
-      { position: 1, type: 'reps', unit: 'reps', planned: 5, done: 5 },
-      { position: 5, type: 'max', unit: 'reps', planned: 7, done: 8 },
+      { position: 1, type: 'reps', planned: 5, done: 5 },
+      { position: 5, type: 'max', planned: 7, done: 8 },
     ],
-    totals: { volumeReps: 27, maxSetReps: 8, holdSeconds: 0 },
+    totals: { volumeReps: 27, maxSetReps: 8 },
   }
 
   it('exports history format', () => {
@@ -35,14 +37,35 @@ describe('export', () => {
     expect(out.schemaVersion).toBe(SCHEMA_VERSION)
     expect(out.records[0].programName).toBe('Pull-up Trainer')
     expect(out.records[0].context?.level).toBe('L2')
+    expect(out.records[0].sets[0]).not.toHaveProperty('unit')
+    expect(out.records[0].totals).toEqual({ volumeReps: 27, maxSetReps: 8 })
   })
 
   it('exports backup format', () => {
     const out = exportBackup(defaultSettings(), null, [sample], '1.0.0')
     expect(out.format).toBe('pullup-trainer.backup')
-    expect(out.schemaVersion).toBe(3)
+    expect(out.schemaVersion).toBe(4)
     expect(validateBackup(out)).toBe(true)
     expect('customPrograms' in out).toBe(false)
+  })
+
+  it('normalizeImportedSet maps legacy hold types to reps', () => {
+    expect(
+      normalizeImportedSet({
+        position: 1,
+        type: 'hold',
+        unit: 'seconds',
+        planned: 30,
+        done: 25,
+      }),
+    ).toEqual({ position: 1, type: 'reps', planned: 30, done: 25 })
+  })
+
+  it('normalizeTotals strips holdSeconds', () => {
+    expect(normalizeTotals({ volumeReps: 10, maxSetReps: 5, holdSeconds: 120 })).toEqual({
+      volumeReps: 10,
+      maxSetReps: 5,
+    })
   })
 
   it('migrateBackupProgress rejects custom activeProgress', () => {
@@ -111,7 +134,39 @@ describe('export', () => {
     }
     const normalized = normalizeImportedBackup(legacy)
     expect(normalized?.activeProgress).toBeNull()
-    expect(normalized?.schemaVersion).toBe(3)
+    expect(normalized?.schemaVersion).toBe(4)
+  })
+
+  it('normalizeImportedBackup normalizes legacy history sets and totals', () => {
+    const backup = {
+      format: 'pullup-trainer.backup',
+      schemaVersion: 3,
+      exportedAt: '2026-08-01T00:00:00+03:00',
+      appVersion: '1.0.0',
+      settings: defaultSettings(),
+      activeProgress: null,
+      history: [
+        {
+          date: '2026-08-01',
+          startedAt: '2026-08-01T10:00:00+03:00',
+          durationSeconds: 600,
+          kind: 'workout',
+          program: 'custom',
+          programName: 'Legacy',
+          result: 'success',
+          sets: [{ position: 1, type: 'hold', unit: 'seconds', planned: 30, done: 20 }],
+          totals: { volumeReps: 0, maxSetReps: 0, holdSeconds: 20 },
+        },
+      ],
+    }
+    const normalized = normalizeImportedBackup(backup)
+    expect(normalized?.history[0].sets[0]).toEqual({
+      position: 1,
+      type: 'reps',
+      planned: 30,
+      done: 20,
+    })
+    expect(normalized?.history[0].totals).toEqual({ volumeReps: 0, maxSetReps: 0 })
   })
 
   it('normalizes backup with lastRetestCycleIndex default', () => {

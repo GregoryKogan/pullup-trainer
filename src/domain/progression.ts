@@ -18,16 +18,11 @@ export function evaluateWorkout(sets: CompletedSet[], planned: PlannedSet[]): Wo
 export function computeTotals(sets: CompletedSet[]) {
   let volumeReps = 0
   let maxSetReps = 0
-  let holdSeconds = 0
   for (const s of sets) {
-    if (s.unit === 'reps') {
-      volumeReps += s.done
-      maxSetReps = Math.max(maxSetReps, s.done)
-    } else {
-      holdSeconds += s.done
-    }
+    volumeReps += s.done
+    maxSetReps = Math.max(maxSetReps, s.done)
   }
-  return { volumeReps, maxSetReps, holdSeconds }
+  return { volumeReps, maxSetReps }
 }
 
 export function deloadAnchor(anchor: number): number {

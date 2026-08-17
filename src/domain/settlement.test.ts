@@ -90,7 +90,7 @@ describe('settlePastMissedWorkouts', () => {
         programName: PROGRAM,
         result: 'success' as const,
         sets: [],
-        totals: { volumeReps: 0, maxSetReps: 0, holdSeconds: 0 },
+        totals: { volumeReps: 0, maxSetReps: 0 },
       },
     ]
     const result = settlePastMissedWorkouts(progress, records, '2026-08-08', PROGRAM)

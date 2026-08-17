@@ -87,7 +87,6 @@
     "setLabel": "Set {n}",
     "doNow": "Do now",
     "reps": "reps",
-    "seconds": "sec",
     "doneMax": "Done",
     "logDifferent": "Different number",
     "maxDoneLabel": "How many did you do?",
@@ -96,7 +95,6 @@
     "maxSetMinLabel": "at least",
     "maxSetA11y": "Set {n}, max effort. Do as many pull-ups as you can, at least {min}.",
     "fewerLabelReps": "Reps completed",
-    "fewerLabelSeconds": "Seconds completed",
     "rest": "REST",
     "restHint": "Rest is optional — tap Skip",
     "adjustMinus": "−15 sec",
@@ -122,16 +120,7 @@
     "resultNextDate": "Next workout: {date}",
     "volume": "{n} reps total",
     "focusReps": "reps · set {n}",
-    "focusSeconds": "sec · set {n}",
-    "focusMax": "max · min {n}",
-    "focusAssisted": "assisted reps · set {n}",
-    "setType": {
-      "reps": "Reps",
-      "max": "Max",
-      "hold": "Hold",
-      "negative": "Negative",
-      "assisted": "Assisted"
-    }
+    "focusMax": "max · min {n}"
   },
   "calendar": {
     "title": "Calendar",

@@ -5,6 +5,7 @@ import type {
   ActiveProgress,
   WorkoutRecord,
 } from '@/domain/types'
+import { normalizeImportedSet, normalizeTotals } from '@/domain/export'
 
 export class PullupDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'id'>
@@ -27,6 +28,23 @@ export class PullupDatabase extends Dexie {
       workoutRecords: '++id, date',
       appMeta: 'id',
     })
+    this.version(3)
+      .stores({
+        settings: 'id',
+        activeProgress: 'id',
+        workoutRecords: '++id, date',
+        appMeta: 'id',
+      })
+      .upgrade(async (tx) => {
+        const records = await tx.table('workoutRecords').toArray()
+        for (const record of records) {
+          await tx.table('workoutRecords').put({
+            ...record,
+            sets: (record.sets ?? []).map((s: unknown) => normalizeImportedSet(s)),
+            totals: normalizeTotals(record.totals),
+          })
+        }
+      })
   }
 }
 

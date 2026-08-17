@@ -26,7 +26,6 @@ function completeAll(planned: PlannedSet[], finalDone?: number): CompletedSet[] 
   return planned.map((p) => ({
     position: p.position,
     type: p.type,
-    unit: p.unit,
     planned: p.planned,
     done: p.type === 'max' && finalDone !== undefined ? finalDone : p.planned,
   }))

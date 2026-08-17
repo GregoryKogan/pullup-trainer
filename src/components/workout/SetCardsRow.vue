@@ -7,8 +7,6 @@ import { rowNeedsScroll } from '@/utils/set-cards-row'
 const props = defineProps<{
   sets: {
     planned: number
-    type?: string
-    unit?: string
     done?: number
     current?: boolean
     doneFlag?: boolean

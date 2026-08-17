@@ -23,8 +23,6 @@ import { requestNotificationPermission, signalRestEnd, unlockRestSound } from '@
 import { todayLocal, toIsoOffset, formatTime } from '@/utils/dates'
 import {
   clampRestSeconds,
-  focusSubtitleKey,
-  setTypeLabelKey,
 } from '@/utils/workout-display'
 import { blockRepFractionKey, clampRepCount, syncRepInput } from '@/utils/reps-input'
 import { REST_MAX_SECONDS } from '@/constants/app'
@@ -80,12 +78,6 @@ const headerA11yLabel = computed(() => {
   return `${t('home.stepProgress', { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 })} · ${setLabel}`
 })
 
-const fewerLabelKey = computed(() => {
-  const set = currentSet.value
-  if (!set) return 'workout.fewerLabelReps'
-  return set.unit === 'seconds' ? 'workout.fewerLabelSeconds' : 'workout.fewerLabelReps'
-})
-
 const maxDoneLimit = computed(() => {
   const set = currentSet.value
   if (!set || set.type !== 'max') return 0
@@ -100,8 +92,6 @@ const maxDoneAtMax = computed(() => maxDoneInput.value >= maxDoneLimit.value)
 const setCards = computed(() =>
   planned.value.map((p, i) => ({
     planned: p.planned,
-    type: p.type,
-    unit: p.unit,
     done: workoutStore.active?.completed.find((c) => c.position === p.position)?.done,
     current: i === current.value && !workoutStore.isComplete(),
     doneFlag: !!workoutStore.active?.completed.find((c) => c.position === p.position),
@@ -262,10 +252,7 @@ async function finishWorkout() {
 
   const result = evaluateWorkout(active.completed, active.planned)
   const totals = computeTotals(active.completed)
-  const plannedTotal = active.planned.reduce(
-    (s, set) => s + (set.unit === 'reps' ? set.planned : 0),
-    0,
-  )
+  const plannedTotal = active.planned.reduce((s, set) => s + set.planned, 0)
   const now = new Date()
 
   const context = {
@@ -371,7 +358,6 @@ function confirmExit() {
         </template>
         <template v-else>
           <p class="kicker">{{ t('workout.doNow') }}</p>
-          <p v-if="currentSet.type !== 'reps'" class="type-tag">{{ t(setTypeLabelKey(currentSet.type)) }}</p>
           <ContourNumber
             class="rep"
             :value="currentSet.planned"
@@ -379,7 +365,7 @@ function confirmExit() {
             aria-atomic="true"
           />
           <p class="sub" aria-live="polite">
-            {{ t(focusSubtitleKey(currentSet), { n: current + 1, min: currentSet.planned }) }}
+            {{ t('workout.focusReps', { n: current + 1 }) }}
           </p>
         </template>
       </div>
@@ -452,7 +438,7 @@ function confirmExit() {
       </div>
       <div v-if="showFewer" class="workout-dock">
         <div class="fewer panel">
-          <label class="fewer-label" :for="'fewer-input'">{{ t(fewerLabelKey) }}</label>
+          <label class="fewer-label" :for="'fewer-input'">{{ t('workout.fewerLabelReps') }}</label>
           <div class="rep-stepper">
             <button
               type="button"
@@ -472,7 +458,7 @@ function confirmExit() {
               :max="maxDoneValue"
               step="1"
               inputmode="numeric"
-              :aria-label="t(fewerLabelKey)"
+              :aria-label="t('workout.fewerLabelReps')"
               @keydown="blockRepFractionKey"
               @input="onFewerInput"
             />
@@ -589,12 +575,6 @@ function confirmExit() {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
-}
-.type-tag {
-  font: 800 0.65rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  text-transform: uppercase;
-  color: var(--accent2);
-  margin: 0 0 8px;
 }
 .rep {
   line-height: 1;

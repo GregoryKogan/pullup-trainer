@@ -7,7 +7,6 @@ function plannedToSkippedSets(planned: PlannedSet[]): CompletedSet[] {
   return planned.map((p) => ({
     position: p.position,
     type: p.type,
-    unit: p.unit,
     planned: p.planned,
     done: 0,
   }))

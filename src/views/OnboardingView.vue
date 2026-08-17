@@ -105,7 +105,7 @@ async function setLang(lang: 'en' | 'ru') {
 
 async function accept() {
   await progressStore.initFromTest(reps.value)
-  const totals = computeTotals([{ position: 1, type: 'max', unit: 'reps', planned: 0, done: reps.value }])
+  const totals = computeTotals([{ position: 1, type: 'max', planned: 0, done: reps.value }])
   await progressStore.saveRecord({
     date: todayLocal(),
     startedAt: toIsoOffset(new Date()),
@@ -115,7 +115,7 @@ async function accept() {
     program: 'builtin',
     programName: t('common.programName'),
     result: 'success',
-    sets: [{ position: 1, type: 'max', unit: 'reps', planned: 0, done: reps.value }],
+    sets: [{ position: 1, type: 'max', planned: 0, done: reps.value }],
     totals,
   })
   router.push('/')

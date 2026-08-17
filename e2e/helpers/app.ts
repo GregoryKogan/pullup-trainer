@@ -18,8 +18,8 @@ export interface SeedWorkoutRecord {
   result: 'success' | 'fail'
   stepInCycle?: number
   kind?: 'workout' | 'test'
-  totals?: { volumeReps: number; maxSetReps: number; holdSeconds?: number }
-  sets?: { position: number; type: string; unit: string; planned: number; done: number }[]
+  totals?: { volumeReps: number; maxSetReps: number }
+  sets?: { position: number; type: string; planned: number; done: number }[]
 }
 
 export interface SeedOptions {
@@ -260,12 +260,12 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
           tx.objectStore('appMeta').put({
             id: 'singleton',
             appVersion: '1.0.0',
-            schemaVersion: 3,
+            schemaVersion: 4,
             builtinSeedVersion: 1,
           })
           tx.objectStore('workoutRecords').clear()
           for (const rec of payload.workoutRecords) {
-            const totals = rec.totals ?? { volumeReps: 0, maxSetReps: 0, holdSeconds: 0 }
+            const totals = rec.totals ?? { volumeReps: 0, maxSetReps: 0 }
             tx.objectStore('workoutRecords').add({
               date: rec.date,
               startedAt: `${rec.date}T10:00:00+03:00`,
@@ -285,7 +285,6 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
               totals: {
                 volumeReps: totals.volumeReps,
                 maxSetReps: totals.maxSetReps,
-                holdSeconds: totals.holdSeconds ?? 0,
               },
             })
           }
@@ -392,7 +391,7 @@ export function buildStatsHistory(today: string, count: number): SeedWorkoutReco
     records.push({
       date,
       result: 'success',
-      totals: { volumeReps, maxSetReps, holdSeconds: 0 },
+      totals: { volumeReps, maxSetReps },
     })
     date = addDays(date, -(2 + (i % 2)))
   }
@@ -460,7 +459,6 @@ export async function seedWorkoutRecord(
             totals: {
               volumeReps: rec.totals?.volumeReps ?? 0,
               maxSetReps: rec.totals?.maxSetReps ?? 0,
-              holdSeconds: rec.totals?.holdSeconds ?? 0,
             },
           })
           tx.oncomplete = () => {

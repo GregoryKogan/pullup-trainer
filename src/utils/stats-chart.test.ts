@@ -28,7 +28,7 @@ function workout(
     programName: 'Pull-up Trainer',
     result: 'success',
     sets: [],
-    totals: { volumeReps, maxSetReps, holdSeconds: 0 },
+    totals: { volumeReps, maxSetReps },
   }
 }
 
@@ -70,7 +70,7 @@ describe('stats-chart series', () => {
       {
         ...workout('2026-08-01', 0, 0),
         kind: 'test',
-        sets: [{ position: 1, type: 'max', unit: 'reps', planned: 0, done: 12 }],
+        sets: [{ position: 1, type: 'max', planned: 0, done: 12 }],
       },
     ]
     expect(buildMaxRepsPoints(records)).toEqual([{ date: '2026-08-01', value: 12 }])

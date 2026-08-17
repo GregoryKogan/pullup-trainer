@@ -139,7 +139,7 @@ async function submitRetest() {
   retestError.value = ''
   await progressStore.applyRetest(retestReps.value)
   const totals = computeTotals([
-    { position: 1, type: 'max', unit: 'reps', planned: 0, done: retestReps.value },
+    { position: 1, type: 'max', planned: 0, done: retestReps.value },
   ])
   await progressStore.saveRecord({
     date: todayLocal(),
@@ -150,7 +150,7 @@ async function submitRetest() {
     program: 'builtin',
     programName: t('common.programName'),
     result: 'success',
-    sets: [{ position: 1, type: 'max', unit: 'reps', planned: 0, done: retestReps.value }],
+    sets: [{ position: 1, type: 'max', planned: 0, done: retestReps.value }],
     totals,
   })
   showRetest.value = false

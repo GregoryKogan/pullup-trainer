@@ -3,12 +3,15 @@ import type {
   AppSettings,
   ActiveProgress,
   AppMeta,
+  CompletedSet,
+  SetType,
+  WorkoutTotals,
 } from './types'
 import { toIsoOffset } from '@/utils/dates'
 
 export const HISTORY_FORMAT = 'pullup-trainer.history'
 export const BACKUP_FORMAT = 'pullup-trainer.backup'
-export const SCHEMA_VERSION = 3
+export const SCHEMA_VERSION = 4
 
 export interface HistoryExport {
   format: typeof HISTORY_FORMAT
@@ -21,8 +24,7 @@ export interface HistoryExport {
 
 export interface HistorySetExport {
   position: number
-  type: 'reps' | 'max' | 'hold' | 'negative' | 'assisted'
-  unit: 'reps' | 'seconds'
+  type: 'reps' | 'max'
   planned?: number
   done: number
 }
@@ -60,6 +62,36 @@ export interface LegacyBackupV1 {
   history: HistoryRecordExport[]
 }
 
+export function normalizeImportedSetType(raw: unknown): SetType {
+  return raw === 'max' ? 'max' : 'reps'
+}
+
+export function normalizeImportedSet(raw: unknown): CompletedSet {
+  const s = raw as Record<string, unknown>
+  return {
+    position: typeof s.position === 'number' ? s.position : 0,
+    type: normalizeImportedSetType(s.type),
+    planned: typeof s.planned === 'number' ? s.planned : 0,
+    done: typeof s.done === 'number' ? s.done : 0,
+  }
+}
+
+export function normalizeTotals(raw: unknown): WorkoutTotals {
+  const t = raw as Record<string, unknown>
+  return {
+    volumeReps: typeof t.volumeReps === 'number' ? t.volumeReps : 0,
+    maxSetReps: typeof t.maxSetReps === 'number' ? t.maxSetReps : 0,
+  }
+}
+
+function normalizeHistoryRecord(r: HistoryRecordExport): HistoryRecordExport {
+  return {
+    ...r,
+    sets: r.sets.map((s) => normalizeImportedSet(s)),
+    totals: normalizeTotals(r.totals),
+  }
+}
+
 export function recordToExport(r: WorkoutRecord): HistoryRecordExport {
   const base: HistoryRecordExport = {
     date: r.date,
@@ -69,8 +101,8 @@ export function recordToExport(r: WorkoutRecord): HistoryRecordExport {
     program: r.program,
     programName: r.programName,
     result: r.result,
-    sets: r.sets,
-    totals: r.totals,
+    sets: r.sets.map((s) => normalizeImportedSet(s)),
+    totals: normalizeTotals(r.totals),
   }
   if (r.finishedAt) base.finishedAt = r.finishedAt
   if (r.context) base.context = r.context
@@ -84,8 +116,8 @@ export function recordToExport(r: WorkoutRecord): HistoryRecordExport {
       program: r.program,
       programName: r.programName,
       result: r.result,
-      sets: [{ position: 1, type: 'max' as const, unit: 'reps' as const, done: r.sets[0]?.done ?? 0 }],
-      totals: r.totals,
+      sets: [{ position: 1, type: 'max' as const, done: r.sets[0]?.done ?? 0 }],
+      totals: normalizeTotals(r.totals),
     }
   }
   return base
@@ -163,7 +195,7 @@ export function normalizeImportedBackup(data: unknown): BackupExport | null {
       appVersion: d.appVersion ?? '1.0.0',
       settings: normalizeSettings(d.settings),
       activeProgress: migrateBackupProgress(d.activeProgress),
-      history: d.history ?? [],
+      history: (d.history ?? []).map((r) => normalizeHistoryRecord(r as HistoryRecordExport)),
     }
   }
   return {
@@ -173,7 +205,7 @@ export function normalizeImportedBackup(data: unknown): BackupExport | null {
     appVersion: d.appVersion ?? '1.0.0',
     settings: normalizeSettings(d.settings),
     activeProgress: migrateBackupProgress(d.activeProgress),
-    history: d.history ?? [],
+    history: (d.history ?? []).map((r) => normalizeHistoryRecord(r as HistoryRecordExport)),
   }
 }
 
