@@ -331,8 +331,8 @@ function confirmExit() {
       v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning && !showFewer"
       class="top-actions"
     >
-      <button type="button" class="btn ghost compact" @click="skipSet">{{ t('workout.skipSet') }}</button>
-      <button type="button" class="btn ghost compact" @click="goReschedule">{{ t('workout.reschedule') }}</button>
+      <button type="button" class="btn outline compact" @click="skipSet">{{ t('workout.skipSet') }}</button>
+      <button type="button" class="btn outline compact" @click="goReschedule">{{ t('workout.reschedule') }}</button>
     </div>
     <p id="workout-exit-hint" class="sr-only">{{ t('workout.exitWarn') }}</p>
     <SetCardsRow :sets="setCards" />
@@ -388,7 +388,7 @@ function confirmExit() {
           <button type="button" class="btn accent" style="flex: 1.6" @click="finishSet(currentSet.planned)">
             {{ t('workout.doneMax') }}
           </button>
-          <button type="button" class="btn ghost" style="flex: 1" @click="openFewer">{{ t('workout.logDifferent') }}</button>
+          <button type="button" class="btn outline" style="flex: 1" @click="openFewer">{{ t('workout.logDifferent') }}</button>
         </div>
       </div>
       <div v-if="showFewer" class="workout-dock">
@@ -404,7 +404,7 @@ function confirmExit() {
           />
           <div class="btnrow">
             <button type="button" class="btn accent" @click="finishSet(fewerValue)">{{ t('common.confirm') }}</button>
-            <button type="button" class="btn ghost" @click="showFewer = false">{{ t('common.cancel') }}</button>
+            <button type="button" class="btn outline" @click="showFewer = false">{{ t('common.cancel') }}</button>
           </div>
         </div>
       </div>
