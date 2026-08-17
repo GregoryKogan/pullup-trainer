@@ -16,12 +16,14 @@ const showTabBar = computed(
     ['home', 'calendar', 'stats', 'settings'].includes(String(route.name)) &&
     !pwa.visible.value,
 )
+
+const fitMain = computed(() => route.name === 'workout')
 </script>
 
 <template>
   <div class="app-shell">
     <IconSprite />
-    <main class="app-main" :aria-label="t('common.appTitle')">
+    <main class="app-main" :class="{ 'app-main--fit': fitMain }" :aria-label="t('common.appTitle')">
       <RouterView />
     </main>
     <AppTabBar v-if="showTabBar" />
