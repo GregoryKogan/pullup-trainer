@@ -24,7 +24,7 @@ import { todayLocal, toIsoOffset, formatTime } from '@/utils/dates'
 import {
   clampRestSeconds,
 } from '@/utils/workout-display'
-import { blockRepFractionKey, clampRepCount, syncRepInput } from '@/utils/reps-input'
+import { blockRepFractionKey, clampRepCount, REP_COUNT_MAX, syncRepInput } from '@/utils/reps-input'
 import { REST_MAX_SECONDS } from '@/constants/app'
 import type { PlannedSet, ActiveProgress } from '@/domain/types'
 
@@ -81,7 +81,7 @@ const headerA11yLabel = computed(() => {
 const maxDoneLimit = computed(() => {
   const set = currentSet.value
   if (!set || set.type !== 'max') return 0
-  return set.planned + 20
+  return REP_COUNT_MAX
 })
 
 const fewerAtMin = computed(() => fewerValue.value <= 0)
