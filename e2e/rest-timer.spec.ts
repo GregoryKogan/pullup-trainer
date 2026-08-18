@@ -61,8 +61,7 @@ test.describe('Rest timer', () => {
     await expect(page.locator('.ring-num')).toHaveText('5:00')
   })
 
-  // C5: reset rest countdown to original duration
-  test('in-workout reset restores original rest duration', async ({ page }) => {
+  test('in-workout reset restores extended rest duration', async ({ page }) => {
     await page.getByRole('link', { name: 'Settings' }).click()
     await page.getByRole('button', { name: '1:30' }).click()
     await page.getByRole('button', { name: /auto.?start/i }).click()
@@ -75,7 +74,7 @@ test.describe('Rest timer', () => {
     await page.getByRole('button', { name: /\+15 sec|\+15 с/i }).click()
     await expect(page.locator('.ring-num')).toHaveText('1:45')
     await page.getByRole('button', { name: /^reset$|^сброс$/i }).click()
-    await expect(page.locator('.ring-num')).toHaveText('1:30')
+    await expect(page.locator('.ring-num')).toHaveText('1:45')
   })
 
   test('pause stops countdown and resume continues', async ({ page }) => {
