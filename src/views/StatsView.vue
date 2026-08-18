@@ -12,7 +12,7 @@ import IconActivity from '@/components/icons/lucide/IconActivity.vue'
 import IconFlame from '@/components/icons/lucide/IconFlame.vue'
 import IconPullUp from '@/components/icons/pullup/IconPullUp.vue'
 import { computeWeeklyStreak } from '@/utils/streak'
-import { formatShortDate, todayLocal } from '@/utils/dates'
+import { formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
 import {
   buildMaxRepsPoints,
   buildWeeklyBars,
@@ -32,9 +32,12 @@ const maxReps = computed(() => buildMaxRepsPoints(progressStore.records))
 
 const weeklyBars = computed(() => buildWeeklyBars(progressStore.records))
 
-const totalVolume = computed(() =>
-  progressStore.records.reduce((s, r) => s + r.totals.volumeReps, 0),
-)
+const weekVolume = computed(() => {
+  const start = startOfWeek(todayLocal())
+  return progressStore.records
+    .filter((r) => r.date >= start && r.kind === 'workout')
+    .reduce((sum, r) => sum + r.totals.volumeReps, 0)
+})
 
 const streakWeeks = computed(() => {
   const p = progressStore.progress
@@ -129,14 +132,14 @@ function exportHistoryJson() {
         <b>{{ maxReps[maxReps.length - 1]?.value ?? 0 }}</b>
         <span class="kpi-label">
           <IconTrendingUp :size="14" class="kpi-icon" />
-          {{ t('stats.maxReps') }}
+          {{ t('stats.lastSessionBestSet') }}
         </span>
       </div>
       <div class="kpi">
-        <b>{{ totalVolume }}</b>
+        <b>{{ weekVolume }}</b>
         <span class="kpi-label">
           <IconPullUp :size="14" class="kpi-icon" />
-          {{ t('stats.totalReps') }}
+          {{ t('stats.repsThisWeek') }}
         </span>
       </div>
       <div class="kpi">

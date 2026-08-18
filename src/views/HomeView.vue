@@ -7,7 +7,7 @@ import { session } from '@/domain/session'
 import { detectReturnPolicy, canStartEarly } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
 import { computeWeeklyStreak } from '@/utils/streak'
-import { formatDisplayDate, startOfWeek, todayLocal, toIsoOffset } from '@/utils/dates'
+import { formatDisplayDate, todayLocal, toIsoOffset } from '@/utils/dates'
 import { blockRepFractionKey, isValidTestRepCount, syncTestRepInput, REP_COUNT_MAX } from '@/utils/reps-input'
 import { computeTotals } from '@/domain/progression'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
@@ -65,12 +65,9 @@ const maxReps = computed(() => {
   return max
 })
 
-const weekVolume = computed(() => {
-  const start = startOfWeek(today)
-  return progressStore.records
-    .filter((r) => r.date >= start && r.kind === 'workout')
-    .reduce((sum, r) => sum + r.totals.volumeReps, 0)
-})
+const totalVolume = computed(() =>
+  progressStore.records.reduce((s, r) => s + r.totals.volumeReps, 0),
+)
 
 const cycleInfo = computed(() => {
   const p = progressStore.progress
@@ -268,8 +265,8 @@ async function reduceAnchor() {
         <b class="big">{{ maxReps }}</b>
       </section>
       <section class="panel tile">
-        <p class="kicker">{{ t('home.volumeWeek') }}</p>
-        <b class="big">{{ weekVolume }}</b>
+        <p class="kicker">{{ t('home.totalReps') }}</p>
+        <b class="big">{{ totalVolume }}</b>
       </section>
     </div>
 
