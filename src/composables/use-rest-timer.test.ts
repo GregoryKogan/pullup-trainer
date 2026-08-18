@@ -42,4 +42,40 @@ describe('useRestTimer pause/resume', () => {
     vi.advanceTimersByTime(4000)
     expect(onFinish).toHaveBeenCalledTimes(1)
   })
+
+  it('extends total when adjust pushes remaining above initial total', () => {
+    const onFinish = vi.fn()
+    const { remaining, total, start, adjust } = useRestTimer(onFinish)
+
+    start(180)
+    adjust(15)
+
+    expect(remaining.value).toBe(195)
+    expect(total.value).toBe(195)
+  })
+
+  it('keeps extended total when adjust decreases remaining', () => {
+    const onFinish = vi.fn()
+    const { remaining, total, start, adjust } = useRestTimer(onFinish)
+
+    start(180)
+    adjust(15)
+    adjust(-30)
+
+    expect(remaining.value).toBe(165)
+    expect(total.value).toBe(195)
+  })
+
+  it('reset returns to extended total after adjust up', () => {
+    const onFinish = vi.fn()
+    const { remaining, total, start, adjust, reset } = useRestTimer(onFinish)
+
+    start(180)
+    adjust(15)
+    vi.advanceTimersByTime(30000)
+    reset()
+
+    expect(remaining.value).toBe(195)
+    expect(total.value).toBe(195)
+  })
 })

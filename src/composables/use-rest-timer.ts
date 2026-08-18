@@ -54,6 +54,9 @@ export function useRestTimer(onFinish: () => void) {
 
   function adjust(delta: number) {
     remaining.value = clampSeconds(remaining.value + delta)
+    if (remaining.value > total.value) {
+      total.value = remaining.value
+    }
   }
 
   function reset() {
