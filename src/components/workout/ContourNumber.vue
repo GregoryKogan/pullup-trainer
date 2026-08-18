@@ -27,13 +27,17 @@ const text = computed(() => String(props.value))
   font-size: clamp(5rem, min(28vw, 26vh), 9rem);
   font-weight: 900;
   line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 0.035em var(--accent);
+  letter-spacing: 0.03em;
+  color: var(--bg);
+  -webkit-text-stroke: 0.05em var(--accent);
+  paint-order: stroke fill;
+  -webkit-font-smoothing: antialiased;
 }
 @supports not (-webkit-text-stroke: 1px #000) {
   .contour-number {
     color: var(--accent);
     -webkit-text-stroke: 0;
+    paint-order: normal;
   }
 }
 </style>

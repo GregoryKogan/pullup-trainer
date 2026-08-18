@@ -67,7 +67,7 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 
 Правило: **числа и подписи — mono, заголовки — display, абзацы — sans**.
 
-Контурная цифра — **CSS `-webkit-text-stroke`** (как в mockup `.focus .rep`): `color: transparent`, `-webkit-text-stroke: 0.035em var(--accent)`; fallback без поддержки — solid `var(--accent)`.
+Контурная цифра — **`-webkit-text-stroke` + `paint-order: stroke fill`**: fill `var(--bg)` поверх stroke маскирует артефакты суб-контуров на iOS; stroke `0.05em var(--accent)`.
 
 ## Цветовые токены
 
@@ -261,7 +261,7 @@ Spec assets: `assets/icons/lucide/` (12 SVG), `assets/icons/pullup/` (3 SVG).
 
 Изменения, намеренно принятые в ходе разработки:
 
-- **Контурная цифра** — `-webkit-text-stroke` (mockup-aligned); responsive clamp до 9rem.
+- **Контурная цифра** — stroke + paint-order fill; responsive clamp до 9rem.
 - **Streak chip** — `--accent2`, не `--accent`.
 - **Tab bar inactive** — полупрозрачные chips (`color-mix`), не opacity-only.
 - **Rest timer** — hero/dock split + presets; sound + notification (не vibrate-only).
