@@ -11,7 +11,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="page">
+  <div class="page page-end-space">
     <div class="subpage-head">
       <header class="head">
         <div>

@@ -85,7 +85,7 @@ const sources = computed(() => {
 </script>
 
 <template>
-  <div class="science page">
+  <div class="science page page-end-space">
     <div class="subpage-head">
       <header class="head">
         <div>

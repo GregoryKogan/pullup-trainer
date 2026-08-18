@@ -95,6 +95,13 @@ html:not([data-theme$='-light']) .app-shell::before {
   padding-top: 16px;
 }
 
+.page-end-space::after {
+  content: '';
+  display: block;
+  flex-shrink: 0;
+  height: calc(36px + env(safe-area-inset-bottom, 0px));
+}
+
 .kicker {
   display: inline-block;
   font: 700 0.68rem/1.5 ui-monospace, 'SF Mono', Menlo, monospace;
