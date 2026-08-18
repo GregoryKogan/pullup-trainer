@@ -2,7 +2,6 @@
 import { ref, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '@/stores/settings'
-import { setLocale } from '@/i18n'
 import { useModalA11y } from '@/composables/use-modal-a11y'
 import type { InstallPlatform } from '@/utils/platform'
 
@@ -24,10 +23,7 @@ const { panelRef: dialogRef } = useModalA11y(toRef(props, 'visible'), {
 })
 
 async function setLang(lang: 'en' | 'ru') {
-  if (settingsStore.settings) {
-    await settingsStore.setLanguage(lang)
-  }
-  setLocale(lang)
+  await settingsStore.setLanguage(lang)
 }
 
 watch(

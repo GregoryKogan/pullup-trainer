@@ -14,7 +14,6 @@ import { clampRestSeconds } from '@/utils/workout-display'
 import { downloadJson } from '@/utils/platform'
 import { requestNotificationPermission } from '@/composables/use-rest-signals'
 import { db } from '@/db/database'
-import { setLocale } from '@/i18n'
 import type { ThemeMode, Weekday, WorkoutRecord } from '@/domain/types'
 
 const { t } = useI18n()
@@ -75,7 +74,6 @@ async function setMode(mode: ThemeMode) {
 
 async function setLang(lang: 'en' | 'ru') {
   await settingsStore.setLanguage(lang)
-  setLocale(lang)
 }
 
 async function setPalette(slug: string) {
@@ -179,7 +177,6 @@ async function confirmImport() {
     })
     await settingsStore.hydrate()
     await progressStore.hydrate()
-    setLocale(settings.language)
     importMessage.value = t('settings.importSuccess')
   } catch {
     importMessage.value = t('settings.importError')

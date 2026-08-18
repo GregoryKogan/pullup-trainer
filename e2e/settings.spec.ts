@@ -52,4 +52,17 @@ test.describe('Settings', () => {
     await page.getByRole('button', { name: /^confirm$|^подтвердить$/i }).click()
     await expect(page).toHaveURL(/\/onboarding/)
   })
+
+  test('reset all restores default English locale', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: 'RU' }).click()
+    await expect(page.getByRole('link', { name: 'Главная' })).toBeVisible()
+
+    await page.getByRole('button', { name: /сбросить все данные/i }).click()
+    await page.getByRole('button', { name: /^подтвердить$/i }).click()
+    await expect(page).toHaveURL(/\/onboarding/)
+
+    await expect(page.getByRole('button', { name: 'EN' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByText(/build pull-up strength step by step/i)).toBeVisible()
+  })
 })

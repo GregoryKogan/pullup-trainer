@@ -6,7 +6,6 @@ import { useProgressStore } from '@/stores/progress'
 import { useSettingsStore } from '@/stores/settings'
 import { recommendStart } from '@/domain/levels'
 import { computeTotals } from '@/domain/progression'
-import { setLocale } from '@/i18n'
 import { todayLocal, toIsoOffset } from '@/utils/dates'
 import {
   blockRepFractionKey,
@@ -97,10 +96,7 @@ function openZeroMessage() {
 }
 
 async function setLang(lang: 'en' | 'ru') {
-  if (settingsStore.settings) {
-    await settingsStore.setLanguage(lang)
-  }
-  setLocale(lang)
+  await settingsStore.setLanguage(lang)
 }
 
 async function accept() {

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { shallowRef, watch } from 'vue'
 import type { AppSettings, ThemeMode } from '@/domain/types'
 import { loadSettings, saveSettings } from '@/db/repositories/settings'
+import { setLocale } from '@/i18n'
 import { PALETTE_SLUGS } from '@/utils/theme'
 
 export const useSettingsStore = defineStore('settings', () => {
@@ -12,6 +13,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function hydrate() {
     settings.value = await loadSettings()
+    setLocale(settings.value.language)
     applyTheme()
     if (typeof window !== 'undefined') {
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -57,6 +59,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function setLanguage(lang: 'en' | 'ru') {
     await update({ language: lang })
+    setLocale(lang)
   }
 
   watch(settings, applyTheme)
