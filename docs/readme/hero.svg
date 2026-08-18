@@ -42,16 +42,27 @@
   <text class="title" x="80" y="175">PULL-UP TRAINER</text>
   <text class="tagline" x="80" y="218">Science-backed program &#183; Offline &#183; No accounts</text>
   <g transform="translate(980, 95) scale(1.875)" aria-label="Pull-up Trainer app icon">
-    <rect x="0" y="0" width="64" height="64" fill="#C6FF3B"/>
-    <path d="M 6.375 10.821 L 57.625 10.821 L 64.000 21.863 L 64.000 64.000 L 33.470 64.000 L 6.375 17.071 Z M 12.625 13.946 L 18.875 13.946 L 47.774 64.000 L 35.387 64.000 L 12.625 24.576 Z M 45.125 13.946 L 51.375 13.946 L 64.000 35.813 L 64.000 57.268 L 45.125 24.576 Z M 35.501 64.000 L 14.353 27.371 L 17.147 21.780 L 30.897 28.650 L 51.306 64.000 Z M 33.103 28.650 L 46.853 21.780 L 64.000 51.479 L 64.000 64.000 L 53.078 64.000 L 35.897 34.241 Z M 28.875 28.826 L 35.125 28.826 L 55.433 64.000 L 37.567 64.000 L 28.875 48.946 Z M 29.762 64.000 L 24.400 54.712 L 29.400 47.212 L 34.600 50.679 L 42.291 64.000 Z M 37.091 64.000 L 29.400 50.679 L 34.600 47.212 L 39.600 54.712 L 44.962 64.000 Z M 26.380 18.326 L 37.630 18.326 L 64.000 64.000 L 64.000 64.000 L 45.533 64.000 L 26.380 30.826 Z" fill="#F7F7F0"/>
-    <line x1="9.5" y1="13.9458" x2="54.5" y2="13.9458" stroke="#161612" stroke-width="6.25" stroke-linecap="square" stroke-linejoin="miter"/>
-    <line x1="15.75" y1="13.9458" x2="15.75" y2="24.5758" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <line x1="48.25" y1="13.9458" x2="48.25" y2="24.5758" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <line x1="15.75" y1="24.5758" x2="29.5" y2="31.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <line x1="48.25" y1="24.5758" x2="34.5" y2="31.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <line x1="32" y1="28.8258" x2="32" y2="48.9458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <line x1="32" y1="48.9458" x2="27" y2="56.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <line x1="32" y1="48.9458" x2="37" y2="56.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
-    <rect x="26.38" y="18.3258" width="11.25" height="12.5" fill="#161612"/>
+    <rect x="0" y="0" width="64" height="64" fill="#161612"/>
+    <circle cx="32" cy="32" r="25" stroke="#C6FF3B" stroke-width="5" fill="none"/>
+    <g transform="translate(2 2)">
+      <line x1="9.5" y1="13.9458" x2="54.5" y2="13.9458" stroke="#161612" stroke-width="6.25" stroke-linecap="square" stroke-linejoin="miter"/>
+      <line x1="15.75" y1="13.9458" x2="15.75" y2="24.5758" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+      <line x1="48.25" y1="13.9458" x2="48.25" y2="24.5758" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+      <line x1="15.75" y1="24.5758" x2="29.5" y2="31.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+      <line x1="48.25" y1="24.5758" x2="34.5" y2="31.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+      <line x1="32" y1="28.8258" x2="32" y2="48.9458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+      <line x1="32" y1="48.9458" x2="27" y2="56.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+      <line x1="32" y1="48.9458" x2="37" y2="56.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+      <rect x="26.38" y="18.3258" width="11.25" height="12.5" fill="#161612" stroke="none"/>
+    </g>
+    <line x1="9.5" y1="13.9458" x2="54.5" y2="13.9458" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="square" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="13.9458" x2="15.75" y2="24.5758" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="13.9458" x2="48.25" y2="24.5758" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="24.5758" x2="29.5" y2="31.4458" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="24.5758" x2="34.5" y2="31.4458" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32" y1="28.8258" x2="32" y2="48.9458" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32" y1="48.9458" x2="27" y2="56.4458" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32" y1="48.9458" x2="37" y2="56.4458" stroke="#F7F7F0" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <rect x="26.38" y="18.3258" width="11.25" height="12.5" fill="#F7F7F0" stroke="none"/>
   </g>
 </svg>
