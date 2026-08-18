@@ -20,6 +20,23 @@ test.describe('Navigation', () => {
     await expect(page).toHaveURL(/\/pullup-trainer\/?$/)
   })
 
+  test('about opens scrolled to top from settings', async ({ page }) => {
+    await page.getByRole('link', { name: 'Settings' }).click()
+    await expect(page).toHaveURL(/\/settings/)
+
+    await page.locator('.app-main').evaluate((el) => {
+      el.scrollTop = 400
+    })
+
+    await page.getByRole('link', { name: 'About' }).scrollIntoViewIfNeeded()
+    await page.getByRole('link', { name: 'About' }).click()
+    await expect(page).toHaveURL(/\/about/)
+
+    await expect
+      .poll(async () => page.locator('.app-main').evaluate((el) => el.scrollTop))
+      .toBe(0)
+  })
+
   test('about back returns to previous screen', async ({ page }) => {
     await page.getByRole('link', { name: 'Settings' }).click()
     await expect(page).toHaveURL(/\/settings/)
