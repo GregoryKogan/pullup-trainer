@@ -77,7 +77,6 @@ const slideGroups = SLIDES.map((slide, i) => {
   const layout = phoneLayouts[i]
   const x = cursorX
   cursorX += layout.frameW + GAP
-  const phoneY = PHONE_Y
   const captionW = Math.max(layout.frameW, 180)
   const cardW = Math.max(captionW, layout.frameW)
   const cardX = x + layout.frameW / 2 - cardW / 2
@@ -85,7 +84,7 @@ const slideGroups = SLIDES.map((slide, i) => {
   const cardH = CAPTION_H + CAPTION_GAP + layout.frameH
   const captionX = cardX + (cardW - captionW) / 2
   const imgX = cardX + (cardW - layout.imgW) / 2
-  const imgY = CAPTION_Y + CAPTION_H + CAPTION_GAP + 4
+  const imgY = PHONE_Y + 4
   return { slide, layout, cardX, cardY, cardW, cardH, captionX, captionW, imgX, imgY }
 })
 
