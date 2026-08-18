@@ -3,9 +3,6 @@
     <pattern id="gridStrip" width="24" height="24" patternUnits="userSpaceOnUse">
       <path d="M24 0H0V24" fill="none" stroke="#F7F7F0" stroke-width="0.5" stroke-opacity="0.08"/>
     </pattern>
-    <pattern id="gridStripLight" width="24" height="24" patternUnits="userSpaceOnUse">
-      <path d="M24 0H0V24" fill="none" stroke="#17150E" stroke-width="0.5" stroke-opacity="0.08"/>
-    </pattern>
   </defs>
   <style>
     .canvas { fill: #0E0E0B; }
@@ -14,14 +11,6 @@
     .tile { fill: #161612; stroke: #000000; stroke-width: 2; }
     .icon { fill: none; stroke: #C6FF3B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .label { fill: #F7F7F0; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; dominant-baseline: middle; alignment-baseline: middle; }
-    @media (prefers-color-scheme: light) {
-      .canvas { fill: #F4F2EA; }
-      .gridStrip { fill: url(#gridStripLight); }
-      .tileShadow { fill: #0F0E0A; }
-      .tile { fill: #FFFFFF; stroke: #0F0E0A; }
-      .icon { stroke: #6B9A12; }
-      .label { fill: #17150E; }
-    }
   </style>
   <rect class="canvas" width="1200" height="280"/>
   <rect class="gridStrip" x="0" y="248" width="1200" height="32"/>
