@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-label="Pull-up Trainer - local-first pull-up PWA">
+  <defs>
+    <pattern id="swissGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#F7F7F0" stroke-width="0.5" stroke-opacity="0.12"/>
+    </pattern>
+    <pattern id="swissGridLight" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#17150E" stroke-width="0.5" stroke-opacity="0.1"/>
+    </pattern>
+  </defs>
+  <style>
+    .bg { fill: #0E0E0B; }
+    .bgGrid { fill: url(#swissGrid); }
+    .shadow { fill: #000000; }
+    .panel { fill: #161612; stroke: #000000; stroke-width: 2; }
+    .kickerBg { fill: #C6FF3B; }
+    .kickerShadow { fill: #000000; }
+    .kickerText { fill: #0E0E0B; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+    .title { fill: #F7F7F0; font-family: 'Arial Black', system-ui, sans-serif; font-size: 52px; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tagline { fill: #A3A397; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 18px; }
+    .accentBar { fill: #FFD22E; }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #F4F2EA; }
+      .bgGrid { fill: url(#swissGridLight); }
+      .shadow { fill: #0F0E0A; }
+      .panel { fill: #FFFFFF; stroke: #0F0E0A; }
+      .kickerBg { fill: #A8D920; }
+      .kickerShadow { fill: #0F0E0A; }
+      .kickerText { fill: #101A02; }
+      .title { fill: #17150E; }
+      .tagline { fill: #6B695D; }
+      .accentBar { fill: #C79200; }
+    }
+  </style>
+  <rect class="bg" width="1200" height="340"/>
+  <rect class="bgGrid" width="1200" height="340"/>
+  <rect class="shadow" x="45" y="45" width="1110" height="250" rx="2"/>
+  <rect class="panel" x="40" y="40" width="1110" height="250" rx="2"/>
+  <rect class="accentBar" x="40" y="40" width="8" height="250"/>
+  <rect class="kickerShadow" x="83" y="83" width="196" height="28" rx="2"/>
+  <rect class="kickerBg" x="80" y="80" width="196" height="28" rx="2"/>
+  <text class="kickerText" x="92" y="99">LOCAL-FIRST PWA</text>
+  <text class="title" x="80" y="175">PULL-UP TRAINER</text>
+  <text class="tagline" x="80" y="218">Science-backed program &#183; Offline &#183; No accounts</text>
+  <g transform="translate(980, 95) scale(1.875)" aria-label="Pull-up Trainer app icon">
+    <rect x="0" y="0" width="64" height="64" fill="#C6FF3B"/>
+    <path d="M 6.375 10.821 L 57.625 10.821 L 64.000 21.863 L 64.000 64.000 L 33.470 64.000 L 6.375 17.071 Z M 12.625 13.946 L 18.875 13.946 L 47.774 64.000 L 35.387 64.000 L 12.625 24.576 Z M 45.125 13.946 L 51.375 13.946 L 64.000 35.813 L 64.000 57.268 L 45.125 24.576 Z M 35.501 64.000 L 14.353 27.371 L 17.147 21.780 L 30.897 28.650 L 51.306 64.000 Z M 33.103 28.650 L 46.853 21.780 L 64.000 51.479 L 64.000 64.000 L 53.078 64.000 L 35.897 34.241 Z M 28.875 28.826 L 35.125 28.826 L 55.433 64.000 L 37.567 64.000 L 28.875 48.946 Z M 29.762 64.000 L 24.400 54.712 L 29.400 47.212 L 34.600 50.679 L 42.291 64.000 Z M 37.091 64.000 L 29.400 50.679 L 34.600 47.212 L 39.600 54.712 L 44.962 64.000 Z M 26.380 18.326 L 37.630 18.326 L 64.000 64.000 L 64.000 64.000 L 45.533 64.000 L 26.380 30.826 Z" fill="#F7F7F0"/>
+    <line x1="9.5" y1="13.9458" x2="54.5" y2="13.9458" stroke="#161612" stroke-width="6.25" stroke-linecap="square" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="13.9458" x2="15.75" y2="24.5758" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="13.9458" x2="48.25" y2="24.5758" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="15.75" y1="24.5758" x2="29.5" y2="31.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="48.25" y1="24.5758" x2="34.5" y2="31.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32" y1="28.8258" x2="32" y2="48.9458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32" y1="48.9458" x2="27" y2="56.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <line x1="32" y1="48.9458" x2="37" y2="56.4458" stroke="#161612" stroke-width="6.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <rect x="26.38" y="18.3258" width="11.25" height="12.5" fill="#161612"/>
+  </g>
+</svg>

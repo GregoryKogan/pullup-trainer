@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-label="Pull-up Trainer feature highlights">
+  <defs>
+    <pattern id="gridStrip" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#F7F7F0" stroke-width="0.5" stroke-opacity="0.08"/>
+    </pattern>
+    <pattern id="gridStripLight" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#17150E" stroke-width="0.5" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+  <style>
+    .canvas { fill: #0E0E0B; }
+    .gridStrip { fill: url(#gridStrip); }
+    .tileShadow { fill: #000000; }
+    .tile { fill: #161612; stroke: #000000; stroke-width: 2; }
+    .icon { fill: none; stroke: #C6FF3B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .label { fill: #F7F7F0; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; dominant-baseline: middle; alignment-baseline: middle; }
+    @media (prefers-color-scheme: light) {
+      .canvas { fill: #F4F2EA; }
+      .gridStrip { fill: url(#gridStripLight); }
+      .tileShadow { fill: #0F0E0A; }
+      .tile { fill: #FFFFFF; stroke: #0F0E0A; }
+      .icon { stroke: #6B9A12; }
+      .label { fill: #17150E; }
+    }
+  </style>
+  <rect class="canvas" width="1200" height="280"/>
+  <rect class="gridStrip" x="0" y="248" width="1200" height="32"/>
+
+  <g transform="translate(40,40)">
+    <rect class="tileShadow" x="4" y="4" width="360" height="90" rx="2"/>
+    <rect class="tile" width="360" height="90" rx="2"/>
+    <g transform="translate(0, 45)">
+      <g class="icon" transform="translate(24, -14.4) scale(1.2)">
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="6"/>
+        <circle cx="12" cy="12" r="2"/>
+      </g>
+      <text class="label" x="88" y="0" dominant-baseline="middle">BUILT-IN PROGRAM</text>
+    </g>
+  </g>
+
+  <g transform="translate(420,40)">
+    <rect class="tileShadow" x="4" y="4" width="360" height="90" rx="2"/>
+    <rect class="tile" width="360" height="90" rx="2"/>
+    <g transform="translate(0, 45)">
+      <g class="icon" transform="translate(24, -14.4) scale(1.2)">
+        <line x1="10" x2="14" y1="2" y2="2"/>
+        <line x1="12" x2="15" y1="14" y2="11"/>
+        <circle cx="12" cy="14" r="8"/>
+      </g>
+      <text class="label" x="88" y="0" dominant-baseline="middle">REST TIMER</text>
+    </g>
+  </g>
+
+  <g transform="translate(800,40)">
+    <rect class="tileShadow" x="4" y="4" width="360" height="90" rx="2"/>
+    <rect class="tile" width="360" height="90" rx="2"/>
+    <g transform="translate(0, 45)">
+      <g class="icon" transform="translate(24, -14.4) scale(1.2)">
+        <path d="m17 2 4 4-4 4"/>
+        <path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
+        <path d="m7 22-4-4 4-4"/>
+        <path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+      </g>
+      <text class="label" x="88" y="0" dominant-baseline="middle">6-STEP CYCLES</text>
+    </g>
+  </g>
+
+  <g transform="translate(40,150)">
+    <rect class="tileShadow" x="4" y="4" width="360" height="90" rx="2"/>
+    <rect class="tile" width="360" height="90" rx="2"/>
+    <g transform="translate(0, 45)">
+      <g class="icon" transform="translate(24, -14.4) scale(1.2)">
+        <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/>
+      </g>
+      <text class="label" x="88" y="0" dominant-baseline="middle">WEEKLY STREAKS</text>
+    </g>
+  </g>
+
+  <g transform="translate(420,150)">
+    <rect class="tileShadow" x="4" y="4" width="360" height="90" rx="2"/>
+    <rect class="tile" width="360" height="90" rx="2"/>
+    <g transform="translate(0, 45)">
+      <g class="icon" transform="translate(24, -14.4) scale(1.2)">
+        <path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/>
+      </g>
+      <text class="label" x="88" y="0" dominant-baseline="middle">14 THEMES</text>
+    </g>
+  </g>
+
+  <g transform="translate(800,150)">
+    <rect class="tileShadow" x="4" y="4" width="360" height="90" rx="2"/>
+    <rect class="tile" width="360" height="90" rx="2"/>
+    <g transform="translate(0, 45)">
+      <g class="icon" transform="translate(24, -14.4) scale(1.2)">
+        <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+      </g>
+      <text class="label" x="88" y="0" dominant-baseline="middle">OFFLINE PWA</text>
+    </g>
+  </g>
+</svg>
