@@ -350,9 +350,6 @@ onBeforeUnmount(() => {
               </ul>
             </div>
             <p v-else class="day-history-empty">{{ t('calendar.dayHistoryEmpty') }}</p>
-            <div class="btnrow">
-              <button type="button" class="btn accent" @click="dismissSheet">{{ t('common.close') }}</button>
-            </div>
           </template>
           <template v-else>
             <div v-if="!moveBlocked" class="optrow">
