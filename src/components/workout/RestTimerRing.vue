@@ -67,11 +67,18 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
             :stroke-dashoffset="offset"
             transform="rotate(-90 60 60)"
           />
-          <text class="ring-num" x="60" y="60" text-anchor="middle" dominant-baseline="central">{{ displayTime }}</text>
+          <text
+            class="ring-num"
+            x="60"
+            y="60"
+            font-size="27"
+            text-anchor="middle"
+            dominant-baseline="central"
+          >{{ displayTime }}</text>
         </svg>
         <p class="ring-lab">
-          <IconTimer :size="16" class="ring-icon" />
-          {{ total > 0 ? label : t('workout.chooseRest') }}
+          <IconTimer class="ring-icon" aria-hidden="true" />
+          <span class="ring-lab-text">{{ total > 0 ? label : t('workout.chooseRest') }}</span>
         </p>
       </div>
     </section>
@@ -137,10 +144,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           {{ $t('workout.reset') }}
         </button>
       </div>
-      <p class="resthint">
-        <AppIcon name="vibrate" />
-        {{ $t('workout.restHint') }}
-      </p>
+      <p class="resthint">{{ $t('workout.restHint') }}</p>
     </section>
   </div>
 </template>
@@ -184,7 +188,8 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   stroke-linecap: butt;
 }
 .ring-num {
-  font: 800 clamp(32px, 9vw, 44px) / 1 ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-weight: 800;
   fill: var(--ink);
 }
 .ring-lab {
@@ -200,7 +205,14 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 }
 .ring-icon {
   flex-shrink: 0;
+  display: block;
+  width: 1em;
+  height: 1em;
   color: var(--accent);
+}
+.ring-lab-text {
+  display: block;
+  line-height: 1;
 }
 .rest-dock {
   flex-shrink: 0;
@@ -259,16 +271,9 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   gap: 6px;
 }
 .resthint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   font: 700 0.68rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
   margin: 10px 0 0;
   text-align: center;
-}
-.resthint svg {
-  flex: 0 0 auto;
 }
 </style>
