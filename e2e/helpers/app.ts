@@ -32,7 +32,10 @@ export interface SeedOptions {
   weekdays?: string[]
   state?: SeedState
   language?: 'en' | 'ru'
+  palette?: string
+  themeMode?: 'dark' | 'light' | 'system'
   restDurationSeconds?: number
+  restAutoStart?: boolean
   workoutRecords?: SeedWorkoutRecord[]
 }
 
@@ -240,10 +243,10 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
           )
           tx.objectStore('settings').put({
             id: 'singleton',
-            palette: 'p01-volt',
-            themeMode: 'system',
+            palette: payload.palette,
+            themeMode: payload.themeMode,
             restDurationSeconds: payload.restDurationSeconds,
-            restAutoStart: false,
+            restAutoStart: payload.restAutoStart,
             restNotify: false,
             language: payload.language,
           })
@@ -300,7 +303,10 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
     {
       dbName: DB_NAME,
       payload: {
+        palette: options.palette ?? 'p01-volt',
+        themeMode: options.themeMode ?? 'system',
         restDurationSeconds: options.restDurationSeconds ?? 180,
+        restAutoStart: options.restAutoStart ?? false,
         language: options.language ?? 'en',
         frequencyDays: options.frequencyDays ?? 3,
         weekdays: options.weekdays ?? ['mon', 'wed', 'fri'],

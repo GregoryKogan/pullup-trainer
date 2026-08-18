@@ -28,6 +28,12 @@
   <img src="docs/readme/features.svg" alt="Built-in program, rest timer, 6-step cycles, weekly streaks, 14 themes, offline PWA" width="100%">
 </p>
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/readme/app-screenshots.svg" alt="Pull-up Trainer app screens: home, workout, rest timer, calendar, stats" width="100%">
+</p>
+
 ## About
 
 Pull-up Trainer is a mobile-first progressive web app for structured pull-up training. Everything runs locally in your browser via IndexedDB — your history and progress never leave the device.
