@@ -401,14 +401,14 @@ function exportHistoryJson() {
   margin: 0;
 }
 .hist li {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
   padding: 11px 0;
   border-bottom: 2px solid var(--line);
 }
 .hist .date {
-  flex: 0 0 auto;
   min-width: 0;
 }
 .hist .date b {
@@ -420,19 +420,23 @@ function exportHistoryJson() {
   color: var(--muted);
 }
 .hist .info {
-  flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 .hist .info b {
   display: block;
   font: 800 0.85rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .pill {
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   padding: 4px 8px;
   border: 2px solid var(--line);
   text-transform: uppercase;
-  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .pill.ok {
   color: var(--ok);
