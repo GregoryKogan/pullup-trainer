@@ -578,6 +578,7 @@ function confirmExit() {
 }
 .rep {
   line-height: 1;
+  margin: 2px 0 10px;
 }
 .rep-stepper {
   display: flex;

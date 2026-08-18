@@ -43,4 +43,37 @@ test.describe('Workout', () => {
     await expect(page.getByRole('button', { name: /^skip set$|^пропустить подход$/i })).toHaveCount(0)
     await expect(page.getByRole('button', { name: /^move workout$|^перенести$/i })).toHaveCount(0)
   })
+
+  test('centers contour number without horizontal overflow', async ({ page }) => {
+    await prepareSeededApp(page, 25, todayLocal())
+    await page.getByRole('button', { name: 'Start' }).click()
+    await clearRestGate(page)
+    await expect(page.locator('.contour-number')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const wrap = document.querySelector('.contour-number-wrap')
+      const svg = document.querySelector('.contour-number')
+      const label = document.querySelector('.contour-number-text')
+      const target = label ?? svg
+      if (!wrap || !svg || !target) return null
+      const wrapRect = wrap.getBoundingClientRect()
+      const svgRect = svg.getBoundingClientRect()
+      const targetRect = target.getBoundingClientRect()
+      return {
+        svgCenterDelta: Math.abs(
+          wrapRect.left + wrapRect.width / 2 - (svgRect.left + svgRect.width / 2),
+        ),
+        labelCenterDelta: Math.abs(
+          wrapRect.left + wrapRect.width / 2 - (targetRect.left + targetRect.width / 2),
+        ),
+        svgWidth: svgRect.width,
+        wrapWidth: wrapRect.width,
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics!.svgCenterDelta).toBeLessThanOrEqual(8)
+    expect(metrics!.labelCenterDelta).toBeLessThanOrEqual(8)
+    expect(metrics!.svgWidth).toBeLessThanOrEqual(metrics!.wrapWidth + 0.5)
+  })
 })

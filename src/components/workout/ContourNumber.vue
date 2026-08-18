@@ -1,46 +1,91 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import {
-  CONTOUR_DIGITS,
-  CONTOUR_STROKE_WIDTH,
-  DIGIT_GAP,
-  DIGIT_HEIGHT,
-  type ContourDigit,
-} from './contour-digit-paths'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+
+const STROKE_WIDTH = 2.5
+const VIEWBOX_PAD = 4
+const BASELINE_Y = 82
+const EST_DIGIT_WIDTH = 52
+const MIN_INNER_WIDTH = 100
+const VIEW_HEIGHT = 100
 
 const props = defineProps<{
   value: string | number
 }>()
 
 const text = computed(() => String(props.value))
+const textEl = ref<SVGTextElement | null>(null)
 
-type PlacedDigit = ContourDigit & { x: number }
+function buildEstimate(value: string) {
+  const chars = value.replace(/\D/g, '').length || value.length || 1
+  const innerWidth = Math.max(MIN_INNER_WIDTH, chars * EST_DIGIT_WIDTH)
+  const viewWidth = innerWidth + VIEWBOX_PAD * 2
+  const viewHeight = VIEW_HEIGHT + VIEWBOX_PAD * 2
+  return {
+    textX: VIEWBOX_PAD,
+    viewBox: `-${VIEWBOX_PAD} -${VIEWBOX_PAD} ${viewWidth} ${viewHeight}`,
+    ratio: viewWidth / viewHeight,
+  }
+}
 
-const layout = computed(() => {
-  const chars = text.value.split('').filter((char) => char in CONTOUR_DIGITS)
-  const digits = chars.map((char) => CONTOUR_DIGITS[char]!)
-  if (digits.length === 0) {
-    return { viewWidth: 100, digits: [] as PlacedDigit[] }
+const initialLayout = buildEstimate(String(props.value))
+const textX = ref(initialLayout.textX)
+const viewBox = ref(initialLayout.viewBox)
+const layoutRatio = ref(initialLayout.ratio)
+
+function applyLayout(innerWidth: number) {
+  const viewWidth = innerWidth + VIEWBOX_PAD * 2
+  const viewHeight = VIEW_HEIGHT + VIEWBOX_PAD * 2
+  viewBox.value = `-${VIEWBOX_PAD} -${VIEWBOX_PAD} ${viewWidth} ${viewHeight}`
+  layoutRatio.value = viewWidth / viewHeight
+}
+
+function applyEstimate(value: string) {
+  const estimate = buildEstimate(value)
+  textX.value = estimate.textX
+  viewBox.value = estimate.viewBox
+  layoutRatio.value = estimate.ratio
+}
+
+async function measure() {
+  textX.value = 0
+  await nextTick()
+
+  const el = textEl.value
+  if (!el) return
+
+  let bb: DOMRect
+  try {
+    bb = el.getBBox()
+  } catch {
+    applyEstimate(text.value)
+    return
   }
 
-  const contentWidth =
-    digits.reduce((sum, digit) => sum + digit.width, 0) + DIGIT_GAP * (digits.length - 1)
-  const viewWidth = Math.max(100, Math.ceil(contentWidth))
-  let offset = (viewWidth - contentWidth) / 2
-  const placed = digits.map((digit) => {
-    const x = offset
-    offset += digit.width + DIGIT_GAP
-    return { ...digit, x }
-  })
+  if (!Number.isFinite(bb.width) || bb.width <= 0) {
+    applyEstimate(text.value)
+    return
+  }
 
-  return { viewWidth, digits: placed }
+  const innerWidth = Math.max(MIN_INNER_WIDTH, Math.ceil(bb.width))
+  textX.value = VIEWBOX_PAD + (innerWidth - bb.width) / 2 - bb.x
+  applyLayout(innerWidth)
+}
+
+watch(text, () => {
+  applyEstimate(text.value)
+  void measure()
 })
 
-const viewBox = computed(() => `0 0 ${layout.value.viewWidth} ${DIGIT_HEIGHT}`)
+onMounted(() => {
+  applyEstimate(text.value)
+  void measure()
+})
 
-function digitTransform(digit: PlacedDigit) {
-  return `translate(${digit.x}, 0) translate(${-digit.originX}, ${-digit.originY}) scale(${digit.scale})`
-}
+const svgStyle = computed(() => ({
+  width: `min(100%, calc(1em * ${layoutRatio.value}))`,
+  height: '1em',
+  maxWidth: '100%',
+}))
 </script>
 
 <template>
@@ -48,22 +93,24 @@ function digitTransform(digit: PlacedDigit) {
     <svg
       class="contour-number"
       :viewBox="viewBox"
+      preserveAspectRatio="xMidYMid meet"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
-      :style="{ aspectRatio: `${layout.viewWidth} / ${DIGIT_HEIGHT}` }"
+      :style="svgStyle"
     >
-      <path
-        v-for="(digit, index) in layout.digits"
-        :key="`${digit.d}-${index}`"
-        :d="digit.d"
-        :transform="digitTransform(digit)"
+      <text
+        ref="textEl"
+        class="contour-number-text"
+        :x="textX"
+        :y="BASELINE_Y"
         fill="none"
         stroke="currentColor"
+        :stroke-width="STROKE_WIDTH"
         stroke-linejoin="round"
         stroke-linecap="round"
-        vector-effect="non-scaling-stroke"
-        :stroke-width="CONTOUR_STROKE_WIDTH"
-      />
+      >
+        {{ text }}
+      </text>
     </svg>
     <span class="sr-only">{{ text }}</span>
   </span>
@@ -71,16 +118,21 @@ function digitTransform(digit: PlacedDigit) {
 
 <style scoped>
 .contour-number-wrap {
-  display: block;
+  display: flex;
+  justify-content: center;
+  width: 100%;
   line-height: 1;
 }
 .contour-number {
   display: block;
-  height: 1em;
-  width: auto;
-  max-width: 100%;
+  flex-shrink: 0;
   font-size: clamp(5rem, min(28vw, 26vh), 9rem);
   color: var(--accent);
   overflow: visible;
+}
+.contour-number-text {
+  font-family: 'Arial Black', system-ui, sans-serif;
+  font-size: 88px;
+  font-weight: 900;
 }
 </style>

@@ -1,33 +1,56 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ContourNumber from '@/components/workout/ContourNumber.vue'
-import { CONTOUR_DIGITS, DIGIT_HEIGHT } from '@/components/workout/contour-digit-paths'
+
+const VIEWBOX_PAD = 4
+const MIN_INNER_WIDTH = 100
+const VIEW_HEIGHT = 100
+
+function expectedEstimate(value: string) {
+  const chars = value.replace(/\D/g, '').length || value.length || 1
+  const innerWidth = Math.max(MIN_INNER_WIDTH, chars * 52)
+  const viewWidth = innerWidth + VIEWBOX_PAD * 2
+  const viewHeight = VIEW_HEIGHT + VIEWBOX_PAD * 2
+  return {
+    viewBox: `-${VIEWBOX_PAD} -${VIEWBOX_PAD} ${viewWidth} ${viewHeight}`,
+    ratio: viewWidth / viewHeight,
+  }
+}
 
 describe('ContourNumber', () => {
-  it('renders value as svg stroke paths', () => {
+  it('renders value as stroked svg text', () => {
     const wrapper = mount(ContourNumber, { props: { value: 2 } })
-    const paths = wrapper.findAll('path')
-    expect(paths).toHaveLength(1)
-    expect(paths[0]!.attributes('d')).toBe(CONTOUR_DIGITS['2']!.d)
-    expect(paths[0]!.attributes('stroke-linejoin')).toBe('round')
-    expect(paths[0]!.attributes('vector-effect')).toBe('non-scaling-stroke')
+    const label = wrapper.find('.contour-number-text')
+    expect(label.exists()).toBe(true)
+    expect(label.text()).toBe('2')
+    expect(label.attributes('stroke-linejoin')).toBe('round')
+    expect(label.attributes('stroke-width')).toBe('2.5')
     expect(wrapper.find('.sr-only').text()).toBe('2')
   })
 
-  it('widens viewBox for multi-digit values', () => {
+  it('uses estimated padded viewBox before measurement', () => {
     const wrapper = mount(ContourNumber, { props: { value: 15 } })
-    const paths = wrapper.findAll('path')
-    expect(paths).toHaveLength(2)
-    const viewBox = wrapper.find('svg').attributes('viewBox')!
-    const width = Number(viewBox.split(' ')[2])
-    const expectedWidth = CONTOUR_DIGITS['1']!.width + CONTOUR_DIGITS['5']!.width + 6
-    expect(width).toBe(Math.max(100, Math.ceil(expectedWidth)))
-    expect(viewBox).toBe(`0 0 ${width} ${DIGIT_HEIGHT}`)
+    const svg = wrapper.find('svg')
+    const expected = expectedEstimate('15')
+    expect(svg.attributes('viewBox')).toBe(expected.viewBox)
+    expect(svg.attributes('preserveAspectRatio')).toBe('xMidYMid meet')
   })
 
-  it('ignores non-digit characters', () => {
+  it('uses explicit inline width for two-digit values', () => {
+    for (const value of [17, 33]) {
+      const wrapper = mount(ContourNumber, { props: { value } })
+      const svg = wrapper.find('svg')
+      const expected = expectedEstimate(String(value))
+      expect(svg.attributes('viewBox')).toBe(expected.viewBox)
+      expect(svg.attributes('style')).toContain('min(100%')
+      expect(svg.attributes('style')).toContain('height: 1em')
+      expect(svg.attributes('style')).not.toContain('aspect-ratio')
+    }
+  })
+
+  it('renders digits and ignores non-digit characters in svg text', () => {
     const wrapper = mount(ContourNumber, { props: { value: '1x2' } })
-    expect(wrapper.findAll('path')).toHaveLength(2)
+    expect(wrapper.find('.contour-number-text').text()).toBe('1x2')
     expect(wrapper.find('.sr-only').text()).toBe('1x2')
   })
 })
