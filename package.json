@@ -14,8 +14,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "screenshots:readme": "UPDATE_README_SCREENSHOTS=1 playwright test e2e/readme-screenshots.spec.ts --project='Mobile Chrome' && node scripts/build-app-screenshots-svg.mjs",
-    "audit:science": "node scripts/audit-science-crosswalk.mjs",
-    "build:contour-digits": "node scripts/build-contour-digits.mjs"
+    "audit:science": "node scripts/audit-science-crosswalk.mjs"
   },
   "dependencies": {
     "dexie": "^4.0.11",

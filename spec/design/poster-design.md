@@ -59,7 +59,7 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 |---|---|---|
 | Body | `system-ui, -apple-system, 'Segoe UI', sans-serif` | **15px / 1.45** |
 | Заголовки экранов (`h1`, `h2`) | `"Arial Black", system-ui` | **1.8rem** / uppercase, **+0.02em** |
-| Контурная цифра (workout) | `"Arial Black"` via SVG [`ContourNumber`](../../src/components/workout/ContourNumber.vue) | `clamp(5rem, min(28vw, 26vh), 9rem)` |
+| Контурная цифра (workout) | `"Arial Black"` via [`ContourNumber`](../../src/components/workout/ContourNumber.vue) | `clamp(5rem, min(28vw, 26vh), 9rem)` |
 | KPI / tile (`.tile .big`) | display | **2.4rem** |
 | Названия секций (`h4`) | display | ~0.95–1rem / uppercase |
 | Kicker, лейблы, кнопки-утилиты | `ui-monospace, 'SF Mono', Menlo` | 0.62–0.88rem / uppercase, tracking |
@@ -67,7 +67,7 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 
 Правило: **числа и подписи — mono, заголовки — display, абзацы — sans**.
 
-Контурная цифра — **SVG stroke text** (не `-webkit-text-stroke`): адаптивная ширина viewBox, `stroke-width: 0.028em`, цвет `var(--accent)`.
+Контурная цифра — **CSS `-webkit-text-stroke`** (как в mockup `.focus .rep`): `color: transparent`, `-webkit-text-stroke: 0.035em var(--accent)`; fallback без поддержки — solid `var(--accent)`.
 
 ## Цветовые токены
 
@@ -261,7 +261,7 @@ Spec assets: `assets/icons/lucide/` (12 SVG), `assets/icons/pullup/` (3 SVG).
 
 Изменения, намеренно принятые в ходе разработки:
 
-- **Контурная цифра** — SVG вместо `-webkit-text-stroke`; responsive clamp до 9rem.
+- **Контурная цифра** — `-webkit-text-stroke` (mockup-aligned); responsive clamp до 9rem.
 - **Streak chip** — `--accent2`, не `--accent`.
 - **Tab bar inactive** — полупрозрачные chips (`color-mix`), не opacity-only.
 - **Rest timer** — hero/dock split + presets; sound + notification (не vibrate-only).
