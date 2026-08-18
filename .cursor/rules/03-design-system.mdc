@@ -7,7 +7,7 @@ alwaysApply: true
 ## Где брать
 - Спека: `spec/design/poster-design.md` — прочитать целиком.
 - Токены: `spec/design/theme-tokens.css` (CSS custom properties, подключить в приложение).
-- Мокапы (референс стиля, не pixel-perfect карта): `spec/design/mockups/poster-p*.html`, галерея `spec/design/mockups/index.html`. При UI-аудите приоритет — UX, логика, a11y; затем дизайн-язык.
+- Мокап (референс стиля, не pixel-perfect карта): `spec/design/mockups/poster-p01-volt.html`, вход `spec/design/mockups/index.html`. При UI-аудите приоритет — UX, логика, a11y; затем дизайн-язык.
 - Пересборка активов: `python3 spec/design/build-assets.py` (регенерирует мокапы, theme-tokens.css, README; пути в скрипте относительные от его папки — запускать можно откуда угодно).
 
 ## Характер

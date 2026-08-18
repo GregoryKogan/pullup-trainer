@@ -13,7 +13,7 @@ design/
 ├── poster-design.md   ← спека дизайн-языка (источник правды)
 ├── theme-tokens.css   ← все палитры как CSS custom properties
 ├── build-assets.py    ← генератор мокапов, токенов и этого README
-├── mockups/           ← HTML-мокапы (14 тем × 10 экранов + галерея)
+├── mockups/           ← HTML-мокап P01 Volt (10 экранов + index)
 └── assets/            ← графика: логотип, иконки, паттерны
 ```
 
@@ -53,8 +53,8 @@ Runtime-стили приложения: [`src/assets/styles/main.css`](../../sr
 
 ## Мокапы
 
-10 экранов на палитру: Home, Workout, Calendar, Stats, Settings,
-Onboarding, Result, PWA install, About, Why program.
+`mockups/poster-p01-volt.html` — 10 экранов в дефолтной палитре P01 Volt:
+Home, Workout, Calendar, Stats, Settings, Onboarding, Result, PWA install, About, Why program.
 
 Графические ассеты — в `assets/` (см. `assets/README.md`).
 

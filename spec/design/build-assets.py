@@ -2,8 +2,8 @@
 """Builds design assets of the Poster / Swiss system (chosen design, TZ §7-З2).
 
 Outputs (relative to design/):
-  mockups/poster-*.html — 14 palettes x 10 screens x 2 themes (dark + light)
-  mockups/index.html   — gallery
+  mockups/poster-p01-volt.html — default palette x 10 screens x 2 themes
+  mockups/index.html           — link to the mockup
   theme-tokens.css     — all palettes as CSS custom properties for the app
   README.md            — structure overview
 
@@ -669,6 +669,8 @@ PALETTES = [
              ok="#1C7A46", warn="#96600A", bad="#B33136", shadow="#0F0F0F")),
 ]
 
+MOCKUP_SLUG = "p01-volt"
+
 SWATCH_KEYS = [("bg", "bg"), ("card", "card"), ("ink", "ink"), ("accent", "accent"),
                ("accent2", "accent2"), ("ok", "ok"), ("warn", "warn"), ("bad", "bad")]
 
@@ -754,9 +756,13 @@ def build_palette(pal):
     return out.name
 
 
+def mockup_palette():
+    return next(p for p in PALETTES if p["slug"] == MOCKUP_SLUG)
+
+
 def build_palettes_index():
     cards = []
-    for pal in PALETTES:
+    for pal in [mockup_palette()]:
         dark_dots = "".join(f'<i style="background:{pal["dark"][k]}"></i>' for k, _ in SWATCH_KEYS)
         light_dots = "".join(f'<i style="background:{pal["light"][k]}"></i>' for k, _ in SWATCH_KEYS)
         cards.append(f"""<div class="card">
@@ -797,11 +803,11 @@ footer{{color:var(--muted);font-size:.78rem;margin-top:2.5rem;border-top:2px sol
 </head>
 <body>
 <main>
-<span class="tag">Palettes · 14</span>
-<h1>Poster / Swiss — цветовые палитры</h1>
-<p class="meta">В каждой — 10 экранов × 2 темы (dark/light), переключатель сверху файла.
+<span class="tag">P01 Volt</span>
+<h1>Poster / Swiss — мокап</h1>
+<p class="meta">10 экранов × 2 темы (dark/light), переключатель сверху файла.
 5 core (tab bar) + 5 extended (onboarding, result, PWA, about, why).
-P01 Volt — эталонная палитра.</p>
+P01 Volt — эталонная палитра по умолчанию.</p>
 <a class="back" href="../poster-design.md">← спека Poster / Swiss</a>
 <div class="grid">
 {chr(10).join(cards)}
@@ -870,7 +876,7 @@ design/
 ├── poster-design.md   ← спека дизайн-языка (источник правды)
 ├── theme-tokens.css   ← все палитры как CSS custom properties
 ├── build-assets.py    ← генератор мокапов, токенов и этого README
-├── mockups/           ← HTML-мокапы (14 тем × 10 экранов + галерея)
+├── mockups/           ← HTML-мокап P01 Volt (10 экранов + index)
 └── assets/            ← графика: логотип, иконки, паттерны
 ```
 
@@ -897,8 +903,8 @@ Runtime-стили приложения: [`src/assets/styles/main.css`](../../sr
 
 ## Мокапы
 
-10 экранов на палитру: Home, Workout, Calendar, Stats, Settings,
-Onboarding, Result, PWA install, About, Why program.
+`mockups/poster-p01-volt.html` — 10 экранов в дефолтной палитре P01 Volt:
+Home, Workout, Calendar, Stats, Settings, Onboarding, Result, PWA install, About, Why program.
 
 Графические ассеты — в `assets/` (см. `assets/README.md`).
 
@@ -909,7 +915,7 @@ Onboarding, Result, PWA install, About, Why program.
 
 if __name__ == "__main__":
     (HERE / "mockups").mkdir(exist_ok=True)
-    names = [build_palette(p) for p in PALETTES]
+    names = [build_palette(mockup_palette())]
     build_palettes_index()
     build_tokens()
     build_readme()

@@ -91,7 +91,7 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 
 ### Светлая тема
 
-Та же система, инвертированная по «бумажному» принципу: `--bg` — тёплая бумага, `--card` — белый; рамки и тени остаются тёмными; акцент и семантика затемняются для контраста AA. Конкретные пары — в `theme-tokens.css` и мокапах `poster-p*.html`.
+Та же система, инвертированная по «бумажному» принципу: `--bg` — тёплая бумага, `--card` — белый; рамки и тени остаются тёмными; акцент и семантика затемняются для контраста AA. Конкретные пары — в `theme-tokens.css` и мокапе `poster-p01-volt.html`.
 
 ## Глобальные классы (`main.css`)
 
@@ -252,8 +252,8 @@ Spec assets: `assets/icons/lucide/` (12 SVG), `assets/icons/pullup/` (3 SVG).
 | `poster-design.md` | Этот документ |
 | `theme-tokens.css` | CSS custom properties — подключается в app |
 | `build-assets.py` | Генератор мокапов, тokens, README |
-| `mockups/poster-p*.html` | 14 палитр × **10 экранов** × 2 темы |
-| `mockups/index.html` | Галерея палитр |
+| `mockups/poster-p01-volt.html` | P01 Volt × **10 экранов** × 2 темы |
+| `mockups/index.html` | Ссылка на мокап |
 | `assets/` | Лого, иконки, паттерны — см. `assets/README.md` |
 | `src/assets/styles/main.css` | Runtime global styles (источник правды) |
 
