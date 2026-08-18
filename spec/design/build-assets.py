@@ -2,7 +2,7 @@
 """Builds design assets of the Poster / Swiss system (chosen design, TZ §7-З2).
 
 Outputs (relative to design/):
-  mockups/poster-*.html — 14 palettes x 5 screens x 2 themes (dark + light)
+  mockups/poster-*.html — 14 palettes x 10 screens x 2 themes (dark + light)
   mockups/index.html   — gallery
   theme-tokens.css     — all palettes as CSS custom properties for the app
   README.md            — structure overview
@@ -12,6 +12,7 @@ Regenerate with: python3 build-assets.py
 from pathlib import Path
 
 HERE = Path(__file__).parent
+APP_VERSION = "1.0.0"
 
 # ---------------------------------------------------------------- symbols
 
@@ -79,7 +80,7 @@ figcaption{color:var(--pg-muted);font-size:.8rem;max-width:390px}
 .phone{width:390px;height:844px;background:#1b1a17;border-radius:54px;padding:11px;box-shadow:0 30px 70px rgba(0,0,0,.45),0 0 0 1px #34332e;flex:0 0 auto}
 .th-light .phone{background:#c8c5b8;box-shadow:0 30px 70px rgba(0,0,0,.25),0 0 0 1px #aaa798}
 .screen{width:100%;height:100%;background:var(--bg);color:var(--ink);border-radius:44px;overflow:hidden;display:flex;flex-direction:column;font:15px/1.45 var(--f-ui)}
-.statusbar{height:46px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font:800 13.5px/1 var(--f-num)}
+.statusbar{height:46px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font:800 13.5px/1 var(--f-num);background:var(--bg);flex-shrink:0}
 .statusbar .right{display:flex;align-items:center;gap:6px}
 .sig{display:flex;align-items:flex-end;gap:1.5px;height:10px}
 .sig i{width:2.5px;background:var(--ink);border-radius:1px}
@@ -88,16 +89,21 @@ figcaption{color:var(--pg-muted);font-size:.8rem;max-width:390px}
 .wifi::after{content:"";position:absolute;width:4px;height:4px;background:var(--ink);border-radius:50%;left:50%;bottom:-1px;transform:translateX(-50%)}
 .batt{width:22px;height:11px;border:1.5px solid var(--ink);border-radius:3.5px;padding:1.5px}
 .batt i{display:block;height:100%;width:72%;background:var(--ink);border-radius:1.5px}
-.app{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:0 18px 10px}
-.kicker{display:inline-block;font:700 .62rem/1.5 var(--f-num);letter-spacing:.16em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:4px 9px;margin:0 0 10px;border:2px solid var(--line);box-shadow:3px 3px 0 var(--shadow)}
+.app{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:0 18px 10px;position:relative;background:var(--bg)}
+.app::before{content:"";position:absolute;inset:0;z-index:0;background:url('../assets/patterns/swiss-grid.svg') repeat;pointer-events:none}
+.th-dark .app::before{filter:invert(1)}
+.app>*{position:relative;z-index:1}
+.kicker{display:inline-block;font:700 .68rem/1.5 var(--f-num);letter-spacing:.16em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:4px 9px;margin:0 0 10px;border:2px solid var(--line);box-shadow:3px 3px 0 var(--shadow)}
 .sub{font-size:.8rem;color:var(--muted);margin:0}
 .head{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0 16px}
-.head h2{font-family:var(--f-display);font-size:1.8rem;font-weight:900;text-transform:uppercase;line-height:.95;letter-spacing:-.02em;margin:.15rem 0 0}
-.chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:2px;font:800 .85rem/1 var(--f-num)}
-.chip.streak{background:var(--accent);color:var(--accent-ink);border:2px solid var(--line);box-shadow:4px 4px 0 var(--shadow)}
+.head>div{background:var(--bg)}
+.head h1,.head h2{font-family:var(--f-display);font-size:1.8rem;font-weight:900;text-transform:uppercase;line-height:.95;letter-spacing:.02em;margin:.15rem 0 0}
+.subpage-head{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.subpage-head .btn{margin-top:0}
+.subpage-head .btn.ghost{background:var(--card);color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:8px 12px;border-radius:2px;font:800 .72rem/1 var(--f-num)}
+.chip.streak{background:var(--accent2);color:var(--accent-ink);border:2px solid var(--line);box-shadow:3px 3px 0 var(--shadow)}
 .chip svg{width:16px;height:16px}
-.banner{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);border-left:6px solid var(--bad);border-radius:2px;box-shadow:4px 4px 0 var(--shadow);padding:9px 12px;font:700 .8rem/1.35 var(--f-num);color:var(--ink);margin-bottom:14px}
-.banner svg{width:15px;height:15px;flex:0 0 auto;color:var(--bad)}
 .panel{background:var(--card);border:2px solid var(--line);border-radius:2px;box-shadow:5px 5px 0 var(--shadow);padding:16px}
 .next .row{display:flex;justify-content:space-between;align-items:baseline;margin:8px 0 12px}
 .next h3{font-family:var(--f-display);font-size:1.3rem;margin:0;text-transform:uppercase}
@@ -108,13 +114,14 @@ figcaption{color:var(--pg-muted);font-size:.8rem;max-width:390px}
 .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow)}
 .btn svg{width:17px;height:17px}
 .btn.accent{background:var(--accent);color:var(--accent-ink)}
-.btn.ghost{background:transparent;color:var(--muted)}
+.btn.ghost{background:var(--card);color:var(--muted)}
+.btn.outline{background:var(--card);color:var(--ink)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .tile .big{display:block;font-family:var(--f-display);font-size:2.4rem;font-weight:900;line-height:1.05;margin:8px 0 2px}
 .tabbar{margin:auto -18px -10px;background:var(--accent);border-top:3px solid var(--line);padding:8px 18px 4px;display:flex}
-.tabbar button{appearance:none;cursor:pointer;background:none;border:0;flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--accent-ink);font:800 .62rem/1 var(--f-num);letter-spacing:.1em;text-transform:uppercase;opacity:.72}
+.tabbar button{appearance:none;cursor:pointer;background:color-mix(in srgb,var(--accent-ink) 14%,var(--accent));border:2px solid color-mix(in srgb,var(--accent-ink) 40%,var(--accent));flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--accent-ink);font:800 .68rem/1 var(--f-num);letter-spacing:.08em;text-transform:uppercase;margin:0 2px;border-radius:2px}
 .tabbar button svg{width:20px;height:20px}
-.tabbar button.on{background:var(--bg);color:var(--accent);opacity:1;margin:2px 2px 4px;border-radius:2px}
+.tabbar button.on{background:var(--bg);color:var(--accent);border-color:var(--line);opacity:1;margin:2px 2px 4px;border-radius:2px}
 .top{display:flex;align-items:center;justify-content:space-between;padding:2px 0 14px}
 .iconbtn{appearance:none;cursor:pointer;width:44px;height:44px;border-radius:2px;background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:3px 3px 0 var(--shadow);display:flex;align-items:center;justify-content:center}
 .iconbtn svg{width:18px;height:18px}
@@ -137,10 +144,14 @@ figcaption{color:var(--pg-muted);font-size:.8rem;max-width:390px}
 .ring text.ring-num{font:800 24px/1 var(--f-num);fill:var(--ink)}
 .ring text.ring-lab{font:700 8px/1 var(--f-num);letter-spacing:.28em;fill:var(--muted)}
 .ring .bg{stroke:var(--line);fill:none;stroke-width:7}
-.ring .fg{stroke:var(--accent);fill:none;stroke-width:7;stroke-linecap:round}
+.ring .fg{stroke:var(--accent);fill:none;stroke-width:7;stroke-linecap:butt}
+.rest-layout{flex:1;display:flex;flex-direction:column;min-height:0}
+.rest-hero{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 0}
+.rest-dock{padding:14px 16px;margin-top:auto}
+.presets{display:flex;gap:8px;margin-bottom:10px}
 .restbody{flex:1}
-.restrow{display:flex;gap:7px;margin-bottom:8px}
-.mini{appearance:none;cursor:pointer;min-height:44px;min-width:44px;flex:1;background:var(--card);border:2px solid var(--line);border-radius:2px;box-shadow:3px 3px 0 var(--shadow);color:var(--ink);font:800 .72rem/1 var(--f-num);display:flex;align-items:center;justify-content:center}
+.restrow{display:flex;gap:8px;margin-bottom:10px}
+.mini{appearance:none;cursor:pointer;min-height:44px;min-width:44px;flex:1;background:var(--bg);border:2px solid var(--line);border-radius:2px;box-shadow:3px 3px 0 var(--shadow);color:var(--ink);font:800 .72rem/1 var(--f-num);display:flex;align-items:center;justify-content:center;gap:6px}
 .mini svg{width:15px;height:15px}
 .resthint{display:flex;align-items:center;gap:6px;font:700 .68rem/1.3 var(--f-num);color:var(--muted)}
 .resthint svg{width:13px;height:13px}
@@ -153,15 +164,15 @@ figcaption{color:var(--pg-muted);font-size:.8rem;max-width:390px}
 .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .calgrid .dow{text-align:center;font:700 .58rem/1 var(--f-num);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-bottom:2px}
 .calgrid .day{min-height:44px;border-radius:2px;background:var(--card);border:2px solid var(--line);box-shadow:2px 2px 0 var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:800 .95rem/1 var(--f-display);color:var(--ink);position:relative}
-.calgrid .day.out{color:var(--muted);background:transparent;border-color:transparent;box-shadow:none}
+.calgrid .day.out{color:var(--muted);background:var(--bg);border-color:transparent;box-shadow:none}
 .calgrid .day svg{width:11px;height:11px}
 .calgrid .day.done{border-color:var(--ok)}
 .calgrid .day.done svg{color:var(--ok)}
-.calgrid .day.missed{border-color:var(--bad);background:transparent}
+.calgrid .day.missed{border-color:var(--bad);background:var(--card)}
 .calgrid .day.missed svg{color:var(--bad)}
 .calgrid .day.planned::after{content:"";width:5px;height:5px;background:var(--accent2);position:absolute;bottom:5px}
 .calgrid .day.today{background:var(--accent);color:var(--accent-ink);border-color:var(--line)}
-.calgrid .day.sel{outline:3px solid var(--accent2);outline-offset:-2px}
+.calgrid .day.sel{box-shadow:inset 0 0 0 3px var(--accent2)}
 .legend{display:flex;gap:14px;justify-content:center;padding:12px 0 4px;font:700 .64rem/1 var(--f-num);color:var(--muted);flex-wrap:wrap}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:2px;display:inline-block;border:1px solid var(--line)}
@@ -204,21 +215,52 @@ figcaption{color:var(--pg-muted);font-size:.8rem;max-width:390px}
 .hist .vol{font:800 1rem/1 var(--f-display)}
 .pill{font:800 .62rem/1 var(--f-num);letter-spacing:.12em;padding:4px 8px;border:2px solid var(--line);border-radius:2px;text-transform:uppercase}
 .pill.ok{color:var(--ok)}
-.pill.part{color:var(--warn)}
+.pill.fail{color:var(--bad)}
 .setrow{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;border-bottom:2px solid var(--line)}
 .setrow.last{border-bottom:0}
 .setrow .k{font:800 .78rem/1.3 var(--f-num)}
 .setrow .v{font:800 .78rem/1 var(--f-num);color:var(--muted);display:flex;align-items:center;gap:8px}
 .setrow .v b{color:var(--ink)}
 .seg{display:inline-flex;border:2px solid var(--line);border-radius:2px;background:var(--bg2);box-shadow:2px 2px 0 var(--shadow)}
-.seg button{appearance:none;cursor:pointer;min-height:38px;padding:0 12px;border:0;background:transparent;color:var(--muted);font:800 .7rem/1 var(--f-num)}
+.seg button{appearance:none;cursor:pointer;min-height:44px;padding:0 12px;border:0;background:transparent;color:var(--muted);font:800 .7rem/1 var(--f-num)}
 .seg button.on{background:var(--ink);color:var(--bg)}
-.sw{appearance:none;cursor:pointer;width:46px;height:26px;border-radius:0;border:2px solid var(--line);background:var(--bg2);position:relative;flex:0 0 auto;box-shadow:2px 2px 0 var(--shadow)}
-.sw i{position:absolute;top:3px;left:3px;width:16px;height:16px;background:var(--muted)}
+.sw{appearance:none;cursor:pointer;width:46px;height:44px;border-radius:0;border:2px solid var(--line);background:var(--bg2);position:relative;flex:0 0 auto;box-shadow:2px 2px 0 var(--shadow)}
+.sw i{position:absolute;top:50%;left:3px;width:18px;height:18px;margin-top:-9px;background:var(--muted)}
 .sw.on{background:var(--accent)}
 .sw.on i{left:23px;background:var(--accent-ink)}
+.wd{appearance:none;cursor:pointer;min-width:44px;min-height:44px;padding:0 8px;border:2px solid var(--line);background:var(--card);font:800 .62rem/1 var(--f-num);text-transform:uppercase;color:var(--muted);box-shadow:2px 2px 0 var(--shadow)}
+.wd.on{background:var(--accent);color:var(--accent-ink)}
+.weekdays{display:flex;flex-wrap:wrap;gap:6px}
+.pal-select{appearance:none;min-height:44px;padding:0 10px;border:2px solid var(--line);background:var(--card);font:800 .72rem/1 var(--f-num);color:var(--ink);box-shadow:2px 2px 0 var(--shadow)}
+.step-dots{display:inline-flex;gap:6px;margin-right:8px;vertical-align:middle}
+.step-dots i{display:inline-block;width:8px;height:8px;background:var(--muted);border:1px solid var(--line)}
+.step-dots i.on{background:var(--accent);border-color:var(--line)}
+.rep-stepper{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0;padding:12px;background:var(--bg);border:2px solid var(--line);box-shadow:5px 5px 0 var(--shadow)}
+.contour{font-family:var(--f-display);font-size:5.5rem;font-weight:900;line-height:1;color:transparent;-webkit-text-stroke:2.5px var(--accent);text-align:center;margin:8px 0;background:var(--bg)}
+@supports not (-webkit-text-stroke:1px #000){.contour{color:var(--accent)}}
+.result-page{display:flex;flex-direction:column;justify-content:center;min-height:100%}
+.result{text-align:center;border-width:3px}
+.result.ok{border-color:var(--ok)}
+.result.fail{border-color:var(--bad)}
+.result .icon svg{width:64px;height:64px}
+.result.ok .icon svg{color:var(--ok)}
+.result.fail .icon svg{color:var(--bad)}
+.pwa-full{background:var(--bg);min-height:100%;display:flex;flex-direction:column}
+.pwa-scroll{flex:1;overflow:auto;padding-bottom:12px}
+.pwa-footer{padding-top:12px;border-top:2px solid var(--line)}
+.pwa-full h2{font-family:var(--f-display);font-size:1.4rem;text-transform:uppercase;margin:0 0 8px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tab{appearance:none;cursor:pointer;min-height:44px;padding:0 12px;border:2px solid var(--line);background:var(--card);font:800 .68rem/1 var(--f-num);text-transform:uppercase;color:var(--muted);box-shadow:2px 2px 0 var(--shadow)}
+.tab.on{background:var(--accent);color:var(--accent-ink)}
+.steps{list-style:none;margin:0 0 12px;padding:0}
+.steps li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:2px solid var(--line);font-size:.82rem}
+.step-num{font:800 .72rem/1 var(--f-num);background:var(--accent);color:var(--accent-ink);padding:4px 8px;border:2px solid var(--line);min-width:28px;text-align:center}
+.langrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid var(--line)}
+.lang-label{font:800 .72rem/1 var(--f-num);text-transform:uppercase;color:var(--muted)}
+.about-mark{width:88px;height:88px;background:var(--accent);border:2px solid var(--line);box-shadow:4px 4px 0 var(--shadow);margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+.formula code{display:block;font:700 .75rem/1.4 var(--f-num);margin:6px 0;padding:8px;background:var(--bg2);border:2px solid var(--line)}
+.badge{display:inline-block;font:700 .6rem/1 var(--f-num);background:var(--bg2);padding:3px 6px;margin-right:8px;border:1px solid var(--line)}
 .danger{color:var(--bad)!important}
-.rucap{font:700 .68rem/1.5 var(--f-num);color:var(--muted);padding-top:8px}
 @media (prefers-reduced-motion: reduce){.btn:active{transform:none;box-shadow:4px 4px 0 var(--shadow)}}
 @media (max-width:430px){.phone{width:100%;max-width:390px}}
 @media print{
@@ -255,47 +297,46 @@ def s_dash():
     return phone(
         '<header class="head"><div><p class="kicker">Sat · Aug 15</p><h2>Get after it.</h2></div>'
         '<span class="chip streak"><svg><use href="#i-flame"/></svg>12</span></header>'
-        '<div class="banner"><svg><use href="#i-bell"/></svg>Missed Fri 14 — plan shifted to Tue 18</div>'
         '<section class="panel next"><p class="kicker">Next workout</p>'
-        '<div class="row"><h3>Tue 18 Aug</h3><span class="sets">7·6·6·5·5</span></div>'
-        '<div class="meter"><i style="width:27%"></i></div>'
-        '<p class="sub">Step 7 of 26 · Week 3 of 8</p>'
+        '<div class="row"><h3>Tue 18 Aug</h3><span class="sets">5·5·5·4·6</span></div>'
+        '<div class="meter"><i style="width:50%"></i></div>'
+        '<p class="sub">Workout 3 of 6 · Round 2</p>'
         '<button class="btn accent">Start workout <svg><use href="#i-arr"/></svg></button></section>'
         '<div class="grid2">'
         '<section class="panel tile"><p class="kicker">Max reps</p><b class="big">13</b><span class="sub">+1 this week</span></section>'
         '<section class="panel tile"><p class="kicker">Volume · week</p><b class="big">63</b><span class="sub">92 last week</span></section>'
         '</div>' + tabbar(1),
-        '1 · Dashboard — следующая тренировка, прогресс, быстрый старт, баннер перенесённой тренировки.')
+        '1 · Home — next workout, progress meter (6-step cycle), KPI tiles, streak chip (accent2).')
 
 
 def s_work():
     return phone(
         '<div class="top"><button class="iconbtn" aria-label="Close workout"><svg><use href="#i-x"/></svg></button>'
-        '<span class="step">Step 7 · Set 4 of 5</span><span class="clock">14:32</span></div>'
+        '<span class="step">Round 2 · Set 4 of 5</span><span class="clock">14:32</span></div>'
         '<div class="setsrow" aria-label="Sets">'
-        '<div class="s done"><b>7</b><svg><use href="#i-check"/></svg><span>Set 1</span></div>'
-        '<div class="s done"><b>6</b><svg><use href="#i-check"/></svg><span>Set 2</span></div>'
-        '<div class="s done"><b>6</b><svg><use href="#i-check"/></svg><span>Set 3</span></div>'
-        '<div class="s now"><b>5</b><span>Now</span></div>'
-        '<div class="s"><b>5</b><span>Set 5</span></div></div>'
-        '<div class="focus"><p class="kicker">Next up</p><div class="rep">5</div>'
-        '<p class="sub">reps · set 4</p></div>'
-        '<section class="restcard">'
-        '<svg class="ring" viewBox="0 0 120 120" width="100" height="100" role="img" aria-label="Rest timer, 2 minutes 47 seconds of 3 minutes">'
+        '<div class="s done"><b>5</b><svg><use href="#i-check"/></svg><span>Set 1</span></div>'
+        '<div class="s done"><b>5</b><svg><use href="#i-check"/></svg><span>Set 2</span></div>'
+        '<div class="s done"><b>5</b><svg><use href="#i-check"/></svg><span>Set 3</span></div>'
+        '<div class="s now"><b>4</b><span>Now</span></div>'
+        '<div class="s"><b>6</b><span>Set 5</span></div></div>'
+        '<div class="rest-layout">'
+        '<div class="rest-hero">'
+        '<svg class="ring" viewBox="0 0 120 120" width="180" height="180" role="img" aria-label="Rest timer, 2:47">'
         '<circle class="bg" cx="60" cy="60" r="52"/>'
         '<circle class="fg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="24" transform="rotate(-90 60 60)"/>'
         '<text class="ring-num" x="60" y="57" text-anchor="middle">2:47</text>'
         '<text class="ring-lab" x="60" y="73" text-anchor="middle">REST</text></svg>'
-        '<div class="restbody">'
-        '<div class="restrow"><button class="mini" aria-label="Minus 15 seconds">−15s</button>'
-        '<button class="mini" aria-label="Pause timer"><svg><use href="#i-pause"/></svg></button>'
-        '<button class="mini" aria-label="Plus 15 seconds">+15s</button></div>'
-        '<div class="restrow"><button class="mini" aria-label="Reset timer"><svg><use href="#i-reset"/></svg>Reset</button>'
-        '<button class="mini" aria-label="Skip rest">Skip</button></div>'
-        '<p class="resthint"><svg><use href="#i-vibr"/></svg>Vibrate + notify on finish · no sound</p></div></section>'
-        '<div class="btnrow"><button class="btn accent" style="flex:1.6">Done — 5 reps</button>'
-        '<button class="btn ghost" style="flex:1">Log fewer</button></div>',
-        '2 · Workout — контурная цифра повторений, сет-карточки, таймер отдыха 2:47 из 3:00 (вибрация + уведомление, без звука).')
+        '</div>'
+        '<section class="rest-dock panel">'
+        '<div class="presets"><button class="mini">1:30</button><button class="mini">3:00</button><button class="mini">5:00</button></div>'
+        '<div class="restrow"><button class="mini" aria-label="Minus 15 seconds"><svg><use href="#i-minus"/></svg></button>'
+        '<button class="mini" aria-label="Plus 15 seconds"><svg><use href="#i-plus"/></svg></button></div>'
+        '<div class="restrow"><button class="mini"><svg><use href="#i-arr"/></svg> Skip</button>'
+        '<button class="mini"><svg><use href="#i-pause"/></svg> Pause</button>'
+        '<button class="mini"><svg><use href="#i-reset"/></svg> Reset</button></div>'
+        '<p class="resthint">Sound + notification when rest ends</p>'
+        '</section></div>',
+        '2 · Workout (rest phase) — set cards, ring hero, presets 90s/3m/5m, no tab bar.')
 
 
 CALGRID = ('<div class="calgrid" role="grid" aria-label="August 2026">'
@@ -328,14 +369,14 @@ def s_cal():
         '<span><i class="dot" style="background:var(--accent2)"></i>Planned</span>'
         '<span><i class="dot" style="background:var(--accent)"></i>Today</span></div>'
         '<div class="sheet"><div class="backdrop"></div><div class="sheetcard">'
-        '<div class="grab"></div><h4>Workout · Tue 18</h4><p class="sub">Sets 7·6·6·5·5 · Step 7</p>'
+        '<div class="grab"></div><h4>Workout · Tue 18</h4><p class="sub">Sets 5·5·5·4·6 · Workout 3 of 6</p>'
         '<div class="optrow"><button class="opt">Mon 17</button><button class="opt on">Tue 18</button>'
         '<button class="opt">Wed 19</button></div>'
         '<p class="note"><svg><use href="#i-info"/></svg>All following workouts shift by the same offset.</p>'
         '<div class="btnrow"><button class="btn accent" style="flex:1.4">Move</button>'
         '<button class="btn ghost" style="flex:1">Start now</button></div></div></div>'
         '</div>' + tabbar(2),
-        '3 · Calendar — статусы рамками и заливкой «сегодня», bottom sheet переноса со сдвигом последующих.')
+        '3 · Calendar — day states, legend, reschedule bottom sheet.')
 
 
 def s_stats():
@@ -381,10 +422,10 @@ def s_stats():
         '<div class="info"><b>6·6·5·5·5</b><span>27 reps · 18 min</span></div><span class="pill ok">Done</span></li>'
         '<li><div class="date"><b>Aug 10</b><span>Step 6</span></div>'
         '<div class="info"><b>6·6·5·5·4</b><span>26 reps · 16 min</span></div><span class="pill ok">Done</span></li>'
-        '<li><div class="date"><b>Aug 7</b><span>Step 6</span></div>'
-        '<div class="info"><b>6·6·5·4·3</b><span>24 of 27 planned</span></div><span class="pill part">Partial</span></li>'
+        '<li><div class="date"><b>Aug 7</b><span>Workout 3</span></div>'
+        '<div class="info"><b>5·5·5·4·3</b><span>22 of 25 planned</span></div><span class="pill fail">Not finished</span></li>'
         '</ul></section>' + tabbar(3),
-        '4 · Stats — график максимума, объём по неделям, история со статусами Done / Partial.')
+        '4 · Stats — max chart, weekly volume, history with Done / Not finished pills.')
 
 
 def s_set():
@@ -392,32 +433,123 @@ def s_set():
         '<div class="head" style="padding-bottom:6px"><div><p class="kicker">Poster · Swiss</p><h2>Settings</h2></div></div>'
         '<section class="sec"><h4>Rest timer</h4>'
         '<div class="setrow"><span class="k">rest_duration</span><span class="v"><b>3:00</b>'
-        '<button class="iconbtn" aria-label="Decrease" style="width:40px;height:40px"><svg><use href="#i-minus"/></svg></button>'
-        '<button class="iconbtn" aria-label="Increase" style="width:40px;height:40px"><svg><use href="#i-plus"/></svg></button></span></div>'
+        '<button class="iconbtn" aria-label="Decrease" style="width:44px;height:44px"><svg><use href="#i-minus"/></svg></button>'
+        '<button class="iconbtn" aria-label="Increase" style="width:44px;height:44px"><svg><use href="#i-plus"/></svg></button></span></div>'
+        '<div class="setrow"><span class="k">presets</span><span class="seg">'
+        '<button>1:30</button><button class="on">3:00</button><button>5:00</button></span></div>'
         '<div class="setrow"><span class="k">auto_start</span>'
-        '<button class="sw on" role="switch" aria-checked="true" aria-label="Auto-start"><i></i></button></div>'
-        '<div class="setrow last"><span class="k">signal</span><span class="v"><b>vibrate + notify</b></span></div>'
-        '<p class="rucap">No sound — by design · RU: «Отдых — 3:00»</p></section>'
+        '<button class="sw on" role="switch" aria-checked="true"><i></i></button></div>'
+        '<div class="setrow last"><span class="k">notify</span>'
+        '<button class="sw on" role="switch" aria-checked="true"><i></i></button></div>'
+        '<p class="sub">Sound + notification when rest ends</p></section>'
         '<section class="sec"><h4>Theme</h4>'
-        '<div class="setrow"><span class="k">theme</span><span class="v"><span class="seg" role="radiogroup" aria-label="Theme">'
-        '<button>light</button><button class="on">system</button><button>dark</button></span></span></div>'
-        '<div class="setrow last"><span class="k">language</span><span class="v"><span class="seg" role="radiogroup" aria-label="Language">'
-        '<button class="on">EN</button><button>RU</button></span></span></div></section>'
+        '<div class="setrow"><span class="k">palette</span><span class="v">'
+        '<select class="pal-select" aria-label="Palette"><option>P01 Volt</option></select></span></div>'
+        '<div class="setrow"><span class="k">mode</span><span class="seg">'
+        '<button>light</button><button class="on">system</button><button>dark</button></span></div>'
+        '<div class="setrow last"><span class="k">language</span><span class="seg">'
+        '<button class="on">EN</button><button>RU</button></span></div></section>'
+        '<section class="sec"><h4>Schedule</h4>'
+        '<div class="setrow"><span class="k">frequency</span><span class="seg">'
+        '<button class="on">3× / week</button><button>2× / week</button></span></div>'
+        '<div class="setrow last"><span class="k">weekdays</span><span class="weekdays">'
+        '<button class="wd on">Mon</button><button class="wd">Tue</button><button class="wd on">Wed</button>'
+        '<button class="wd">Thu</button><button class="wd on">Fri</button><button class="wd">Sat</button>'
+        '<button class="wd">Sun</button></span></div></section>'
         '<section class="sec"><h4>Data</h4>'
-        '<div class="setrow"><span class="k">export_backup</span><span class="v"><b>backup.json</b>'
-        '<svg style="width:16px;height:16px"><use href="#i-dl"/></svg></span></div>'
-        '<div class="setrow"><span class="k">import_backup</span><span class="v">'
-        '<svg style="width:16px;height:16px"><use href="#i-up"/></svg></span></div>'
+        '<button class="btn"><svg><use href="#i-dl"/></svg> Export backup</button>'
+        '<button class="btn"><svg><use href="#i-up"/></svg> Import backup</button>'
         '<div class="setrow last"><span class="k danger">reset_all_data</span><span class="v">'
         '<svg style="width:16px;height:16px"><use href="#i-trash"/></svg></span></div></section>'
         '<section class="sec" style="margin-bottom:4px"><h4>About</h4>'
-        '<div class="setrow"><span class="k">version</span><span class="v"><b>0.1.0</b></span></div>'
-        '<div class="setrow last"><span class="k">program_sources</span><span class="v"><b>50pullups · research</b></span></div>'
+        '<div class="setrow"><span class="k">version</span><span class="v"><b>' + APP_VERSION + '</b></span></div>'
+        '<div class="setrow"><span class="k">about_app</span><span class="v"><b>→</b></span></div>'
+        '<div class="setrow last"><span class="k">why_program</span><span class="v"><b>→</b></span></div>'
         '</section>' + tabbar(4),
-        '5 · Settings — ключи mono слева, контролы справа, RU как пример i18n.')
+        '5 · Settings — rest, theme, schedule, data export/import, about links.')
 
 
-SCREENS = [s_dash, s_work, s_cal, s_stats, s_set]
+def s_onboarding():
+    return phone(
+        '<p class="kicker"><span class="step-dots"><i></i><i class="on"></i><i></i></span> Step 2 of 3</p>'
+        '<section class="panel">'
+        '<p class="kicker">Max reps test</p>'
+        '<p class="sub">How many strict pull-ups can you do in one set?</p>'
+        '<div class="rep-stepper">'
+        '<button class="iconbtn" aria-label="Decrease"><svg><use href="#i-minus"/></svg></button>'
+        '<div class="contour">7</div>'
+        '<button class="iconbtn" aria-label="Increase"><svg><use href="#i-plus"/></svg></button></div>'
+        '<p class="sub">Use your best honest attempt.</p>'
+        '<div class="btnrow"><button class="btn ghost">Back</button><button class="btn accent">Next</button></div>'
+        '</section>',
+        '6 · Onboarding — max test with rep-stepper, no tab bar.')
+
+
+def s_result():
+    return phone(
+        '<div class="result-page">'
+        '<section class="panel result ok">'
+        '<div class="icon"><svg><use href="#i-check"/></svg></div>'
+        '<p class="kicker">Workout complete</p>'
+        '<p class="sub">24 of 25 reps</p>'
+        '<p class="sub">Next: Workout 4 of 6</p>'
+        '<div class="btnrow"><button class="btn accent">Home</button></div>'
+        '</section></div>',
+        '7 · Result — success panel with ok border, no tab bar.')
+
+
+def s_pwa():
+    return phone(
+        '<div class="pwa-full">'
+        '<div class="pwa-scroll">'
+        '<p class="kicker">Install app</p>'
+        '<h2>Add to Home Screen</h2>'
+        '<p class="sub">Works offline after first visit.</p>'
+        '<div class="langrow"><span class="lang-label">Language</span>'
+        '<span class="seg"><button class="on">EN</button><button>RU</button></span></div>'
+        '<div class="tabs"><button class="tab on">iOS</button><button class="tab">Android</button>'
+        '<button class="tab">Desktop</button><button class="tab">Other</button></div>'
+        '<ol class="steps">'
+        '<li><span class="step-num">1</span><span>Tap Share in Safari toolbar</span></li>'
+        '<li><span class="step-num">2</span><span>Scroll and tap Add to Home Screen</span></li>'
+        '<li><span class="step-num">3</span><span>Confirm — app opens full screen</span></li>'
+        '</ol></div>'
+        '<div class="pwa-footer">'
+        '<button class="btn accent">Install</button>'
+        '<button class="btn outline">Dismiss</button></div></div>',
+        '8 · PWA install — full-screen modal, platform tabs, no tab bar.')
+
+
+def s_about():
+    return phone(
+        '<div class="subpage-head">'
+        '<header class="head"><div><p class="kicker">About</p><h2>Pull-up Trainer</h2></div></header>'
+        '<button class="btn ghost"><svg><use href="#i-chevL"/></svg> Back</button>'
+        '<div class="about-mark"><svg width="40" height="40" viewBox="0 0 24 24" fill="var(--accent-ink)"><circle cx="12" cy="8" r="3"/><path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div>'
+        '</div>'
+        '<section class="panel"><p>Local-first PWA for pull-up training.</p>'
+        '<p class="sub">Version ' + APP_VERSION + '</p>'
+        '<button class="btn accent">Why this program?</button>'
+        '<button class="btn">Sources</button></section>',
+        '9 · About — subpage with back button, brand mark, no tab bar.')
+
+
+def s_why():
+    return phone(
+        '<div class="subpage-head">'
+        '<header class="head"><div><p class="kicker">Science</p><h2>Why this program</h2></div></header>'
+        '<button class="btn ghost"><svg><use href="#i-chevL"/></svg> Back</button></div>'
+        '<section class="sec"><h4>Overview</h4>'
+        '<p class="sub">Progressive overload with autoregulated max sets and deload rules.</p></section>'
+        '<section class="sec"><h4>Formulas</h4>'
+        '<div class="formula"><b>Working set</b><code>ceil(0.7 × M*)</code>'
+        '<span class="sub">Example: M*=7 → 5 reps</span></div></section>'
+        '<section class="sec"><h4>Sources</h4>'
+        '<p><span class="badge">Open access</span><span class="badge">[1]</span> Study title…</p></section>',
+        '10 · Why program — long-form sections, formulas, source badges, no tab bar.')
+
+
+SCREENS = [s_dash, s_work, s_cal, s_stats, s_set, s_onboarding, s_result, s_pwa, s_about, s_why]
 
 # ---------------------------------------------------------------- palettes
 
@@ -594,7 +726,7 @@ def build_palette(pal):
   <header class="intro">
     <span class="tag">{pal['num']} · {pal['name']} — {pal['style']}</span>
     <h1>Poster — {pal['name']}</h1>
-    <p>{pal['desc']} Дизайн A8 · Poster/Swiss: обе темы, по 5 экранов.</p>
+    <p>{pal['desc']} Poster/Swiss: обе темы, 10 экранов (5 core + 5 extended).</p>
     <div class="swboxes">
       <div class="swbox"><span class="t">Dark</span><ul>{dark_sw}</ul></div>
       <div class="swbox"><span class="t">Light</span><ul>{light_sw}</ul></div>
@@ -667,8 +799,9 @@ footer{{color:var(--muted);font-size:.78rem;margin-top:2.5rem;border-top:2px sol
 <main>
 <span class="tag">Palettes · 14</span>
 <h1>Poster / Swiss — цветовые палитры</h1>
-<p class="meta">В каждой — 5 экранов × 2 темы (dark/light), переключатель сверху файла.
-P01 Volt — эталонная палитра выбранного дизайна A8.</p>
+<p class="meta">В каждой — 10 экранов × 2 темы (dark/light), переключатель сверху файла.
+5 core (tab bar) + 5 extended (onboarding, result, PWA, about, why).
+P01 Volt — эталонная палитра.</p>
 <a class="back" href="../poster-design.md">← спека Poster / Swiss</a>
 <div class="grid">
 {chr(10).join(cards)}
@@ -727,17 +860,22 @@ def build_readme():
 Дизайн-система приложения: язык **Poster / Swiss**,
 14 цветовых тем, в каждой — тёмный и светлый режим.
 
+Полная спека: [`poster-design.md`](poster-design.md) (экраны, компоненты, a11y).
+
 ## Структура
 
 ```
 design/
 ├── README.md          ← этот файл
-├── poster-design.md   ← спека дизайн-языка
-├── theme-tokens.css   ← все палитры как CSS custom properties — подключается в приложение
+├── poster-design.md   ← спека дизайн-языка (источник правды)
+├── theme-tokens.css   ← все палитры как CSS custom properties
 ├── build-assets.py    ← генератор мокапов, токенов и этого README
-├── mockups/           ← HTML-мокапы экранов (14 тем + галерея index.html)
-└── assets/            ← графика: логотип, иконки, паттерны (см. assets/README.md)
+├── mockups/           ← HTML-мокапы (14 тем × 10 экранов + галерея)
+└── assets/            ← графика: логотип, иконки, паттерны
 ```
+
+Runtime-стили приложения: [`src/assets/styles/main.css`](../../src/assets/styles/main.css)
+(импортирует `theme-tokens.css`).
 
 ## Темы
 
@@ -749,16 +887,20 @@ design/
 
 ## Как использовать в приложении
 
-1. Подключить `theme-tokens.css` (или перенести переменные в стили приложения).
+1. Подключить `theme-tokens.css` через `main.css`.
 2. Установить на `<html>` атрибут `data-theme="<slug>-<mode>"`, mode = dark | light.
 3. Настройки: выбор палитры (P01–P14) + режим light / dark / system;
-   system резолвится через `prefers-color-scheme` в dark или light.
+   system резолвится через `prefers-color-scheme`.
 4. Все компоненты используют только переменные: `--bg`, `--bg2`, `--card`,
    `--ink`, `--muted`, `--line`, `--accent`, `--accent-ink`, `--accent2`,
    `--ok`, `--warn`, `--bad`, `--shadow`.
 
-Графические ассеты (логотип, иконки, паттерны) лежат в `assets/` — детали
-и лицензии в `assets/README.md`.
+## Мокапы
+
+10 экранов на палитру: Home, Workout, Calendar, Stats, Settings,
+Onboarding, Result, PWA install, About, Why program.
+
+Графические ассеты — в `assets/` (см. `assets/README.md`).
 
 Пересборка: `python3 build-assets.py`.
 """

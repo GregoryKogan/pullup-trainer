@@ -39,20 +39,30 @@ apple-touch-icon, `icon-32.png` — favicon.
 
 | Папка | Что это |
 |---|---|
-| `lucide/` | 13 строгих линейных иконок для интерфейса (Lucide, ISC) |
-| `pullup/` | 4 авторские иконки про подтягивания (без внешней лицензии) |
+| `lucide/` | **12** строгих линейных иконок для галереи/референса (Lucide, ISC) |
+| `pullup/` | **3** авторские иконки про подтягивания (без внешней лицензии) |
 
-`pullup/`: `pull-up` (голова над перекладиной), `dead-hang` (вис),
-`bar` (перекладина), `above-bar` (стрелка над перекладиной — прогресс).
+`pullup/`: `pull-up.svg` (голова над перекладиной), `dead-hang.svg` (вис),
+`above-bar.svg` (стрелка над перекладиной — прогресс).
+
+### Использование в приложении
+
+Runtime использует **гибридную** стратегию:
+
+- [`IconSprite.vue`](../../../src/components/icons/IconSprite.vue) — 26 inline SVG symbols (nav, controls, social).
+- Lucide SFC в `src/components/icons/lucide/` — декоративные KPI (flame, target, timer и др.).
+- Pullup SFC в `src/components/icons/pullup/` — контекст workout/onboarding.
+
+Файлы в `assets/icons/lucide/` — статические копии для preview; не импортируются напрямую в runtime.
 
 ## Паттерны — `patterns/`
 
 | Файл | Назначение |
 |---|---|
-| `swiss-grid.svg` | мелкая сетка «миллиметровка» — фирменный швейцарский фон |
-| `halftone-dots.svg` | растровые точки по диагонали |
-| `diagonal-hatch.svg` | тонкая косая штриховка |
-| `pullup-bars.svg` | мотив перекладин — фоновый паттерн под тему приложения |
+| `swiss-grid.svg` | мелкая сетка «миллиметровка» — **используется в app** (`.app-shell::before`) |
+| `halftone-dots.svg` | растровые точки по диагонали (резерв) |
+| `diagonal-hatch.svg` | тонкая косая штриховка (резерв) |
+| `pullup-bars.svg` | мотив перекладин — фоновый паттерн (резерв) |
 
 Паттерны ч/б с низкой непрозрачностью (0.06–0.10): накладывать через CSS
 `background-image`; в тёмной теме инвертировать (`filter: invert(1)`) либо
