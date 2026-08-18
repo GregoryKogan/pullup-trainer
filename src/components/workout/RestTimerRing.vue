@@ -77,7 +77,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           >{{ displayTime }}</text>
         </svg>
         <p class="ring-lab">
-          <IconTimer class="ring-icon" aria-hidden="true" />
+          <IconTimer :size="16" class="ring-icon" aria-hidden="true" />
           <span class="ring-lab-text">{{ total > 0 ? label : t('workout.chooseRest') }}</span>
         </p>
       </div>
@@ -197,7 +197,8 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font: 700 0.68rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  height: 16px;
+  font: 700 0.68rem/16px ui-monospace, 'SF Mono', Menlo, monospace;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted);
@@ -206,13 +207,12 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 .ring-icon {
   flex-shrink: 0;
   display: block;
-  width: 1em;
-  height: 1em;
   color: var(--accent);
 }
 .ring-lab-text {
   display: block;
-  line-height: 1;
+  line-height: 16px;
+  transform: translateY(2px);
 }
 .rest-dock {
   flex-shrink: 0;
