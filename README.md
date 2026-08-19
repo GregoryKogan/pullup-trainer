@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/readme/hero.svg" alt="Pull-up Trainer — local-first pull-up PWA in Poster / Swiss design" width="100%">
+  <img src="docs/readme/hero.svg" alt="Pull-up Trainer: local-first pull-up PWA in Poster / Swiss design" width="100%">
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 
 <p align="center">
   <strong>Local-first pull-up training PWA.</strong><br>
-  One built-in evidence-based program, full offline — no ads, no accounts, no cloud.<br>
+  One built-in evidence-based program, full offline. No ads, no accounts, no cloud.<br>
   <a href="https://gregorykogan.github.io/pullup-trainer/"><strong>Open live app →</strong></a>
 </p>
 
@@ -36,7 +36,7 @@
 
 ## About
 
-Pull-up Trainer is a mobile-first progressive web app for structured pull-up training. Everything runs locally in your browser via IndexedDB — your history and progress never leave the device.
+Pull-up Trainer is a mobile-first progressive web app for structured pull-up training. Everything runs locally in your browser via IndexedDB. Your history and progress never leave the device.
 
 The built-in program generates each workout from your max-rep anchor (`M*`) and current step in a 6-workout cycle. Progression, deloads, retests, and scheduling follow rules described on the in-app Why this program page. Install as a PWA for offline use and quick access from your home screen.
 
@@ -55,11 +55,11 @@ Default schedule: three non-consecutive days per week with at least 48 hours bet
 
 ## Tech stack
 
-- **UI:** Vue 3 (Composition API), Vue Router, Pinia, vue-i18n (EN / RU)
-- **Build:** Vite, TypeScript, vite-plugin-pwa
-- **Data:** Dexie (IndexedDB), JSON export/import for history and full backup
-- **Quality:** Vitest, Vue Test Utils, Playwright, ESLint, Prettier
-- **Hosting:** GitHub Pages with CI deploy
+- Vue 3 (Composition API), Vue Router, Pinia, vue-i18n (EN / RU)
+- Vite, TypeScript, vite-plugin-pwa
+- Dexie (IndexedDB), JSON export/import for history and full backup
+- Vitest, Vue Test Utils, Playwright, ESLint, Prettier
+- GitHub Pages with CI deploy
 
 ## Development
 
@@ -76,7 +76,7 @@ npm run preview      # preview production build
 
 ## Design system
 
-The app uses **Poster / Swiss** — flat fills, 2px borders, 2px radius, offset shadows, mono caps labels, and display uppercase headings. Default palette: **P01 Volt** (14 palettes × light/dark).
+The app uses Poster / Swiss: flat fills, 2px borders, 2px radius, offset shadows, mono caps labels, and display uppercase headings. Default palette is P01 Volt (14 palettes × light/dark).
 
 | Resource | Path |
 |----------|------|
@@ -88,16 +88,16 @@ The app uses **Poster / Swiss** — flat fills, 2px borders, 2px radius, offset 
 
 ## License
 
-[GPL-3.0](LICENSE) — Copyright Gregory Koganovsky.
+[GPL-3.0](LICENSE). Copyright Gregory Koganovsky.
 
 Third-party notice: icons by [Lucide](https://lucide.dev) (ISC). See [`public/NOTICE`](public/NOTICE) and [`spec/design/assets/LICENSES/Lucide-ISC.txt`](spec/design/assets/LICENSES/Lucide-ISC.txt).
 
 <details>
 <summary>What this app does NOT include</summary>
 
-- No ads, donations, paywalls, or subscriptions
-- No user accounts or cloud sync
-- No push reminders (not feasible in a static PWA v1)
-- No voice cues, background music, camera, or social features
+- Ads, donations, paywalls, or subscriptions
+- User accounts or cloud sync
+- Push reminders (not feasible in a static PWA v1)
+- Voice cues, background music, camera, or social features
 
 </details>
