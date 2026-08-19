@@ -432,27 +432,6 @@ onBeforeUnmount(() => {
   font-size: clamp(1.2rem, 5vw, 1.5rem);
   overflow-wrap: anywhere;
 }
-.banner {
-  background: var(--card);
-  border: 2px solid var(--line);
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
-  color: var(--muted);
-}
-.pending-banner p {
-  margin: 0 0 10px;
-}
-.banner-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.banner-actions .btn {
-  flex: 1;
-  min-width: 120px;
-  margin-top: 0;
-}
 .day-history {
   margin: 0 0 14px;
   padding-top: 8px;
@@ -558,11 +537,6 @@ onBeforeUnmount(() => {
   color: var(--ink);
   background: var(--card);
 }
-.day.missed {
-  border-color: var(--muted);
-  color: var(--muted);
-  background: var(--bg2);
-}
 .day .day-icon {
   position: absolute;
   top: 3px;
@@ -573,9 +547,6 @@ onBeforeUnmount(() => {
 }
 .day.failed .day-icon {
   color: var(--warn);
-}
-.day.missed .day-icon {
-  color: var(--muted);
 }
 .shift-note {
   display: flex;
@@ -647,10 +618,6 @@ onBeforeUnmount(() => {
 .dot.failed {
   border-color: var(--warn);
   background: var(--card);
-}
-.dot.missed {
-  border-color: var(--muted);
-  background: var(--bg2);
 }
 .dot.planned {
   background: var(--accent2);

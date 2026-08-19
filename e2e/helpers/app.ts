@@ -264,7 +264,6 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
             id: 'singleton',
             appVersion: '1.0.0',
             schemaVersion: 4,
-            builtinSeedVersion: 1,
           })
           tx.objectStore('workoutRecords').clear()
           for (const rec of payload.workoutRecords) {

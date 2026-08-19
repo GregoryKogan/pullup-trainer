@@ -35,7 +35,7 @@ export interface HistoryRecordExport {
   finishedAt?: string
   durationSeconds: number
   kind: 'workout' | 'test'
-  program: 'builtin' | 'custom'
+  program: 'builtin'
   programName: string
   context?: WorkoutRecord['context']
   result: 'success' | 'fail'
@@ -50,15 +50,6 @@ export interface BackupExport {
   appVersion: string
   settings: AppSettings
   activeProgress: ActiveProgress | null
-  history: HistoryRecordExport[]
-}
-
-export interface LegacyBackupV1 {
-  format: typeof BACKUP_FORMAT
-  schemaVersion: number
-  settings: AppSettings
-  customPrograms?: unknown[]
-  activeProgress: unknown
   history: HistoryRecordExport[]
 }
 
@@ -87,9 +78,25 @@ export function normalizeTotals(raw: unknown): WorkoutTotals {
 function normalizeHistoryRecord(r: HistoryRecordExport): HistoryRecordExport {
   return {
     ...r,
+    program: 'builtin',
     sets: r.sets.map((s) => normalizeImportedSet(s)),
     totals: normalizeTotals(r.totals),
   }
+}
+
+function normalizeActiveProgress(raw: unknown): ActiveProgress | null {
+  if (raw === null) return null
+  if (!raw || typeof raw !== 'object') return null
+  const p = raw as ActiveProgress
+  if (!p.state || !Array.isArray(p.schedule) || !Array.isArray(p.weekdays)) return null
+  if (p.frequencyDays !== 2 && p.frequencyDays !== 3) return null
+  if (typeof p.state.lastRetestCycleIndex !== 'number') {
+    return {
+      ...p,
+      state: { ...p.state, lastRetestCycleIndex: 0 },
+    }
+  }
+  return p
 }
 
 export function recordToExport(r: WorkoutRecord): HistoryRecordExport {
@@ -98,7 +105,7 @@ export function recordToExport(r: WorkoutRecord): HistoryRecordExport {
     startedAt: r.startedAt,
     durationSeconds: r.durationSeconds,
     kind: r.kind,
-    program: r.program,
+    program: 'builtin',
     programName: r.programName,
     result: r.result,
     sets: r.sets.map((s) => normalizeImportedSet(s)),
@@ -113,7 +120,7 @@ export function recordToExport(r: WorkoutRecord): HistoryRecordExport {
       finishedAt: r.finishedAt,
       durationSeconds: r.durationSeconds,
       kind: 'test',
-      program: r.program,
+      program: 'builtin',
       programName: r.programName,
       result: r.result,
       sets: [{ position: 1, type: 'max' as const, done: r.sets[0]?.done ?? 0 }],
@@ -155,86 +162,39 @@ export function exportBackup(
   }
 }
 
-export function migrateBackupProgress(raw: unknown): ActiveProgress | null {
-  if (!raw || typeof raw !== 'object') return null
-  const p = raw as Record<string, unknown>
-  if (p.source === 'custom') return null
-  let progress: ActiveProgress | null = null
-  if (p.source === 'builtin') {
-    const rest = { ...p }
-    delete rest.source
-    progress = rest as unknown as ActiveProgress
-  } else if ('state' in p && 'frequencyDays' in p && 'weekdays' in p && 'schedule' in p) {
-    progress = p as unknown as ActiveProgress
-  }
-  if (!progress) return null
-  const state = progress.state as unknown as Record<string, unknown>
-  if (state.path === 'P0') return null
-  if ('path' in state) {
-    const rest = { ...state }
-    delete rest.path
-    progress = { ...progress, state: rest as unknown as ActiveProgress['state'] }
-  }
-  if (typeof progress.state.lastRetestCycleIndex !== 'number') {
-    progress = {
-      ...progress,
-      state: { ...progress.state, lastRetestCycleIndex: 0 },
-    }
-  }
-  return progress
+export function validateBackup(data: unknown): data is BackupExport {
+  if (!data || typeof data !== 'object') return false
+  const d = data as Record<string, unknown>
+  return (
+    d.format === BACKUP_FORMAT &&
+    d.schemaVersion === SCHEMA_VERSION &&
+    typeof d.exportedAt === 'string' &&
+    typeof d.appVersion === 'string' &&
+    d.settings !== undefined &&
+    Array.isArray(d.history)
+  )
 }
 
 export function normalizeImportedBackup(data: unknown): BackupExport | null {
   if (!validateBackup(data)) return null
-  const d = data as LegacyBackupV1 & BackupExport
-  if (d.schemaVersion >= 2) {
-    return {
-      format: BACKUP_FORMAT,
-      schemaVersion: d.schemaVersion,
-      exportedAt: d.exportedAt ?? toIsoOffset(new Date()),
-      appVersion: d.appVersion ?? '1.0.0',
-      settings: normalizeSettings(d.settings),
-      activeProgress: migrateBackupProgress(d.activeProgress),
-      history: (d.history ?? []).map((r) => normalizeHistoryRecord(r as HistoryRecordExport)),
-    }
-  }
+  const d = data as BackupExport
+  const activeProgress = normalizeActiveProgress(d.activeProgress)
+  if (d.activeProgress !== null && activeProgress === null) return null
   return {
     format: BACKUP_FORMAT,
     schemaVersion: SCHEMA_VERSION,
-    exportedAt: d.exportedAt ?? toIsoOffset(new Date()),
-    appVersion: d.appVersion ?? '1.0.0',
+    exportedAt: d.exportedAt,
+    appVersion: d.appVersion,
     settings: normalizeSettings(d.settings),
-    activeProgress: migrateBackupProgress(d.activeProgress),
-    history: (d.history ?? []).map((r) => normalizeHistoryRecord(r as HistoryRecordExport)),
+    activeProgress,
+    history: d.history.map((r) => normalizeHistoryRecord(r)),
   }
-}
-
-export function validateBackup(data: unknown): data is BackupExport | LegacyBackupV1 {
-  if (!data || typeof data !== 'object') return false
-  const d = data as Record<string, unknown>
-  return d.format === BACKUP_FORMAT && typeof d.schemaVersion === 'number'
-}
-
-export function validateHistory(data: unknown): data is HistoryExport {
-  if (!data || typeof data !== 'object') return false
-  const d = data as Record<string, unknown>
-  return d.format === HISTORY_FORMAT && typeof d.schemaVersion === 'number'
 }
 
 export function normalizeSettings(raw: unknown): AppSettings {
   const defaults = defaultSettings()
   if (!raw || typeof raw !== 'object') return defaults
   const s = raw as Record<string, unknown>
-  const hasNotify = typeof s.restNotify === 'boolean'
-  const hasVibrate = typeof s.restVibrate === 'boolean'
-  let restNotify = defaults.restNotify
-  if (hasNotify && hasVibrate) {
-    restNotify = Boolean(s.restNotify || s.restVibrate)
-  } else if (hasNotify) {
-    restNotify = s.restNotify as boolean
-  } else if (hasVibrate) {
-    restNotify = s.restVibrate as boolean
-  }
   return {
     id: 'singleton',
     palette: typeof s.palette === 'string' ? s.palette : defaults.palette,
@@ -245,7 +205,7 @@ export function normalizeSettings(raw: unknown): AppSettings {
     restDurationSeconds:
       typeof s.restDurationSeconds === 'number' ? s.restDurationSeconds : defaults.restDurationSeconds,
     restAutoStart: typeof s.restAutoStart === 'boolean' ? s.restAutoStart : defaults.restAutoStart,
-    restNotify,
+    restNotify: typeof s.restNotify === 'boolean' ? s.restNotify : defaults.restNotify,
     language: s.language === 'ru' ? 'ru' : defaults.language,
   }
 }
@@ -267,6 +227,5 @@ export function defaultAppMeta(): AppMeta {
     id: 'singleton',
     appVersion: '1.0.0',
     schemaVersion: SCHEMA_VERSION,
-    builtinSeedVersion: 1,
   }
 }

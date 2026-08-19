@@ -1,38 +1,20 @@
 import type { ActiveProgress } from '@/domain/types'
 import { db } from '../database'
 
-function normalizeProgress(raw: unknown): ActiveProgress | null {
-  if (!raw || typeof raw !== 'object') return null
-  const p = raw as Record<string, unknown>
-  if (p.source === 'custom') return null
-  let progress: ActiveProgress | null = null
-  if (p.source === 'builtin') {
-    const rest = { ...p }
-    delete rest.source
-    progress = rest as unknown as ActiveProgress
-  } else if ('state' in p && 'frequencyDays' in p && 'weekdays' in p && 'schedule' in p) {
-    progress = p as unknown as ActiveProgress
-  }
-  if (!progress) return null
-  const state = progress.state as unknown as Record<string, unknown>
-  if (state.path === 'P0') return null
-  if ('path' in state) {
-    const rest = { ...state }
-    delete rest.path
-    progress = { ...progress, state: rest as unknown as ActiveProgress['state'] }
-  }
-  if (typeof progress.state.lastRetestCycleIndex !== 'number') {
-    progress = {
-      ...progress,
-      state: { ...progress.state, lastRetestCycleIndex: 0 },
+function ensureProgress(raw: ActiveProgress | null): ActiveProgress | null {
+  if (!raw) return null
+  if (typeof raw.state.lastRetestCycleIndex !== 'number') {
+    return {
+      ...raw,
+      state: { ...raw.state, lastRetestCycleIndex: 0 },
     }
   }
-  return progress
+  return raw
 }
 
 export async function loadProgress(): Promise<ActiveProgress | null> {
   const row = await db.activeProgress.get('singleton')
-  return normalizeProgress(row?.data ?? null)
+  return ensureProgress(row?.data ?? null)
 }
 
 export async function saveProgress(data: ActiveProgress | null): Promise<void> {

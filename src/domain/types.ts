@@ -1,6 +1,5 @@
 export type SetType = 'reps' | 'max'
 export type WorkoutResult = 'success' | 'fail'
-export type LegacyProgramSource = 'builtin' | 'custom'
 export type Level = 'L1' | 'L2' | 'L3' | 'L4'
 export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
 export type ThemeMode = 'light' | 'dark' | 'system'
@@ -55,11 +54,6 @@ export interface WorkoutRecordContextL {
   stepInCycle: number
 }
 
-export interface WorkoutRecordContextP0 {
-  level: 'P0'
-  path0Step: number
-}
-
 export interface WorkoutTotals {
   volumeReps: number
   maxSetReps: number
@@ -72,9 +66,9 @@ export interface WorkoutRecord {
   finishedAt?: string
   durationSeconds: number
   kind: RecordKind
-  program: LegacyProgramSource
+  program: 'builtin'
   programName: string
-  context?: WorkoutRecordContextL | WorkoutRecordContextP0
+  context?: WorkoutRecordContextL
   result: WorkoutResult
   sets: CompletedSet[]
   totals: WorkoutTotals
@@ -94,7 +88,6 @@ export interface AppMeta {
   id: 'singleton'
   appVersion: string
   schemaVersion: number
-  builtinSeedVersion: number
 }
 
 export interface StartRecommendation {

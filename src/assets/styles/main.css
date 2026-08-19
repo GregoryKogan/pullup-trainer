@@ -271,12 +271,6 @@ html:not([data-theme$='-light']) .app-shell::before {
   height: 16px;
 }
 
-.banner svg {
-  width: 15px;
-  height: 15px;
-  flex: 0 0 auto;
-}
-
 .resthint svg {
   width: 13px;
   height: 13px;

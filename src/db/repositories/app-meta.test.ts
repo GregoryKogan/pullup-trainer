@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { ensureAppMeta, loadAppMeta, BUILTIN_SEED_VERSION } from './app-meta'
+import { ensureAppMeta, loadAppMeta } from './app-meta'
 import { db } from '../database'
 import { APP_VERSION } from '@/constants/app'
 import { SCHEMA_VERSION } from '@/domain/export'
@@ -14,7 +14,6 @@ describe('app-meta repository', () => {
     const meta = await ensureAppMeta()
     expect(meta.appVersion).toBe(APP_VERSION)
     expect(meta.schemaVersion).toBe(SCHEMA_VERSION)
-    expect(meta.builtinSeedVersion).toBe(BUILTIN_SEED_VERSION)
 
     const loaded = await loadAppMeta()
     expect(loaded?.id).toBe('singleton')
@@ -25,7 +24,6 @@ describe('app-meta repository', () => {
       id: 'singleton',
       appVersion: '0.9.0',
       schemaVersion: SCHEMA_VERSION,
-      builtinSeedVersion: BUILTIN_SEED_VERSION,
     })
 
     const meta = await ensureAppMeta()

@@ -5,27 +5,26 @@ alwaysApply: true
 # Модель данных
 
 ## IndexedDB (Dexie — первичный выбор)
-Таблицы: `settings` (синглтон: тема, таймер, язык), `activeProgress` (синглтон), `workoutRecords` (автоинкремент: глобальная история тренировок), `appMeta` (синглтон: версия seed встроенной программы, версия схемы данных, версия приложения).
+Таблицы: `settings` (синглтон: тема, таймер, язык), `activeProgress` (синглтон), `workoutRecords` (автоинкремент: глобальная история тренировок), `appMeta` (синглтон: версия схемы данных, версия приложения).
 
 `activeProgress`:
-- `state` — генератор: `anchor`, `level`, `cycleIndex`, `stepInCycle` (k), `failStreak` (0–2), `lastRetestDate`, `cycleBestMax`.
+- `state` — генератор: `anchor`, `level`, `cycleIndex`, `stepInCycle` (k), `failStreak` (0–2), `lastRetestDate`, `lastRetestCycleIndex`, `cycleBestMax`.
 - `schedule` — упорядоченные слоты `{date: "YYYY-MM-DD", stepRef}` (stepRef = k). Перенос тренировки и автосдвиг при пропуске — операции над `schedule`.
 - `frequencyDays` (2 или 3) и `weekdays` (напр. mon/wed/fri).
-- Legacy `state.path === "P0"` при загрузке → сброс прогресса (онбординг).
 
 ## Экспорт истории `pullup-trainer-history.json` — для ИИ
 - Верхний уровень: `format: "pullup-trainer.history"`, `schemaVersion` (int, повышается при ломающих изменениях), `generatedAt`, `appVersion`, `language`, `records[]`.
-- Запись: `date` (YYYY-MM-DD), `startedAt`/`finishedAt` (ISO 8601 с offset; `finishedAt` может отсутствовать при прерванной), `durationSeconds`, `kind` (`"workout" | "test"`), `program` (`"builtin"`; legacy-экспорты могут содержать `"custom"`), `programName`, `context`, `result` (`"success" | "fail"`), `sets[]`, `totals`.
-- `context`: `{level, anchor, cycleIndex, stepInCycle}`. Legacy: `{level: "P0", path0Step}` — read-only.
+- Запись: `date` (YYYY-MM-DD), `startedAt`/`finishedAt` (ISO 8601 с offset; `finishedAt` может отсутствовать при прерванной), `durationSeconds`, `kind` (`"workout" | "test"`), `program` (`"builtin"`), `programName`, `context`, `result` (`"success" | "fail"`), `sets[]`, `totals`.
+- `context`: `{level, anchor, cycleIndex, stepInCycle}`.
 - `sets[]`: `position` (с 1), `type` (`reps|max`), `planned`, `done`. Для `max` `planned` = минимум N_k. Провал = `done < planned`.
 - `kind="test"`: один подход `{type:"max", done:M}`; поля `planned` и `context` отсутствуют.
 - `totals`: `volumeReps` (Σ done), `maxSetReps` (лучший подход в повторах).
 - Принципы: плоская структура, БЕЗ внутренних ID-ссылок (программа описывается значениями), ISO-даты, читатель обязан игнорировать неизвестные поля. Полный пример JSON.
 
 ## Полный бэкап `pullup-trainer-backup.json`
-`format: "pullup-trainer.backup"` + `settings`, `activeProgress`, `history` (записи в форме выше). `schemaVersion` 4. Импорт — полная замена состояния с подтверждением; валидация `format`/`schemaVersion`; чтение старых `schemaVersion` — обратная совместимость (legacy `customPrograms` игнорируется; legacy sets/totals нормализуются; P0 progress → онбординг).
+`format: "pullup-trainer.backup"` + `settings`, `activeProgress`, `history` (записи в форме выше). `schemaVersion` 4. Импорт — полная замена состояния с подтверждением; валидация `format` и `schemaVersion === 4`.
 
 ## Целостность
 - Автосохранение при каждом изменении состояния (без кнопки «Сохранить»).
 - История тренировок глобальна; прогресс встроенной программы хранится отдельно.
-- Миграции схемы IndexedDB по версиям приложения; seed встроенной программы версионируется в `appMeta`.
+- Dexie schema version 4; при breaking-изменениях — clear site data.

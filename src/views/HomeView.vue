@@ -292,20 +292,6 @@ async function reduceAnchor() {
   border: 2px solid var(--line);
   box-shadow: 3px 3px 0 var(--shadow);
 }
-.banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  background: var(--card);
-  border: 2px solid var(--line);
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
-  color: var(--muted);
-}
-.banner svg {
-  color: var(--muted);
-}
 .next h2.workout-date {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.3rem;
