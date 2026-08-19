@@ -20,7 +20,7 @@
 
 <p align="center">
   <strong>Local-first pull-up training PWA.</strong><br>
-  One built-in evidence-based program, custom programs, full offline — no ads, no accounts, no cloud.<br>
+  One built-in evidence-based program, full offline — no ads, no accounts, no cloud.<br>
   <a href="https://gregorykogan.github.io/pullup-trainer/"><strong>Open live app →</strong></a>
 </p>
 
@@ -38,7 +38,7 @@
 
 Pull-up Trainer is a mobile-first progressive web app for structured pull-up training. Everything runs locally in your browser via IndexedDB — your history and progress never leave the device.
 
-The built-in program generates each workout from your max-rep anchor (`M*`) and current step in a 6-workout cycle. Progression, deloads, retests, and scheduling follow rules described on the in-app Science page. Install as a PWA for offline use and quick access from your home screen.
+The built-in program generates each workout from your max-rep anchor (`M*`) and current step in a 6-workout cycle. Progression, deloads, retests, and scheduling follow rules described on the in-app Why this program page. Install as a PWA for offline use and quick access from your home screen.
 
 ## Program at a glance
 
@@ -57,7 +57,7 @@ Default schedule: three non-consecutive days per week with at least 48 hours bet
 
 - **UI:** Vue 3 (Composition API), Vue Router, Pinia, vue-i18n (EN / RU)
 - **Build:** Vite, TypeScript, vite-plugin-pwa
-- **Data:** Dexie (IndexedDB), JSON export for history and full backup
+- **Data:** Dexie (IndexedDB), JSON export/import for history and full backup
 - **Quality:** Vitest, Vue Test Utils, Playwright, ESLint, Prettier
 - **Hosting:** GitHub Pages with CI deploy
 
@@ -69,7 +69,7 @@ npm run dev          # local dev server
 npm run typecheck    # vue-tsc
 npm run lint
 npm run test         # unit tests
-npm run test:e2e     # Playwright (requires build)
+npm run test:e2e     # Playwright (auto-builds preview server)
 npm run build
 npm run preview      # preview production build
 ```
