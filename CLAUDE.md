@@ -15,10 +15,11 @@ npm run lint             # eslint --max-warnings 0
 npm run test             # vitest run
 npm run test:coverage    # vitest + пороги покрытия
 npm run test:e2e         # playwright (сам поднимает preview)
-npm run test:a11y        # только a11y-спеки
-npm run test:visual      # визуальные регрессии по темам
+npm run test:a11y        # axe по всем экранам (dark + light)
+npm run test:visual      # визуальные регрессии, локально (VISUAL=1)
 npm run build            # sync-pwa-icons + vue-tsc -b + vite build
 npm run size             # бюджет бандла
+npm run lighthouse       # Lighthouse с порогами из lighthouserc.json
 npm run audit:science    # сверка страницы «Почему программа такая» с генератором
 ```
 
@@ -124,6 +125,21 @@ transform-анимации. Подробности — скил `poster-design`.
 - Mobile-first; десктоп просто должен работать.
 - Страница «Почему программа такая» — только ОТКРЫТЫЕ источники, все формулы с примерами
   подстановки, честные пометки об экстраполяциях.
+
+## Инструменты
+
+MCP в `.mcp.json`: `chrome-devtools` (Lighthouse, perf-трейсы, отладка live-страницы),
+`context7` (актуальная дока Vue / Vite / Dexie / vue-i18n). Оба требуют подтверждения
+при старте сессии.
+
+Версия Node — в `.nvmrc`, CI читает её оттуда. Не задавать версию в workflow вручную.
+
+Визуальные эталоны привязаны к платформе и сняты на macOS, поэтому `test:visual`
+не гоняется в CI (Linux) — это локальный гейт под `VISUAL=1`.
+
+**Осторожно с preview-сервером.** У Playwright `reuseExistingServer: true` вне CI: если
+на 4173 уже висит сервер, сборка не пересобирается и тесты идут по старому `dist`.
+Перед прогоном после правок в стилях — `lsof -ti:4173 | xargs kill -9`.
 
 ## Скилы
 
