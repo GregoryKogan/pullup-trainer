@@ -43,6 +43,10 @@ const SEED = {
   workoutRecords: buildStatsHistory(TODAY, 14),
 }
 
+async function freezeClock(page: Page) {
+  await page.clock.setFixedTime(new Date(`${TODAY}T10:00:00`))
+}
+
 async function settle(page: Page) {
   await page.evaluate(() => document.fonts.ready)
   await page.waitForTimeout(150)
@@ -58,6 +62,7 @@ test.describe('visual regression', () => {
     for (const palette of PALETTES) {
       for (const mode of MODES) {
         test(`${palette} ${mode}`, async ({ page }) => {
+          await freezeClock(page)
           await prepareProgress(page, { ...SEED, palette, themeMode: mode })
           await gotoApp(page)
           await settle(page)
@@ -83,6 +88,7 @@ test.describe('visual regression', () => {
     for (const mode of MODES) {
       for (const screen of SCREENS) {
         test(`${screen.name} ${mode}`, async ({ page }) => {
+          await freezeClock(page)
           await prepareProgress(page, { ...SEED, palette: 'p01-volt', themeMode: mode })
           await gotoApp(page, screen.path)
           await settle(page)
@@ -94,6 +100,7 @@ test.describe('visual regression', () => {
       }
 
       test(`workout ${mode}`, async ({ page }) => {
+        await freezeClock(page)
         await prepareProgress(page, { ...SEED, palette: 'p01-volt', themeMode: mode })
         await startWorkout(page, TODAY)
         await settle(page)
@@ -106,6 +113,7 @@ test.describe('visual regression', () => {
   })
 
   test('onboarding renders on the default palette', async ({ page }) => {
+    await freezeClock(page)
     await prepareProgress(page, { ...SEED, palette: 'p01-volt', themeMode: 'dark' })
     await gotoApp(page, '/onboarding')
     await settle(page)
