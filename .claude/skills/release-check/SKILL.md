@@ -22,6 +22,7 @@ npm run typecheck && npm run lint && npm run test
 | `src/i18n/locales/science/` | `npm run audit:science` |
 | любой `.vue`, стили, темы | `npm run test:visual` |
 | экраны, интерактив, a11y | `npm run test:a11y` |
+| цвета, токены, палитры | `npm run test:contrast` — axe этот класс регрессий не ловит |
 | UI-поток, роутинг, PWA | `npm run test:e2e` |
 | зависимости, импорты | `npm run size` — бюджет бандла |
 | производительность, PWA | `npm run lighthouse` |
@@ -34,6 +35,8 @@ npm run typecheck && npm run lint && npm run test
 npm run typecheck && npm run lint && npm run test:coverage && \
 npm run audit:science && npm run size && npm run test:e2e && npm run lighthouse
 ```
+
+`test:e2e` уже включает `a11y` и `contrast`. Отдельно они нужны для быстрой итерации.
 
 ## Обновление визуальных эталонов
 

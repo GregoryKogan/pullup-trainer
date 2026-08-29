@@ -16,6 +16,7 @@ npm run test             # vitest run
 npm run test:coverage    # vitest + пороги покрытия
 npm run test:e2e         # playwright (сам поднимает preview)
 npm run test:a11y        # axe по всем экранам (dark + light)
+npm run test:contrast    # контраст по отрендеренным цветам (ловит регрессии токенов)
 npm run test:visual      # визуальные регрессии, локально (VISUAL=1)
 npm run build            # sync-pwa-icons + vue-tsc -b + vite build
 npm run size             # бюджет бандла
@@ -147,5 +148,13 @@ performance 0.92–0.98. Всё это `error`. Единственный `warn` 
 
 ## Скилы
 
-`program-core`, `poster-design`, `science-page`, `release-check` — проектные.
-`vue-core`, `vue-testing`, `code-review-and-quality`, `humanizer`, `humanizer-ru` — общие.
+Проектные: `program-core` (генератор, прогрессия, расписание, модель данных),
+`poster-design` (токены, палитры, a11y), `science-page` (страница «Почему программа такая»),
+`e2e-helpers` (хелперы Playwright и грабли), `release-check` (какие проверки под какую правку).
+
+Общие: `vue-core`, `vue-testing`, `code-review-and-quality`, `humanizer`, `humanizer-ru`.
+
+**Этот файл и `.claude/skills/` — единственный источник правды.** `.cursor/skills/` — симлинки
+сюда, а `.cursor/rules/` сведён к одному указателю. Раньше знания дублировались в двух местах
+и копии молча расходились. Правишь правила — правь здесь, не в `.cursor/`.
+Целостность проверяет `src/test/assistant-config.test.ts`.

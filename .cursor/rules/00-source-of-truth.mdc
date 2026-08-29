@@ -1,0 +1,28 @@
+---
+description: Где лежат правила проекта pullup-trainer (единый источник правды)
+alwaysApply: true
+---
+# Источник правды — `CLAUDE.md` и `.claude/skills/`
+
+Правила этого проекта раньше дублировались в `.cursor/rules/` и в `CLAUDE.md`. Копии
+разъезжались молча, поэтому теперь источник один.
+
+**Прочитай `CLAUDE.md` в корне репозитория.** Там ядро программы, модель данных,
+дизайн-система, конвенции кода, команды проверки, ограничения PWA и продуктовые запреты.
+
+Скилы в `.cursor/skills/` — симлинки на `.claude/skills/`. Загружай по задаче:
+
+| Скил | Когда |
+|---|---|
+| `program-core` | `src/domain/`, `src/stores/`, `src/db/`, правила тренировок, форматы JSON |
+| `poster-design` | любой `.vue` с вёрсткой, `src/assets/styles/`, палитры, UI-аудит |
+| `science-page` | `src/i18n/locales/science/`, `WhyProgramView.vue`, правка формул |
+| `e2e-helpers` | любая спека в `e2e/` |
+| `release-check` | перед коммитом, пушем, релизом |
+| `vue-core` | любой `.vue` или Vue-логика |
+| `vue-testing` | написание и починка тестов |
+| `code-review-and-quality` | перед каждым коммитом |
+| `humanizer` / `humanizer-ru` | правка англоязычного / русского текста |
+
+Правишь правила — правь `CLAUDE.md` или файл скила в `.claude/skills/`, не этот файл.
+Целостность симлинков проверяет `src/test/assistant-config.test.ts`.
