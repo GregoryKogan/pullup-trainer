@@ -24,6 +24,7 @@ npm run typecheck && npm run lint && npm run test
 | экраны, интерактив, a11y | `npm run test:a11y` |
 | UI-поток, роутинг, PWA | `npm run test:e2e` |
 | зависимости, импорты | `npm run size` — бюджет бандла |
+| производительность, PWA | `npm run lighthouse` |
 | палитры, `build-assets.py` | `python3 spec/design/build-assets.py`, затем `test:visual` |
 | иконки приложения | `npm run sync:icons` (входит в `build`) |
 
@@ -31,10 +32,21 @@ npm run typecheck && npm run lint && npm run test
 
 ```bash
 npm run typecheck && npm run lint && npm run test:coverage && \
-npm run audit:science && npm run size && npm run test:e2e
+npm run audit:science && npm run size && npm run test:e2e && npm run lighthouse
 ```
 
 ## Обновление визуальных эталонов
+
+Эталоны сняты на macOS и привязаны к платформе, поэтому в CI (Linux) `test:visual`
+пропускается — это локальный гейт, включается через `VISUAL=1`.
+
+**Сначала убей залипший preview-сервер.** У Playwright `reuseExistingServer: true` вне CI:
+если на 4173 уже висит сервер, `npm run build` не отработает и тесты пройдут по старому
+`dist` — правки стилей просто не попадут в проверку.
+
+```bash
+lsof -ti:4173 | xargs kill -9
+```
 
 Диффы в `test:visual` — **сначала посмотреть глазами**, отчёт лежит в `playwright-report/`.
 Тени, рамки и токены ломаются именно здесь и больше нигде.
