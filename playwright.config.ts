@@ -7,6 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1,
   reporter: process.env.CI ? 'github' : 'list',
+  snapshotPathTemplate: '{testDir}/__screenshots__/{arg}{ext}',
   use: {
     baseURL: 'http://127.0.0.1:4173/pullup-trainer/',
     trace: 'on-first-retry',
