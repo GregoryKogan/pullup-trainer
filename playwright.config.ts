@@ -8,6 +8,11 @@ export default defineConfig({
   workers: 1,
   reporter: process.env.CI ? 'github' : 'list',
   snapshotPathTemplate: '{testDir}/__screenshots__/{arg}{ext}',
+  expect: {
+    // pixelmatch's default threshold (0.2) is a perceptual YIQ distance wide
+    // enough to hide a token swap on small text; keep it tight.
+    toHaveScreenshot: { threshold: 0.02, maxDiffPixels: 0 },
+  },
   use: {
     baseURL: 'http://127.0.0.1:4173/pullup-trainer/',
     trace: 'on-first-retry',

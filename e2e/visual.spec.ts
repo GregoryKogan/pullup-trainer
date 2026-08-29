@@ -68,7 +68,6 @@ test.describe('visual regression', () => {
           await settle(page)
           await expect(page).toHaveScreenshot(`home-${palette}-${mode}.png`, {
             fullPage: true,
-            maxDiffPixelRatio: 0.01,
           })
         })
       }
@@ -94,7 +93,6 @@ test.describe('visual regression', () => {
           await settle(page)
           await expect(page).toHaveScreenshot(`screen-${screen.name}-${mode}.png`, {
             fullPage: true,
-            maxDiffPixelRatio: 0.01,
           })
         })
       }
@@ -115,7 +113,6 @@ test.describe('visual regression', () => {
         await settle(page)
         await expect(page).toHaveScreenshot(`screen-workout-${mode}.png`, {
           fullPage: true,
-          maxDiffPixelRatio: 0.01,
         })
       })
     }
@@ -128,7 +125,6 @@ test.describe('visual regression', () => {
     await settle(page)
     await expect(page).toHaveScreenshot('screen-onboarding-dark.png', {
       fullPage: true,
-      maxDiffPixelRatio: 0.01,
     })
   })
 })
