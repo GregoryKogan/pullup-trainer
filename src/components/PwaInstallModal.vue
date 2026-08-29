@@ -115,18 +115,19 @@ function onTabKeydown(e: KeyboardEvent) {
               {{ t(`pwa.tabs.${tab}`) }}
             </button>
           </div>
-          <p v-if="activeTab === 'ios'" class="note">{{ t('pwa.ios.note') }}</p>
-          <ol
+          <div
             :id="`pwa-panel-${activeTab}`"
-            class="steps"
             role="tabpanel"
             :aria-labelledby="`pwa-tab-${activeTab}`"
           >
-            <li v-for="(step, i) in steps()" :key="i">
-              <span class="step-num">{{ i + 1 }}</span>
-              <span>{{ step }}</span>
-            </li>
-          </ol>
+            <p v-if="activeTab === 'ios'" class="note">{{ t('pwa.ios.note') }}</p>
+            <ol class="steps">
+              <li v-for="(step, i) in steps()" :key="i">
+                <span class="step-num">{{ i + 1 }}</span>
+                <span>{{ step }}</span>
+              </li>
+            </ol>
+          </div>
           <div class="illus" aria-hidden="true">
             <svg v-if="activeTab === 'ios'" viewBox="0 0 200 120" width="200" height="120">
               <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
