@@ -55,13 +55,11 @@ updates:
     commit-message:
       prefix: 'deps'
 
+  # Majors are allowed here: first-party actions have no peer graph to keep
+  # in lockstep, and pinning them back is how the Node 20 deprecation crept in.
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
-    ignore:
-      - dependency-name: '*'
-        update-types:
-          - version-update:semver-major
     commit-message:
       prefix: 'ci'
