@@ -5,6 +5,7 @@ import {
   buildStatsHistory,
   assertNoTextOverlap,
   dismissPwaModal,
+  freezeToday,
 } from './helpers/app'
 
 async function openStatsWithHistory(page: import('@playwright/test').Page) {
@@ -25,6 +26,10 @@ function isMobileProject(projectName: string) {
 }
 
 test.describe('Stats chart labels', () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToday(page)
+  })
+
   test('max chart labels do not overlap', async ({ page }, testInfo) => {
     await openStatsWithHistory(page)
     const mobile = isMobileProject(testInfo.project.name)

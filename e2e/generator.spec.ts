@@ -4,9 +4,14 @@ import {
   startWorkout,
   assertSetTargets,
   todayLocal,
+  freezeToday,
 } from './helpers/app'
 
 test.describe('Session generator UI', () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToday(page)
+  })
+
   const today = todayLocal()
 
   test('M*=7 k=1 shows targets 5,5,5,4,5', async ({ page }) => {

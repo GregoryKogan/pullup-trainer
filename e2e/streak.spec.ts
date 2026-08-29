@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { prepareProgress, todayLocal, addDays, startOfWeek } from './helpers/app'
+import { prepareProgress, todayLocal, addDays, startOfWeek, freezeToday} from './helpers/app'
 
 test.describe('Weekly streak', () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToday(page)
+  })
+
   // D8: streak counts weeks with enough successful workouts
   test('shows streak after successful workouts in current week', async ({ page }) => {
     const today = todayLocal()

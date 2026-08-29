@@ -5,9 +5,14 @@ import {
   readRecords,
   todayLocal,
   addDays,
+  freezeToday,
 } from './helpers/app'
 
 test.describe('Retest prompts', () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToday(page)
+  })
+
   const today = todayLocal()
 
   test('shows retest prompt after 15-day break', async ({ page }) => {

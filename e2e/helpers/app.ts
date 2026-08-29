@@ -360,12 +360,29 @@ async function expectHomeReady(page: Page) {
   await nav.waitFor({ state: 'visible', timeout: 15_000 })
 }
 
-export function todayLocal(): string {
+// Resolved once per worker process. A run that crosses midnight would
+// otherwise seed one date and assert against the next.
+const RUN_DATE = (() => {
   const d = new Date()
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
+})()
+
+export function todayLocal(): string {
+  return RUN_DATE
+}
+
+/**
+ * Pins the page clock to midday on `date` (the run date by default) so the app
+ * and the seeded schedule agree on what "today" is.
+ *
+ * Date.now() stops moving, so do NOT use this in specs that assert on elapsed
+ * time or the rest timer. Call it before prepareProgress / prepareSeededApp.
+ */
+export async function freezeToday(page: Page, date: string = RUN_DATE) {
+  await page.clock.setFixedTime(new Date(`${date}T12:00:00`))
 }
 
 export function addDays(isoDate: string, delta: number): string {

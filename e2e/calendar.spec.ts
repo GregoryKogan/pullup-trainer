@@ -8,9 +8,14 @@ import {
   todayLocal,
   addDays,
   seedActiveWorkoutSession,
+  freezeToday,
 } from './helpers/app'
 
 test.describe('Calendar', () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToday(page)
+  })
+
   const today = todayLocal()
 
   test.beforeEach(async ({ page }) => {

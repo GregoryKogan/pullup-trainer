@@ -5,9 +5,14 @@ import {
   readRecords,
   todayLocal,
   addDays,
+  freezeToday,
 } from './helpers/app'
 
 test.describe('Missed workout policy', () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToday(page)
+  })
+
   const today = todayLocal()
   const missedDate = addDays(today, -3)
 

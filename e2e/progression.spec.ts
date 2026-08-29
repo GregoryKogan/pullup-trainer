@@ -8,9 +8,14 @@ import {
   todayLocal,
   addDays,
   dismissPwaModal,
+  freezeToday,
 } from './helpers/app'
 
 test.describe('Progression', () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToday(page)
+  })
+
   const today = todayLocal()
 
   test('success advances stepRef in schedule', async ({ page }) => {
