@@ -17,6 +17,7 @@
     "test:a11y": "playwright test e2e/a11y.spec.ts --project='Mobile Chrome'",
     "test:visual": "VISUAL=1 playwright test e2e/visual.spec.ts --project='Mobile Chrome'",
     "size": "size-limit",
+    "lighthouse": "lhci autorun",
     "screenshots:readme": "UPDATE_README_SCREENSHOTS=1 playwright test e2e/readme-screenshots.spec.ts --project='Mobile Chrome' && node scripts/build-app-screenshots-svg.mjs",
     "audit:science": "node scripts/audit-science-crosswalk.mjs"
   },
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.22.0",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.62.1",
     "@size-limit/file": "^13.0.3",
     "@types/node": "^22.13.10",
