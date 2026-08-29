@@ -134,6 +134,11 @@ MCP в `.mcp.json`: `chrome-devtools` (Lighthouse, perf-трейсы, отлад
 
 Версия Node — в `.nvmrc`, CI читает её оттуда. Не задавать версию в workflow вручную.
 
+Пороги Lighthouse откалиброваны на macOS (Apple Silicon). Машинозависимые метрики
+(performance, FCP, LCP, TBT) пока стоят как `warn` — поднять до `error` после того,
+как накопится несколько прогонов на раннерах CI и станут известны их реальные числа.
+Не зависящие от железа (accessibility, best-practices, CLS) уже `error`.
+
 Визуальные эталоны привязаны к платформе и сняты на macOS, поэтому `test:visual`
 не гоняется в CI (Linux) — это локальный гейт под `VISUAL=1`.
 
