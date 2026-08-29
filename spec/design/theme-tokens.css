@@ -33,6 +33,7 @@
   --line: #000000;
   --accent: #C6FF3B;
   --accent-ink: #0E0E0B;
+  --accent-text: #C6FF3B;
   --accent2: #FFD22E;
   --ok: #4CE08A;
   --warn: #FFC24D;
@@ -50,6 +51,7 @@
   --line: #000000;
   --accent: #C6FF3B;
   --accent-ink: #0E0E0B;
+  --accent-text: #C6FF3B;
   --accent2: #FFD22E;
   --ok: #4CE08A;
   --warn: #FFC24D;
@@ -66,6 +68,7 @@
   --line: #0F0E0A;
   --accent: #A8D920;
   --accent-ink: #101A02;
+  --accent-text: #526A10;
   --accent2: #C79200;
   --ok: #1C7A46;
   --warn: #96600A;
@@ -83,6 +86,7 @@
   --line: #1C1206;
   --accent: #FF5A1F;
   --accent-ink: #160700;
+  --accent-text: #FF5A1F;
   --accent2: #FFB35C;
   --ok: #54D98C;
   --warn: #FFC14D;
@@ -99,6 +103,7 @@
   --line: #241608;
   --accent: #FF6A2E;
   --accent-ink: #1A0800;
+  --accent-text: #B33300;
   --accent2: #B35500;
   --ok: #1C7A46;
   --warn: #96600A;
@@ -116,6 +121,7 @@
   --line: #0C1030;
   --accent: #4D8DFF;
   --accent-ink: #041030;
+  --accent-text: #4D8DFF;
   --accent2: #7DD3FF;
   --ok: #54E09B;
   --warn: #FFC65C;
@@ -132,6 +138,7 @@
   --line: #10173A;
   --accent: #6F9DFF;
   --accent-ink: #051138;
+  --accent-text: #0152FF;
   --accent2: #0A7ABF;
   --ok: #1A7A46;
   --warn: #96600A;
@@ -149,6 +156,7 @@
   --line: #1F0518;
   --accent: #FF2D95;
   --accent-ink: #1A0010;
+  --accent-text: #FF2D95;
   --accent2: #9D6BFF;
   --ok: #54E09B;
   --warn: #FFC65C;
@@ -165,6 +173,7 @@
   --line: #2B0A20;
   --accent: #F25CAE;
   --accent-ink: #2B0016;
+  --accent-text: #BF0F6F;
   --accent2: #6B3FD1;
   --ok: #1A7A46;
   --warn: #96600A;
@@ -182,6 +191,7 @@
   --line: #000000;
   --accent: #FFD400;
   --accent-ink: #141000;
+  --accent-text: #FFD400;
   --accent2: #FF7A00;
   --ok: #4CE08A;
   --warn: #FFD35E;
@@ -198,6 +208,7 @@
   --line: #151300;
   --accent: #D4B000;
   --accent-ink: #141000;
+  --accent-text: #766200;
   --accent2: #D96A00;
   --ok: #1C7A46;
   --warn: #8A6500;
@@ -215,6 +226,7 @@
   --line: #000000;
   --accent: #EF4A3F;
   --accent-ink: #140000;
+  --accent-text: #EF4A3F;
   --accent2: #D8D8D8;
   --ok: #4CD78A;
   --warn: #FFC14D;
@@ -231,6 +243,7 @@
   --line: #111111;
   --accent: #C6281C;
   --accent-ink: #FFFFFF;
+  --accent-text: #C6281C;
   --accent2: #5A5A5A;
   --ok: #1E7D47;
   --warn: #96600A;
@@ -248,6 +261,7 @@
   --line: #032318;
   --accent: #6FE3C1;
   --accent-ink: #032318;
+  --accent-text: #6FE3C1;
   --accent2: #9EE8FF;
   --ok: #54E09B;
   --warn: #FFC65C;
@@ -264,6 +278,7 @@
   --line: #0A2C1E;
   --accent: #37B389;
   --accent-ink: #062A1D;
+  --accent-text: #247559;
   --accent2: #0A6EA8;
   --ok: #157A46;
   --warn: #96630A;
@@ -281,6 +296,7 @@
   --line: #1F1503;
   --accent: #FFB000;
   --accent-ink: #1C1100;
+  --accent-text: #FFB000;
   --accent2: #FF8A3D;
   --ok: #54D98C;
   --warn: #FFD35E;
@@ -297,6 +313,7 @@
   --line: #2B1E04;
   --accent: #E08A00;
   --accent-ink: #1A0F00;
+  --accent-text: #8C5600;
   --accent2: #C4501A;
   --ok: #1C7A46;
   --warn: #8A6500;
@@ -314,6 +331,7 @@
   --line: #03313A;
   --accent: #00E0E8;
   --accent-ink: #00262C;
+  --accent-text: #00E0E8;
   --accent2: #FF5CD0;
   --ok: #54E09B;
   --warn: #FFC65C;
@@ -330,6 +348,7 @@
   --line: #093540;
   --accent: #0FBCC4;
   --accent-ink: #02262B;
+  --accent-text: #097378;
   --accent2: #B01C8F;
   --ok: #157A46;
   --warn: #8F6000;
@@ -347,6 +366,7 @@
   --line: #200404;
   --accent: #FF4A3D;
   --accent-ink: #1A0000;
+  --accent-text: #FF4A3D;
   --accent2: #FF8A75;
   --ok: #54E09B;
   --warn: #FFC65C;
@@ -363,6 +383,7 @@
   --line: #2E0B0A;
   --accent: #C6281C;
   --accent-ink: #FFFFFF;
+  --accent-text: #BD261B;
   --accent2: #A04A3D;
   --ok: #1A7A46;
   --warn: #96600A;
@@ -380,6 +401,7 @@
   --line: #062508;
   --accent: #00E07F;
   --accent-ink: #04260F;
+  --accent-text: #00E07F;
   --accent2: #6AE0FF;
   --ok: #4FE3D6;
   --warn: #FFC65C;
@@ -396,6 +418,7 @@
   --line: #0C2B0F;
   --accent: #0DAF5E;
   --accent-ink: #052610;
+  --accent-text: #097841;
   --accent2: #0A7FA8;
   --ok: #0E7A7A;
   --warn: #96630A;
@@ -413,6 +436,7 @@
   --line: #180739;
   --accent: #8B5CFF;
   --accent-ink: #12002B;
+  --accent-text: #8B5CFF;
   --accent2: #FF5CD0;
   --ok: #54E09B;
   --warn: #FFC65C;
@@ -429,6 +453,7 @@
   --line: #221148;
   --accent: #6F42D9;
   --accent-ink: #FFFFFF;
+  --accent-text: #6F42D9;
   --accent2: #A6247F;
   --ok: #1A7A46;
   --warn: #96600A;
@@ -446,6 +471,7 @@
   --line: #210B03;
   --accent: #FF6B4A;
   --accent-ink: #220500;
+  --accent-text: #FF6B4A;
   --accent2: #6FD3FF;
   --ok: #54E09B;
   --warn: #FFC65C;
@@ -462,6 +488,7 @@
   --line: #2E1508;
   --accent: #F2683F;
   --accent-ink: #220500;
+  --accent-text: #B7330C;
   --accent2: #1F8FC4;
   --ok: #1A7A46;
   --warn: #96600A;
@@ -479,6 +506,7 @@
   --line: #FFFFFF;
   --accent: #FFFFFF;
   --accent-ink: #000000;
+  --accent-text: #FFFFFF;
   --accent2: #A8A8A8;
   --ok: #7EE8A8;
   --warn: #E8D27E;
@@ -495,6 +523,7 @@
   --line: #0F0F0F;
   --accent: #0F0F0F;
   --accent-ink: #FFFFFF;
+  --accent-text: #0F0F0F;
   --accent2: #666666;
   --ok: #1C7A46;
   --warn: #96600A;

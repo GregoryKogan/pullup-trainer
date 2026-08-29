@@ -207,7 +207,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 .ring-icon {
   flex-shrink: 0;
   display: block;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .ring-lab-text {
   display: block;

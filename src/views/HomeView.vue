@@ -308,7 +308,7 @@ async function reduceAnchor() {
 }
 .sets {
   font: 800 0.85rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
-  color: var(--accent);
+  color: var(--accent-text);
   text-align: right;
   flex: 1 1 140px;
 }
@@ -371,6 +371,6 @@ async function reduceAnchor() {
 }
 .step-icon {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 </style>

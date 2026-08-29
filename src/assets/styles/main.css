@@ -36,7 +36,7 @@ body {
 }
 
 a {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .app-shell {
@@ -316,7 +316,7 @@ html:not([data-theme$='-light']) .app-shell::before {
 
 .tabbar a.on {
   background: var(--bg);
-  color: var(--accent);
+  color: var(--accent-text);
   border-color: var(--line);
   opacity: 1;
   margin: 2px 2px 4px;

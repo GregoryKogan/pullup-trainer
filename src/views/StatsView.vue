@@ -354,7 +354,7 @@ function exportHistoryJson() {
 }
 .kpi-icon {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 @media (max-width: 420px) {
   .kpis {
@@ -477,6 +477,6 @@ function exportHistoryJson() {
 }
 .sec-icon {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 </style>

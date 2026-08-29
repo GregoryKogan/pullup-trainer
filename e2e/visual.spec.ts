@@ -100,9 +100,18 @@ test.describe('visual regression', () => {
       }
 
       test(`workout ${mode}`, async ({ page }) => {
+        // A clean single-slot seed: past slots settle as failures on hydrate and
+        // leave no loadable workout for TODAY.
         await freezeClock(page)
-        await prepareProgress(page, { ...SEED, palette: 'p01-volt', themeMode: mode })
+        await prepareProgress(page, {
+          today: TODAY,
+          anchor: 7,
+          language: 'en',
+          palette: 'p01-volt',
+          themeMode: mode,
+        })
         await startWorkout(page, TODAY)
+        await expect(page.locator('.contour-number')).toBeVisible()
         await settle(page)
         await expect(page).toHaveScreenshot(`screen-workout-${mode}.png`, {
           fullPage: true,

@@ -519,7 +519,7 @@ function confirmExit() {
 }
 .hero-icon {
   margin-bottom: 8px;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .workout-dock {
   flex-shrink: 0;

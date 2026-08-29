@@ -33,8 +33,9 @@ function parseThemes(): Record<string, Record<string, string>> {
 const themes = parseThemes()
 const themeNames = Object.keys(themes)
 
-// Text-on-surface pairs only. --accent and --accent2 are fill colors read
-// through --accent-ink, so they are not asserted against --bg here.
+// Text-on-surface pairs only. --accent and --accent2 are fill colors, read
+// through --accent-ink when text sits on them; accent-coloured *text* uses
+// --accent-text, which is asserted against every surface.
 const TEXT_PAIRS: [string, string][] = [
   ['ink', 'bg'],
   ['ink', 'bg2'],
@@ -43,6 +44,9 @@ const TEXT_PAIRS: [string, string][] = [
   ['muted', 'bg2'],
   ['muted', 'card'],
   ['accent-ink', 'accent'],
+  ['accent-text', 'bg'],
+  ['accent-text', 'bg2'],
+  ['accent-text', 'card'],
   ['ok', 'bg'],
   ['ok', 'card'],
   ['warn', 'bg'],
@@ -54,6 +58,10 @@ const TEXT_PAIRS: [string, string][] = [
 describe('theme token contrast', () => {
   it('parses all 28 themes from the generated token file', () => {
     expect(themeNames).toHaveLength(28)
+  })
+
+  it('defines accent-text in every theme', () => {
+    expect(themeNames.filter((n) => !themes[n]['accent-text'])).toEqual([])
   })
 
   it('meets WCAG AA (4.5:1) for every text-on-surface pair in every theme', () => {

@@ -168,7 +168,7 @@ const sources = computed(() => {
 }
 .cite {
   font: 700 0.75rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
 }
 .cite:hover {

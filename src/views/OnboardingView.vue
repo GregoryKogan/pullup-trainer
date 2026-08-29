@@ -269,7 +269,7 @@ async function accept() {
 }
 .test-icon {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .lang {
   min-height: 44px;

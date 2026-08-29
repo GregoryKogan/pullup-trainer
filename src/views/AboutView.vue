@@ -100,7 +100,7 @@ const router = useRouter()
   padding: 4px 0 8px;
 }
 .about-mark {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .about-links,
 .about-contact-list {
@@ -123,7 +123,7 @@ const router = useRouter()
 }
 .about-link svg {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .about-link-muted {
   font-weight: 600;

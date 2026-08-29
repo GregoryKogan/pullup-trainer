@@ -117,8 +117,11 @@ export async function startWorkout(page: Page, date?: string) {
   if (await start.isVisible().catch(() => false)) {
     await start.click()
   } else {
-    await page.goto(`/workout/${date ?? todayLocal()}`)
+    await page.goto(`workout/${date ?? todayLocal()}`)
   }
+  await page.waitForURL(/\/workout\//)
+  // A goto fallback is a full page load, which brings the install modal back.
+  await dismissPwaModal(page)
   await clearRestGate(page)
 }
 
