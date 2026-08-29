@@ -6,20 +6,37 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    # Majors are done deliberately by hand: across this stack they move in
+    # lockstep (vite with @vitejs/plugin-vue, typescript with typescript-eslint)
+    # and a lone major bump only produces an unresolvable peer conflict.
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     groups:
       vue:
         patterns:
           - 'vue'
           - 'vue-*'
-          - '@vitejs/*'
+          - '@vue/*'
           - 'pinia'
-      tooling:
+      build:
+        patterns:
+          - 'vite'
+          - 'vite-*'
+          - '@vitejs/*'
+      typescript:
+        patterns:
+          - 'typescript'
+          - 'typescript-*'
+          - 'vue-tsc'
+          - '@types/*'
+      lint:
         patterns:
           - 'eslint*'
           - '@eslint/*'
-          - 'typescript*'
           - 'prettier'
-          - '@types/*'
+          - 'globals'
       testing:
         patterns:
           - 'vitest'
@@ -29,6 +46,12 @@ updates:
           - '@axe-core/*'
           - 'jsdom'
           - 'fake-indexeddb'
+          - 'wait-on'
+      budgets:
+        patterns:
+          - 'size-limit'
+          - '@size-limit/*'
+          - '@lhci/*'
     commit-message:
       prefix: 'deps'
 
@@ -36,5 +59,9 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     commit-message:
       prefix: 'ci'

@@ -11,8 +11,9 @@ permissions:
   pages: write
   id-token: write
 
+# Per-ref, so a Dependabot PR run never cancels the run on main.
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -81,6 +82,10 @@ jobs:
     needs: [verify, e2e, lighthouse]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    # Pages allows one deploy at a time; queue rather than cancel.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
