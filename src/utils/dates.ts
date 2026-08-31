@@ -56,10 +56,10 @@ export function formatShortDate(iso: string, locale = 'en'): string {
 }
 
 export function formatMonthLabel(isoMonth: string, locale = 'en'): string {
-  return parseLocalDate(`${isoMonth}-01`).toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', {
-    month: 'long',
-    year: 'numeric',
-  })
+  const tag = locale === 'ru' ? 'ru-RU' : 'en-US'
+  const date = parseLocalDate(`${isoMonth}-01`)
+  const month = date.toLocaleDateString(tag, { month: 'long' })
+  return `${month.charAt(0).toLocaleUpperCase(tag)}${month.slice(1)} ${date.getFullYear()}`
 }
 
 export function formatTime(seconds: number): string {
