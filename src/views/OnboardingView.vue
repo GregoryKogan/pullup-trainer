@@ -90,8 +90,8 @@ function adjustReps(delta: number) {
   showZeroMessage.value = false
 }
 
-function openZeroMessage() {
-  showZeroMessage.value = true
+function toggleZeroMessage() {
+  showZeroMessage.value = !showZeroMessage.value
   repsError.value = ''
 }
 
@@ -177,10 +177,16 @@ async function accept() {
       </label>
       <p v-if="repsError" class="sub error">{{ repsError }}</p>
       <p class="sub hint">{{ t('onboarding.testHint') }}</p>
-      <button type="button" class="text-link zero-link" @click="openZeroMessage">
+      <button
+        type="button"
+        class="text-link zero-link"
+        aria-controls="onboarding-zero-note"
+        :aria-expanded="showZeroMessage"
+        @click="toggleZeroMessage"
+      >
         {{ t('onboarding.cannotDoPullupsLink') }}
       </button>
-      <div v-if="showZeroMessage" class="panel zero-panel">
+      <div v-if="showZeroMessage" id="onboarding-zero-note" class="panel zero-panel">
         <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
         <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
       </div>

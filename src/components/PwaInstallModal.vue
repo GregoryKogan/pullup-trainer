@@ -216,7 +216,7 @@ function onTabKeydown(e: KeyboardEvent) {
   font: 700 0.65rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   padding: 6px 10px;
   border: 2px solid var(--line);
-  opacity: 0.6;
+  border-radius: 2px;
   background: var(--card);
   cursor: pointer;
   color: var(--ink);
@@ -225,7 +225,6 @@ function onTabKeydown(e: KeyboardEvent) {
 .tab.on {
   background: var(--accent);
   color: var(--accent-ink);
-  opacity: 1;
 }
 .note {
   font-size: 0.75rem;
@@ -243,6 +242,9 @@ function onTabKeydown(e: KeyboardEvent) {
   min-height: 44px;
   border-bottom: 2px solid var(--line);
   font: 700 0.78rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.steps li:last-child {
+  border-bottom: 0;
 }
 .step-num {
   width: 28px;

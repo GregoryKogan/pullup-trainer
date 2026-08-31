@@ -322,6 +322,7 @@ async function reduceAnchor() {
 <style scoped>
 .chip.streak {
   display: inline-flex;
+  margin-left: auto;
   align-items: center;
   gap: 6px;
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
@@ -330,6 +331,12 @@ async function reduceAnchor() {
   color: var(--accent-ink);
   border: 2px solid var(--line);
   box-shadow: 3px 3px 0 var(--shadow);
+}
+.retest {
+  margin-bottom: 12px;
+}
+.next .sub {
+  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
 }
 .next-label {
   margin: 0;
@@ -384,7 +391,6 @@ async function reduceAnchor() {
 }
 .rest-not-ready {
   margin: 0 0 8px;
-  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
 .rep-stepper {

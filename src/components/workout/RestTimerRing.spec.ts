@@ -15,6 +15,7 @@ const i18n = createI18n({
         restHint: 'hint',
         adjustMinus: '−15 sec',
         adjustPlus: '+15 sec',
+        adjustStep: '15 sec',
       },
     },
   },

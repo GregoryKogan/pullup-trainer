@@ -39,6 +39,11 @@ const restAtMax = computed(
 
 const scheduleProgress = computed(() => progressStore.progress)
 
+const weekdaysAtLimit = computed(() => {
+  const p = scheduleProgress.value
+  return !!p && p.weekdays.length >= p.frequencyDays
+})
+
 function paletteLabel(slug: string) {
   return t(`settings.palettes.${slug}`, slug)
 }
@@ -323,7 +328,11 @@ async function confirmReset() {
           </button>
         </div>
         <p class="sub weekday-hint">
-          {{ t('settings.weekdaysLimit', scheduleProgress.frequencyDays) }}
+          {{
+            weekdaysAtLimit
+              ? t('settings.weekdaysSwap')
+              : t('settings.weekdaysLimit', scheduleProgress.frequencyDays)
+          }}
         </p>
       </div>
     </section>
@@ -490,7 +499,7 @@ select {
   color: var(--accent-ink);
 }
 .wd:disabled {
-  opacity: 0.35;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 .sub.ok {

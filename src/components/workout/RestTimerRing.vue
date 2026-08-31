@@ -56,30 +56,36 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
     <section class="rest-hero">
       <p class="sr-only" aria-live="polite" aria-atomic="true">{{ ringLabel }}</p>
       <div class="ring-stack">
-        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="bg" cx="60" cy="60" r="52" />
-          <circle
-            class="fg"
-            cx="60"
-            cy="60"
-            r="52"
-            :stroke-dasharray="326.7"
-            :stroke-dashoffset="offset"
-            transform="rotate(-90 60 60)"
-          />
-          <text
-            class="ring-num"
-            x="60"
-            y="60"
-            font-size="27"
-            text-anchor="middle"
-            dominant-baseline="central"
-          >{{ displayTime }}</text>
-        </svg>
-        <p class="ring-lab">
-          <IconTimer :size="16" class="ring-icon" aria-hidden="true" />
-          <span class="ring-lab-text">{{ total > 0 ? label : t('workout.chooseRest') }}</span>
-        </p>
+        <template v-if="total > 0">
+          <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="bg" cx="60" cy="60" r="52" />
+            <circle
+              class="fg"
+              cx="60"
+              cy="60"
+              r="52"
+              :stroke-dasharray="326.7"
+              :stroke-dashoffset="offset"
+              transform="rotate(-90 60 60)"
+            />
+            <text
+              class="ring-num"
+              x="60"
+              y="60"
+              font-size="27"
+              text-anchor="middle"
+              dominant-baseline="central"
+            >{{ displayTime }}</text>
+          </svg>
+          <p class="ring-lab">
+            <IconTimer :size="16" class="ring-icon" aria-hidden="true" />
+            <span class="ring-lab-text">{{ label }}</span>
+          </p>
+        </template>
+        <div v-else class="rest-prompt">
+          <IconTimer :size="44" class="rest-prompt-icon" aria-hidden="true" />
+          <p class="rest-prompt-text">{{ t('workout.chooseRest') }}</p>
+        </div>
       </div>
     </section>
     <section class="rest-dock panel">
@@ -105,7 +111,8 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           :aria-label="t('workout.adjustMinus')"
           @click="emit('minus')"
         >
-          <AppIcon name="minus" :size="16" />
+          <AppIcon name="minus" :size="15" />
+          {{ t('workout.adjustStep') }}
         </button>
         <button
           type="button"
@@ -115,7 +122,8 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           :aria-label="t('workout.adjustPlus')"
           @click="emit('plus')"
         >
-          <AppIcon name="plus" :size="16" />
+          <AppIcon name="plus" :size="15" />
+          {{ t('workout.adjustStep') }}
         </button>
       </div>
       <div class="restrow">
@@ -177,6 +185,23 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   height: clamp(168px, min(52vw, 34vh), 240px);
   flex-shrink: 0;
   display: block;
+}
+.rest-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.rest-prompt-icon {
+  flex-shrink: 0;
+  color: var(--accent-text);
+}
+.rest-prompt-text {
+  margin: 0;
+  font: 800 0.95rem/1.2 'Arial Black', system-ui, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .ring .bg {
   stroke: var(--line);
@@ -265,9 +290,10 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   box-shadow: none;
 }
 .icon-mini {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
 }
 .skip-btn,
 .reset-btn {

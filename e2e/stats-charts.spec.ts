@@ -37,6 +37,8 @@ test.describe('Stats chart labels', () => {
     await expect(maxChart.locator('circle')).toHaveCount(mobile ? 4 : 6)
     await assertNoTextOverlap(page, 0, '.chart-label')
     await assertNoTextOverlap(page, 0, '.chart-val')
+    // The y-axis ticks share the left gutter with the first value label.
+    await assertNoTextOverlap(page, 0, '.chart-tick, .chart-val')
   })
 
   test('weekly volume chart labels do not overlap', async ({ page }, testInfo) => {
@@ -46,6 +48,7 @@ test.describe('Stats chart labels', () => {
     await expect(weeklyChart.locator('rect.bar')).toHaveCount(mobile ? 4 : 7)
     await assertNoTextOverlap(page, 1, '.chart-label')
     await assertNoTextOverlap(page, 1, '.chart-val')
+    await assertNoTextOverlap(page, 1, '.chart-tick, .chart-val')
   })
 
   test('RU locale chart labels do not overlap on desktop', async ({ page }, testInfo) => {
@@ -66,5 +69,7 @@ test.describe('Stats chart labels', () => {
     await assertNoTextOverlap(page, 0, '.chart-val')
     await assertNoTextOverlap(page, 1, '.chart-label')
     await assertNoTextOverlap(page, 1, '.chart-val')
+    await assertNoTextOverlap(page, 0, '.chart-tick, .chart-val')
+    await assertNoTextOverlap(page, 1, '.chart-tick, .chart-val')
   })
 })

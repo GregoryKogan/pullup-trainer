@@ -342,7 +342,7 @@ function confirmExit() {
         v-if="currentSet && !workoutStore.isComplete() && !workoutStore.restRunning"
         class="workout-hero"
       >
-        <IconPullUp :size="24" class="hero-icon" />
+        <IconPullUp :size="30" class="hero-icon" />
         <template v-if="currentSet.type === 'max'">
           <p class="kicker">{{ t('workout.maxSetKicker') }}</p>
           <p class="sub max-instruction">{{ t('workout.maxSetInstruction') }}</p>
