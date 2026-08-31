@@ -67,14 +67,14 @@ test.describe('Calendar', () => {
     await expect(page.getByRole('status')).toContainText(/no workout planned|не запланирована/i)
   })
 
-  test('legend today dot stays small', async ({ page }) => {
+  test('legend today swatch stays small', async ({ page }) => {
     await page.getByRole('link', { name: 'Calendar' }).click()
 
-    const dot = page.locator('.legend .dot.today')
-    await expect(dot).toBeVisible()
-    const box = await dot.boundingBox()
-    expect(box?.height ?? 99).toBeLessThan(16)
-    expect(box?.width ?? 99).toBeLessThan(16)
+    const swatch = page.locator('.legend .swatch.today')
+    await expect(swatch).toBeVisible()
+    const box = await swatch.boundingBox()
+    expect(box?.height ?? 99).toBeLessThan(20)
+    expect(box?.width ?? 99).toBeLessThan(20)
   })
 
   test('move stays disabled when date unchanged', async ({ page }) => {

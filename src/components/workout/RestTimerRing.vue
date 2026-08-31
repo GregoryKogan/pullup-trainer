@@ -56,7 +56,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
     <section class="rest-hero">
       <p class="sr-only" aria-live="polite" aria-atomic="true">{{ ringLabel }}</p>
       <div class="ring-stack">
-        <svg class="ring" viewBox="0 0 120 120" role="img" :aria-label="ringLabel" aria-hidden="true">
+        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
           <circle class="bg" cx="60" cy="60" r="52" />
           <circle
             class="fg"
@@ -88,7 +88,9 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           v-for="sec in REST_PRESET_SECONDS"
           :key="sec"
           type="button"
-          class="mini"
+          class="mini preset"
+          :class="{ on: total === sec }"
+          :aria-pressed="total === sec"
           @click="emit('preset', sec)"
         >
           {{ formatTime(sec) }}
@@ -226,6 +228,10 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 .presets .mini {
   flex: 1;
   font-size: 0.72rem;
+}
+.presets .mini.on {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .restrow {
   display: flex;

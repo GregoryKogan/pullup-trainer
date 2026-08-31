@@ -299,11 +299,11 @@ onBeforeUnmount(() => {
         <span v-else-if="dayStatus(cell.date) === 'failed'" class="day-icon"><AppIcon name="x" /></span>
       </button>
     </div>
-    <div class="legend page-bottom">
-      <span><i class="dot done" aria-hidden="true" />{{ t('calendar.done') }}</span>
-      <span><i class="dot failed" aria-hidden="true" />{{ t('calendar.failed') }}</span>
-      <span><i class="dot planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
-      <span><i class="dot today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
+    <div class="legend">
+      <span><i class="swatch done" aria-hidden="true" />{{ t('calendar.done') }}</span>
+      <span><i class="swatch failed" aria-hidden="true" />{{ t('calendar.failed') }}</span>
+      <span><i class="swatch planned" aria-hidden="true" />{{ t('calendar.planned') }}</span>
+      <span><i class="swatch today" aria-hidden="true" />{{ t('calendar.todayLegend') }}</span>
     </div>
     <Teleport to="body">
       <div
@@ -453,8 +453,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   padding: 8px 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid var(--line);
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.day-history li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 .day-history li b {
   flex: 1;
@@ -504,24 +508,44 @@ onBeforeUnmount(() => {
   color: var(--ink);
 }
 .calgrid {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto repeat(6, minmax(44px, 1fr));
   gap: 5px;
 }
 .dow {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 2px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
 .day {
   position: relative;
   min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   background: var(--card);
   border: 2px solid var(--line);
   box-shadow: 2px 2px 0 var(--shadow);
   font: 800 0.95rem/1 'Arial Black', system-ui, sans-serif;
   cursor: pointer;
   color: var(--ink);
+}
+
+/* Days with nothing on them stay flat, so the raised cells are the ones
+   that actually open the day sheet. */
+.day.rest {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--line) 30%, transparent);
+  box-shadow: none;
+  color: var(--muted);
 }
 .day.out {
   opacity: 0.35;
@@ -566,11 +590,8 @@ onBeforeUnmount(() => {
   content: '';
   width: 5px;
   height: 5px;
+  flex-shrink: 0;
   background: var(--accent2);
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 .day.today {
   background: var(--accent);
@@ -593,10 +614,10 @@ onBeforeUnmount(() => {
 }
 .legend {
   display: flex;
-  gap: 14px;
+  gap: 10px 14px;
   justify-content: center;
   flex-wrap: wrap;
-  padding-bottom: 12px;
+  padding: 14px 0 12px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
@@ -605,27 +626,33 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 6px;
 }
-.dot {
+.swatch {
+  position: relative;
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 14px;
+  height: 14px;
+  background: var(--card);
   border: 2px solid var(--line);
   flex-shrink: 0;
 }
-.dot.done {
+.swatch.done {
   border-color: var(--ok);
 }
-.dot.failed {
+.swatch.failed {
   border-color: var(--warn);
-  background: var(--card);
 }
-.dot.planned {
+.swatch.planned::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
   background: var(--accent2);
-  border-color: var(--accent2);
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
 }
-.dot.today {
+.swatch.today {
   background: var(--accent);
-  border-color: var(--accent);
 }
 .optrow {
   display: flex;
@@ -637,7 +664,9 @@ onBeforeUnmount(() => {
   min-height: 46px;
   padding: 0 10px;
   border: 2px solid var(--line);
+  border-radius: 2px;
   background: var(--card);
+  box-shadow: 2px 2px 0 var(--shadow);
   font: 800 0.74rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   cursor: pointer;
   color: var(--ink);

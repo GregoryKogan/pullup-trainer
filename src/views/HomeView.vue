@@ -8,7 +8,14 @@ import { detectReturnPolicy, canStartEarly } from '@/domain/schedule'
 import { needsRetest } from '@/domain/progression'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatDisplayDate, todayLocal, toIsoOffset } from '@/utils/dates'
-import { blockRepFractionKey, isValidTestRepCount, syncTestRepInput, REP_COUNT_MAX } from '@/utils/reps-input'
+import {
+  blockRepFractionKey,
+  clampTestRepCount,
+  isValidTestRepCount,
+  syncTestRepInput,
+  REP_COUNT_MAX,
+  REP_COUNT_MIN,
+} from '@/utils/reps-input'
 import { computeTotals } from '@/domain/progression'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
@@ -47,6 +54,9 @@ const canStartEarlyToday = computed(() => {
 const showRestNotReady = computed(
   () => nextSlot.value !== null && !isWorkoutToday.value && !canStartEarlyToday.value,
 )
+
+const retestAtMin = computed(() => retestReps.value <= REP_COUNT_MIN)
+const retestAtMax = computed(() => retestReps.value >= REP_COUNT_MAX)
 
 const setsPreview = computed(() => {
   const p = progressStore.progress
@@ -170,6 +180,12 @@ function onRetestRepsInput(event: Event) {
   })
 }
 
+function adjustRetestReps(delta: number) {
+  retestReps.value = clampTestRepCount(retestReps.value + delta)
+  retestError.value = ''
+  showRetestZeroMessage.value = false
+}
+
 async function reduceAnchor() {
   await progressStore.reduceAnchor()
   showRetest.value = false
@@ -182,9 +198,6 @@ async function reduceAnchor() {
       <div>
         <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
         <h1>{{ headline }}</h1>
-        <p v-if="nextSlot && !isWorkoutToday" class="sub opens-on">
-          {{ t('home.opensOn', { date: formatDisplayDate(nextSlot.date, locale) }) }}
-        </p>
       </div>
       <span v-if="streakWeeks > 0" class="chip streak">
         <IconFlame :size="16" />
@@ -208,18 +221,40 @@ async function reduceAnchor() {
       <p class="kicker">{{ t('onboarding.testTitle') }}</p>
       <label class="field">
         <span>{{ t('onboarding.repsLabel') }}</span>
-        <input
-          id="retest-reps"
-          v-model.number="retestReps"
-          type="number"
-          min="1"
-          :max="REP_COUNT_MAX"
-          step="1"
-          inputmode="numeric"
-          :placeholder="t('onboarding.repsPlaceholder')"
-          @keydown="blockRepFractionKey"
-          @input="onRetestRepsInput"
-        />
+        <div class="rep-stepper">
+          <button
+            type="button"
+            class="iconbtn rep-step"
+            :class="{ inactive: retestAtMin }"
+            :aria-label="t('onboarding.repsDecrease')"
+            :disabled="retestAtMin"
+            @click="adjustRetestReps(-1)"
+          >
+            <AppIcon name="minus" />
+          </button>
+          <input
+            id="retest-reps"
+            v-model.number="retestReps"
+            type="number"
+            min="1"
+            :max="REP_COUNT_MAX"
+            step="1"
+            inputmode="numeric"
+            :placeholder="t('onboarding.repsPlaceholder')"
+            @keydown="blockRepFractionKey"
+            @input="onRetestRepsInput"
+          />
+          <button
+            type="button"
+            class="iconbtn rep-step"
+            :class="{ inactive: retestAtMax }"
+            :aria-label="t('onboarding.repsIncrease')"
+            :disabled="retestAtMax"
+            @click="adjustRetestReps(1)"
+          >
+            <AppIcon name="plus" />
+          </button>
+        </div>
       </label>
       <p v-if="retestError" class="sub error">{{ retestError }}</p>
       <p class="sub hint">{{ t('onboarding.testHint') }}</p>
@@ -227,16 +262,17 @@ async function reduceAnchor() {
         <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
         <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
       </div>
-      <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
-      <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
+      <div class="btnrow retest-actions">
+        <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
+        <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
+      </div>
     </section>
 
     <section v-if="nextSlot" class="panel next">
-      <div class="row">
-        <h2 class="workout-date">{{ formatDisplayDate(nextSlot.date, locale) }}</h2>
-        <span v-if="setsPreview" class="sets">{{ setsPreview }}</span>
-      </div>
-      <div class="meter"><i :style="{ width: `${progressPercent}%` }" /></div>
+      <p class="next-label">{{ isWorkoutToday ? t('home.todayLabel') : t('home.nextLabel') }}</p>
+      <h2 class="workout-date">{{ formatDisplayDate(nextSlot.date, locale) }}</h2>
+      <p v-if="setsPreview" class="sets">{{ setsPreview }}</p>
+      <div class="meter" aria-hidden="true"><i :style="{ width: `${progressPercent}%` }" /></div>
       <p v-if="cycleInfo" class="sub step-progress">
         <IconAboveBar :size="16" class="step-icon" />
         {{ t('home.stepProgress', { step: cycleInfo.step, cycle: cycleInfo.cycle }) }}
@@ -295,25 +331,24 @@ async function reduceAnchor() {
   border: 2px solid var(--line);
   box-shadow: 3px 3px 0 var(--shadow);
 }
+.next-label {
+  margin: 0;
+  font: 700 0.68rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .next h2.workout-date {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.3rem;
-  margin: 0;
+  margin: 6px 0 0;
   text-transform: uppercase;
 }
-.next .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  margin: 8px 0 12px;
-}
 .sets {
+  display: block;
+  margin: 8px 0 0;
   font: 800 0.85rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--accent-text);
-  text-align: right;
-  flex: 1 1 140px;
 }
 .meter {
   height: 10px;
@@ -341,20 +376,34 @@ async function reduceAnchor() {
 }
 .field input {
   min-height: 50px;
+  padding: 8px 12px;
   font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   border: 2px solid var(--line);
   background: var(--bg);
   color: var(--ink);
-  padding: 0 12px;
 }
 .rest-not-ready {
   margin: 0 0 8px;
   font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
-.opens-on {
-  margin: 4px 0 0;
-  font: 700 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+.rep-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.rep-step {
+  flex: 0 0 50px;
+  width: 50px;
+  min-height: 50px;
+}
+.rep-stepper input {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+.retest-actions {
+  margin-top: 14px;
 }
 .next .btn {
   text-decoration: none;

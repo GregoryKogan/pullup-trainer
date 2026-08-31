@@ -13,13 +13,13 @@ test.describe('Workout log fewer', () => {
     await prepareSeededApp(page, 7, todayLocal())
   })
 
-  test('hides main actions when logging different number', async ({ page }) => {
+  test('hides main actions when logging a different rep count', async ({ page }) => {
     await page.getByRole('button', { name: 'Start' }).click()
     await clearRestGate(page)
 
-    await page.getByRole('button', { name: /different number|другое число/i }).click()
+    await page.getByRole('button', { name: /enter reps|ввести число/i }).click()
 
-    await expect(page.getByRole('button', { name: /different number|другое число/i })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /enter reps|ввести число/i })).toHaveCount(0)
     await expect(page.getByRole('button', { name: /^done$|^готово$/i })).toHaveCount(0)
     await expect(page.locator('#fewer-input')).toBeVisible()
 

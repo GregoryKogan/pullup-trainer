@@ -123,7 +123,7 @@ async function accept() {
     <h1 class="sr-only">{{ t('onboarding.introTitle') }}</h1>
     <p class="step-indicator kicker">
       <span class="step-dots" aria-hidden="true">
-        <i v-for="n in 3" :key="n" :class="{ on: n === stepNumber }" />
+        <i v-for="n in 3" :key="n" :class="{ on: n <= stepNumber }" />
       </span>
       {{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}
     </p>
@@ -193,34 +193,33 @@ async function accept() {
       <p class="kicker">{{ t('onboarding.recommendTitle') }}</p>
       <p>{{ recommendText }}</p>
       <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
-      <div class="btnrow">
-        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
-        <button type="button" class="btn ghost" @click="step = 'test'">{{ t('onboarding.override') }}</button>
-      </div>
+      <button type="button" class="btn ghost" @click="goBack">{{ t('onboarding.override') }}</button>
     </section>
-    <div class="langrow" role="group" :aria-label="t('settings.language')">
-      <button
-        type="button"
-        class="lang"
-        :class="{ on: settingsStore.settings?.language === 'en' }"
-        :aria-pressed="settingsStore.settings?.language === 'en'"
-        @click="setLang('en')"
-      >
-        EN
-      </button>
-      <button
-        type="button"
-        class="lang"
-        :class="{ on: settingsStore.settings?.language === 'ru' }"
-        :aria-pressed="settingsStore.settings?.language === 'ru'"
-        @click="setLang('ru')"
-      >
-        RU
-      </button>
-    </div>
-    <div class="links page-bottom">
-      <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
-      <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
+    <div class="onboarding-foot page-bottom">
+      <div class="langrow" role="group" :aria-label="t('settings.language')">
+        <button
+          type="button"
+          class="lang"
+          :class="{ on: settingsStore.settings?.language === 'en' }"
+          :aria-pressed="settingsStore.settings?.language === 'en'"
+          @click="setLang('en')"
+        >
+          EN
+        </button>
+        <button
+          type="button"
+          class="lang"
+          :class="{ on: settingsStore.settings?.language === 'ru' }"
+          :aria-pressed="settingsStore.settings?.language === 'ru'"
+          @click="setLang('ru')"
+        >
+          RU
+        </button>
+      </div>
+      <div class="links">
+        <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
+        <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
+      </div>
     </div>
   </div>
 </template>
@@ -233,12 +232,13 @@ async function accept() {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 14px;
+  margin-bottom: 4px;
 }
 .step-indicator {
   margin-bottom: 14px;
   padding: 6px 9px;
-  display: flex;
+  display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
@@ -250,13 +250,12 @@ async function accept() {
 .step-dots i {
   width: 10px;
   height: 10px;
-  border: 2px solid var(--line);
-  background: var(--card);
+  border: 2px solid var(--accent-ink);
+  background: transparent;
   display: block;
 }
 .step-dots i.on {
-  background: var(--accent);
-  border-color: var(--line);
+  background: var(--accent-ink);
 }
 .test-head {
   display: flex;
@@ -351,8 +350,5 @@ async function accept() {
 .zero-panel {
   margin-bottom: 14px;
   background: var(--bg2);
-}
-.panel > .btn + .btnrow {
-  margin-top: 14px;
 }
 </style>

@@ -3,7 +3,9 @@ import {
   addDays,
   buildStatsHistory,
   gotoApp,
+  prepareFreshAppKeepPwa,
   prepareProgress,
+  seedSettingsOnly,
   startWorkout,
 } from './helpers/app'
 
@@ -118,10 +120,14 @@ test.describe('visual regression', () => {
     }
   })
 
+  // Seeded progress would redirect /onboarding straight to home, so the
+  // baseline has to come from a genuinely empty app.
   test('onboarding renders on the default palette', async ({ page }) => {
     await freezeClock(page)
-    await prepareProgress(page, { ...SEED, palette: 'p01-volt', themeMode: 'dark' })
+    await prepareFreshAppKeepPwa(page)
+    await seedSettingsOnly(page, { palette: 'p01-volt', themeMode: 'dark' })
     await gotoApp(page, '/onboarding')
+    await expect(page.locator('.step-indicator')).toBeVisible()
     await settle(page)
     await expect(page).toHaveScreenshot('screen-onboarding-dark.png', {
       fullPage: true,

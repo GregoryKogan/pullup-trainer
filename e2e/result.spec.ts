@@ -18,7 +18,7 @@ test.describe('Result', () => {
     await page.getByRole('button', { name: 'Start' }).click()
     await clearRestGate(page)
 
-    await page.getByRole('button', { name: /different number|другое число/i }).click()
+    await page.getByRole('button', { name: /enter reps|ввести число/i }).click()
     await page.locator('#fewer-input').fill('2')
     await page.getByRole('button', { name: 'Confirm' }).click()
     await clearRestGate(page)

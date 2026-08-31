@@ -4,7 +4,7 @@
       <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.8 12 3l9 7.8"/><path d="M5.2 9.6V20a1 1 0 0 0 1 1h3.2v-6.2h5.2V21h3.2a1 1 0 0 0 1-1V9.6"/></symbol>
       <symbol id="icon-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.2" width="17.6" height="15.6" rx="2.4"/><path d="M3.2 10h17.6M8 3v4.4M16 3v4.4"/></symbol>
       <symbol id="icon-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 19.5h17"/><path d="M5.5 15.5 10 10.5l3.6 2.8L19 6.5"/></symbol>
-      <symbol id="icon-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.4" fill="var(--bg)"/><circle cx="15" cy="17" r="2.4" fill="var(--bg)"/></symbol>
+      <symbol id="icon-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h2.2M11.8 7H20M4 17h8.2M17.8 17H20"/><circle cx="9" cy="7" r="2.4"/><circle cx="15" cy="17" r="2.4"/></symbol>
       <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.6 9.7 17 19 7.4"/></symbol>
       <symbol id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
       <symbol id="icon-pause" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6.6" y="5.4" width="3.6" height="13.2" rx="1"/><rect x="13.8" y="5.4" width="3.6" height="13.2" rx="1"/></symbol>
@@ -14,6 +14,7 @@
       <symbol id="icon-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.4 12h13.2"/></symbol>
       <symbol id="icon-chev-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 6 8.6 12l6 6"/></symbol>
       <symbol id="icon-chev-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 6l6 6-6 6"/></symbol>
+      <symbol id="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M6.4 10.4 12 4.8l5.6 5.6"/></symbol>
       <symbol id="icon-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13.6 6.4 19 12l-5.4 5.6"/></symbol>
       <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10.5M7.6 11 12 15.4 16.4 11"/><path d="M4.5 19.5h15"/></symbol>
       <symbol id="icon-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.4V4.9M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 19.5h15"/></symbol>

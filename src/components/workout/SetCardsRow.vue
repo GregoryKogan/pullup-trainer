@@ -10,6 +10,7 @@ const props = defineProps<{
     done?: number
     current?: boolean
     doneFlag?: boolean
+    isMax?: boolean
   }[]
 }>()
 
@@ -48,12 +49,13 @@ onBeforeUnmount(() => {
           v-for="(s, i) in sets"
           :key="i"
           class="s"
-          :class="{ done: s.doneFlag, now: s.current }"
+          :class="{ done: s.doneFlag, now: s.current, max: s.isMax }"
           :aria-label="t('workout.setLabel', { n: i + 1 })"
           :aria-current="s.current ? 'step' : undefined"
         >
           <span v-if="s.doneFlag" class="check"><AppIcon name="check" :size="12" /></span>
           <b>{{ s.done ?? s.planned }}</b>
+          <span v-if="s.isMax" class="tag">{{ t('workout.maxTag') }}</span>
         </div>
       </div>
     </div>
@@ -124,6 +126,22 @@ onBeforeUnmount(() => {
 }
 .setsrow .s.now .check {
   color: var(--accent-ink);
+}
+.setsrow .tag {
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font: 800 0.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.setsrow .s.now .tag {
+  color: var(--accent-ink);
+}
+.setsrow .s.max b {
+  margin-bottom: 7px;
 }
 .scroll-hint {
   margin: 6px 0 0;

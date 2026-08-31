@@ -75,7 +75,7 @@ html:not([data-theme$='-light']) .app-shell::before {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: none;
-  padding-bottom: 8px;
+  padding-bottom: 12px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -134,6 +134,7 @@ html:not([data-theme$='-light']) .app-shell::before {
 .head h2 {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.8rem;
+  overflow-wrap: anywhere;
   font-weight: 900;
   text-transform: uppercase;
   line-height: 0.95;
@@ -146,11 +147,15 @@ html:not([data-theme$='-light']) .app-shell::before {
   flex-direction: column;
   align-items: stretch;
   gap: 12px;
+  padding-top: 10px;
   margin-bottom: 16px;
 }
 
 .subpage-head .btn {
   margin-top: 0;
+  width: auto;
+  align-self: flex-start;
+  padding: 0 18px 0 12px;
 }
 
 .subpage-head .btn.ghost {
@@ -161,6 +166,10 @@ html:not([data-theme$='-light']) .app-shell::before {
 .subpage-head .head {
   padding-bottom: 0;
   margin: 0;
+}
+
+.subpage-head .head h1 {
+  font-size: clamp(1.35rem, 5.8vw, 1.8rem);
 }
 
 .sr-only {
@@ -217,7 +226,7 @@ html:not([data-theme$='-light']) .app-shell::before {
 
 .btn.ghost {
   background: transparent;
-  color: var(--muted);
+  color: var(--ink);
 }
 
 .btn.outline {
@@ -448,7 +457,7 @@ select:focus-visible,
 .sw {
   appearance: none;
   cursor: pointer;
-  width: 46px;
+  width: 54px;
   height: 44px;
   min-height: 44px;
   border-radius: 0;
@@ -462,11 +471,12 @@ select:focus-visible,
 .sw i {
   position: absolute;
   top: 50%;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  margin-top: -9px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
   background: var(--muted);
+  transition: left 0.12s ease;
 }
 
 .sw.on {
@@ -474,7 +484,7 @@ select:focus-visible,
 }
 
 .sw.on i {
-  left: 23px;
+  left: 26px;
   background: var(--accent-ink);
 }
 
@@ -533,5 +543,9 @@ select:focus-visible,
   .btn:active {
     transform: none;
     box-shadow: 4px 4px 0 var(--shadow);
+  }
+
+  .sw i {
+    transition: none;
   }
 }

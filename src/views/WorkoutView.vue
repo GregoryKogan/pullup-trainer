@@ -93,6 +93,7 @@ const setCards = computed(() =>
   planned.value.map((p, i) => ({
     planned: p.planned,
     done: workoutStore.active?.completed.find((c) => c.position === p.position)?.done,
+    isMax: p.type === 'max',
     current: i === current.value && !workoutStore.isComplete(),
     doneFlag: !!workoutStore.active?.completed.find((c) => c.position === p.position),
   })),
@@ -430,10 +431,12 @@ function confirmExit() {
           </button>
         </div>
         <div v-else class="btnrow">
-          <button type="button" class="btn accent" style="flex: 1.6" @click="finishSet(currentSet.planned)">
+          <button type="button" class="btn accent set-actions-primary" @click="finishSet(currentSet.planned)">
             {{ t('workout.doneMax') }}
           </button>
-          <button type="button" class="btn outline" style="flex: 1" @click="openFewer">{{ t('workout.logDifferent') }}</button>
+          <button type="button" class="btn outline set-actions-secondary" @click="openFewer">
+            {{ t('workout.logDifferent') }}
+          </button>
         </div>
       </div>
       <div v-if="showFewer" class="workout-dock">
@@ -605,6 +608,14 @@ function confirmExit() {
 }
 .max-done {
   margin-bottom: 0;
+}
+.set-actions-primary {
+  flex: 1.5;
+}
+.set-actions-secondary {
+  flex: 1;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
 }
 .fewer-label {
   display: block;

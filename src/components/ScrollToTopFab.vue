@@ -17,7 +17,7 @@ const { visible, scrollToTop } = useScrollTopFab(props.anchorSelector)
     :aria-label="t('common.scrollToTop')"
     @click="scrollToTop"
   >
-    <AppIcon name="upload" :size="20" />
+    <AppIcon name="arrow-up" :size="20" />
   </button>
 </template>
 

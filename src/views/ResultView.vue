@@ -61,7 +61,7 @@ onMounted(() => {
       <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', { n: volume }) }}</p>
       <p v-if="success && nextStep" class="sub">{{ t('workout.resultNext', { step: nextStep }) }}</p>
       <p v-else-if="!success" class="sub">{{ t('workout.resultRetry') }}</p>
-      <p v-if="!success && nextSlotDate" class="sub next-date">
+      <p v-if="nextSlotDate" class="sub next-date">
         {{ t('workout.resultNextDate', { date: formatDisplayDate(nextSlotDate, locale) }) }}
       </p>
       <div class="btnrow">
@@ -119,6 +119,7 @@ onMounted(() => {
 }
 .next-date {
   margin-top: -8px;
+  color: var(--ink);
 }
 .btnrow {
   flex-direction: column;

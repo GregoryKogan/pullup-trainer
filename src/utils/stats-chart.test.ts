@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import type { WorkoutRecord } from '@/domain/types'
 import {
+  CHART_TICK_X,
   CHART_X_END,
   CHART_X_START,
   CHART_Y_BASE,
@@ -48,9 +49,13 @@ describe('stats-chart layout', () => {
   })
 
   it('chartX distributes six points across the chart width', () => {
-    expect(chartX(0, 6)).toBe(30)
-    expect(chartX(5, 6)).toBe(330)
-    expect(chartX(3, 6)).toBe(210)
+    expect(chartX(0, 6)).toBe(CHART_X_START)
+    expect(chartX(5, 6)).toBe(CHART_X_END)
+    expect(chartX(3, 6)).toBe(CHART_X_START + ((CHART_X_END - CHART_X_START) * 3) / 5)
+  })
+
+  it('leaves room between the y-axis tick and the first value label', () => {
+    expect(CHART_X_START - CHART_TICK_X).toBeGreaterThanOrEqual(14)
   })
 })
 

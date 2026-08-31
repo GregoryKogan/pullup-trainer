@@ -14,6 +14,10 @@ import IconPullUp from '@/components/icons/pullup/IconPullUp.vue'
 import { computeWeeklyStreak } from '@/utils/streak'
 import { formatMonthLabel, formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
 import {
+  CHART_TICK_X,
+  CHART_X_END,
+  CHART_X_START,
+  CHART_Y_BASE,
   buildMaxRepsPoints,
   buildWeeklyBars,
   chartX,
@@ -161,18 +165,30 @@ function exportHistoryJson() {
       <div v-else class="chart-wrap">
         <svg class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
           <title>{{ t('stats.maxChart') }}</title>
-          <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
-          <text class="chart-tick" x="24" :y="chartY(maxChartMax, maxChartMax) + 4" text-anchor="end">
+          <text class="chart-tick" :x="CHART_TICK_X" :y="CHART_Y_BASE + 4" text-anchor="end">0</text>
+          <text
+            class="chart-tick"
+            :x="CHART_TICK_X"
+            :y="chartY(maxChartMax, maxChartMax) + 4"
+            text-anchor="end"
+          >
             {{ maxChartMax }}
           </text>
-          <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
+          <line
+            :x1="CHART_X_START"
+            :y1="CHART_Y_BASE"
+            :x2="CHART_X_END"
+            :y2="CHART_Y_BASE"
+            stroke="var(--line)"
+            stroke-width="2"
+          />
           <line
             v-for="i in 4"
             :key="`grid-${i}`"
-            x1="30"
-            :y1="130 - i * 25"
-            x2="330"
-            :y2="130 - i * 25"
+            :x1="CHART_X_START"
+            :y1="CHART_Y_BASE - i * 25"
+            :x2="CHART_X_END"
+            :y2="CHART_Y_BASE - i * 25"
             stroke="var(--line)"
             stroke-width="1"
             opacity="0.35"
@@ -228,18 +244,30 @@ function exportHistoryJson() {
       <div v-else class="chart-wrap">
         <svg class="chart" viewBox="0 0 354 148" role="img" :aria-label="t('stats.weeklyVolume')">
           <title>{{ t('stats.weeklyVolume') }}</title>
-          <text class="chart-tick" x="24" y="134" text-anchor="end">0</text>
-          <text class="chart-tick" x="24" :y="chartY(weeklyChartMax, weeklyChartMax) + 4" text-anchor="end">
+          <text class="chart-tick" :x="CHART_TICK_X" :y="CHART_Y_BASE + 4" text-anchor="end">0</text>
+          <text
+            class="chart-tick"
+            :x="CHART_TICK_X"
+            :y="chartY(weeklyChartMax, weeklyChartMax) + 4"
+            text-anchor="end"
+          >
             {{ weeklyChartMax }}
           </text>
-          <line x1="30" y1="130" x2="330" y2="130" stroke="var(--line)" stroke-width="2" />
+          <line
+            :x1="CHART_X_START"
+            :y1="CHART_Y_BASE"
+            :x2="CHART_X_END"
+            :y2="CHART_Y_BASE"
+            stroke="var(--line)"
+            stroke-width="2"
+          />
           <line
             v-for="i in 4"
             :key="`vgrid-${i}`"
-            x1="30"
-            :y1="130 - i * 25"
-            x2="330"
-            :y2="130 - i * 25"
+            :x1="CHART_X_START"
+            :y1="CHART_Y_BASE - i * 25"
+            :x2="CHART_X_END"
+            :y2="CHART_Y_BASE - i * 25"
             stroke="var(--line)"
             stroke-width="1"
             opacity="0.35"
@@ -250,7 +278,7 @@ function exportHistoryJson() {
               :x="chartX(i, displayWeeklyBars.length) - 13"
               :y="chartY(b.vol, weeklyChartMax)"
               width="26"
-              :height="130 - chartY(b.vol, weeklyChartMax)"
+              :height="CHART_Y_BASE - chartY(b.vol, weeklyChartMax)"
               fill="var(--accent)"
             />
             <text
@@ -322,45 +350,37 @@ function exportHistoryJson() {
 <style scoped>
 .kpis {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-bottom: 14px;
 }
 .kpi {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   background: var(--card);
   border: 2px solid var(--line);
+  border-radius: 2px;
   box-shadow: 4px 4px 0 var(--shadow);
-  padding: 14px 10px;
-  text-align: center;
+  padding: 12px 14px;
 }
 .kpi b {
-  display: block;
+  flex: 0 0 auto;
+  min-width: 2.2ch;
+  text-align: center;
   font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: 1.7rem;
-}
-.kpi .streak-num {
-  font-size: 1.7rem;
+  font-size: 2rem;
+  line-height: 1;
 }
 .kpi-label {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font: 700 0.68rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
+  gap: 6px;
+  font: 700 0.7rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
 .kpi-icon {
   flex-shrink: 0;
   color: var(--accent-text);
-}
-@media (max-width: 420px) {
-  .kpis {
-    grid-template-columns: 1fr;
-  }
-  .kpi b,
-  .kpi .streak-num {
-    font-size: 2rem;
-  }
 }
 .chart-wrap {
   overflow-x: auto;
@@ -396,6 +416,9 @@ function exportHistoryJson() {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+.hist li:last-child {
+  border-bottom: 0;
 }
 .hist li {
   display: grid;

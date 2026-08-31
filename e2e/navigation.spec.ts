@@ -45,7 +45,7 @@ test.describe('Navigation', () => {
     await page.getByRole('link', { name: 'About' }).click()
     await expect(page).toHaveURL(/\/about/)
 
-    await page.getByRole('button', { name: 'Back' }).click()
+    await page.getByRole('button', { name: 'Back', exact: true }).click()
     await expect(page).toHaveURL(/\/settings/)
   })
 

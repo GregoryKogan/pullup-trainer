@@ -87,16 +87,16 @@ const sources = computed(() => {
 <template>
   <div class="science page page-end-space">
     <div class="subpage-head">
+      <button type="button" class="btn ghost" @click="safeBack(router)">
+        <AppIcon name="chev-left" />
+        {{ t('common.back') }}
+      </button>
       <header class="head">
         <div>
           <p class="kicker">{{ t('why.kicker') }}</p>
           <h1>{{ t('science.title') }}</h1>
         </div>
       </header>
-      <button type="button" class="btn ghost" @click="safeBack(router)">
-        <AppIcon name="chev-left" />
-        {{ t('common.back') }}
-      </button>
     </div>
     <section class="sec">
       <h4>{{ t('science.introTitle') }}</h4>
@@ -152,6 +152,10 @@ const sources = computed(() => {
   border-bottom: 2px solid var(--line);
   padding: 10px 0;
 }
+.formula:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
 .formula code {
   display: block;
   font: 700 0.75rem/1.4 ui-monospace, 'SF Mono', Menlo, monospace;
@@ -183,13 +187,17 @@ const sources = computed(() => {
   padding: 10px 0;
   border-bottom: 2px solid var(--line);
 }
+.sources li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
 .badge {
   display: inline-block;
   font: 700 0.6rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   background: var(--bg2);
   padding: 3px 6px;
   margin-right: 8px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
 }
 .source-id {
   font: 700 0.75rem/1 ui-monospace, 'SF Mono', Menlo, monospace;

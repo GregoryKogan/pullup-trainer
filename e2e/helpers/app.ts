@@ -321,6 +321,52 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
   )
 }
 
+/**
+ * Writes only the settings row, leaving activeProgress empty so the app still
+ * routes to onboarding. Reload after calling it.
+ */
+export async function seedSettingsOnly(
+  page: Page,
+  options: { palette?: string; themeMode?: 'dark' | 'light' | 'system'; language?: 'en' | 'ru' } = {},
+) {
+  await withOrigin(page)
+  await page.evaluate(
+    async ({ dbName, payload }) => {
+      await new Promise<void>((resolve, reject) => {
+        const req = indexedDB.open(dbName)
+        req.onsuccess = () => {
+          const db = req.result
+          const tx = db.transaction('settings', 'readwrite')
+          tx.objectStore('settings').put({
+            id: 'singleton',
+            palette: payload.palette,
+            themeMode: payload.themeMode,
+            restDurationSeconds: 180,
+            restAutoStart: false,
+            restNotify: false,
+            language: payload.language,
+          })
+          tx.oncomplete = () => {
+            db.close()
+            resolve()
+          }
+          tx.onerror = () => reject(tx.error)
+        }
+        req.onerror = () => reject(req.error)
+      })
+    },
+    {
+      dbName: DB_NAME,
+      payload: {
+        palette: options.palette ?? 'p01-volt',
+        themeMode: options.themeMode ?? 'system',
+        language: options.language ?? 'en',
+      },
+    },
+  )
+  await page.reload({ waitUntil: 'networkidle' })
+}
+
 export async function gotoApp(page: Page, path = '') {
   const target = path ? (path.startsWith('/') ? path.slice(1) : path) : '.'
   await page.goto(target)

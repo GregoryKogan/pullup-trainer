@@ -15,9 +15,9 @@ defineProps<{ size?: number }>()
     stroke-linejoin="round"
     aria-hidden="true"
   >
-    <path d="M2 8h13.5" />
-    <path d="M18.5 8h-3" />
-    <circle cx="18.5" cy="4.7" r="1.7" />
-    <path d="M18.5 8.2v7.3" />
+    <path d="M3 6h18" />
+    <path d="M8.6 6v2.6M15.4 6v2.6" />
+    <circle cx="12" cy="10.6" r="2" />
+    <path d="M12 12.6v8" />
   </svg>
 </template>

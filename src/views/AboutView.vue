@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { APP_VERSION } from '@/constants/app'
 import AppIcon from '@/components/icons/AppIcon.vue'
 import IconMark from '@/components/icons/brand/IconMark.vue'
+import ScrollToTopFab from '@/components/ScrollToTopFab.vue'
 import { safeBack } from '@/utils/navigation'
 
 const { t } = useI18n()
@@ -13,16 +14,16 @@ const router = useRouter()
 <template>
   <div class="page page-end-space">
     <div class="subpage-head">
+      <button type="button" class="btn ghost" @click="safeBack(router)">
+        <AppIcon name="chev-left" />
+        {{ t('common.back') }}
+      </button>
       <header class="head">
         <div>
           <p class="kicker">{{ t('about.kicker') }}</p>
           <h1>{{ t('about.title') }}</h1>
         </div>
       </header>
-      <button type="button" class="btn ghost" @click="safeBack(router)">
-        <AppIcon name="chev-left" />
-        {{ t('common.back') }}
-      </button>
       <div class="about-mark-wrap">
         <IconMark :size="88" class="about-mark" />
       </div>
@@ -90,6 +91,7 @@ const router = useRouter()
         </li>
       </ul>
     </section>
+    <ScrollToTopFab />
   </div>
 </template>
 

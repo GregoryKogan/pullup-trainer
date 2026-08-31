@@ -22,6 +22,7 @@ const settingsStore = useSettingsStore()
 const progressStore = useProgressStore()
 
 const importMessage = ref('')
+const fileInputRef = ref<HTMLInputElement | null>(null)
 const showResetConfirm = ref(false)
 const showImportConfirm = ref(false)
 const pendingImport = ref<BackupExport | null>(null)
@@ -120,6 +121,10 @@ async function exportBackupFile() {
   downloadJson('pullup-trainer-backup.json', data)
 }
 
+function pickBackupFile() {
+  fileInputRef.value?.click()
+}
+
 async function importBackupFile(e: Event) {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
@@ -215,7 +220,6 @@ async function confirmReset() {
             type="button"
             class="iconbtn"
             :class="{ inactive: restAtMin }"
-            style="width: 44px; height: 44px"
             :aria-label="t('settings.restDecrease')"
             :disabled="restAtMin"
             @click="changeRest(-15)"
@@ -226,7 +230,6 @@ async function confirmReset() {
             type="button"
             class="iconbtn"
             :class="{ inactive: restAtMax }"
-            style="width: 44px; height: 44px"
             :aria-label="t('settings.restIncrease')"
             :disabled="restAtMax"
             @click="changeRest(15)"
@@ -280,7 +283,7 @@ async function confirmReset() {
     </section>
     <section v-if="scheduleProgress" class="sec">
       <h4>{{ t('settings.frequency') }}</h4>
-      <div class="setrow">
+      <div class="setrow last">
         <span class="k">{{ t('settings.frequencyValue') }}</span>
         <span class="seg">
           <button
@@ -301,10 +304,9 @@ async function confirmReset() {
           </button>
         </span>
       </div>
-      <p class="sub">{{ t('settings.weekdaysLimit', scheduleProgress.frequencyDays) }}</p>
-      <div class="setrow last">
+      <div class="weekday-block">
         <span class="k">{{ t('settings.weekdays') }}</span>
-        <span class="weekdays">
+        <div class="weekdays" role="group" :aria-label="t('settings.weekdays')">
           <button
             v-for="day in weekdayOptions"
             :key="day"
@@ -319,7 +321,10 @@ async function confirmReset() {
           >
             {{ t(`calendar.dow.${day}`) }}
           </button>
-        </span>
+        </div>
+        <p class="sub weekday-hint">
+          {{ t('settings.weekdaysLimit', scheduleProgress.frequencyDays) }}
+        </p>
       </div>
     </section>
     <section class="sec">
@@ -391,18 +396,24 @@ async function confirmReset() {
         <AppIcon name="download" />
         {{ t('settings.exportBackup') }}
       </button>
-      <label class="btn">
+      <button type="button" class="btn" @click="pickBackupFile">
         <AppIcon name="upload" />
         {{ t('settings.importBackup') }}
-        <input
-          type="file"
-          accept="application/json"
-          hidden
-          :aria-label="t('settings.importBackup')"
-          @change="importBackupFile"
-        />
-      </label>
-      <p v-if="importMessage" class="sub" :class="{ ok: importMessage === t('settings.importSuccess') }">
+      </button>
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept="application/json"
+        hidden
+        :aria-label="t('settings.importBackup')"
+        @change="importBackupFile"
+      />
+      <p
+        v-if="importMessage"
+        class="sub import-message"
+        :class="{ ok: importMessage === t('settings.importSuccess') }"
+        role="status"
+      >
         {{ importMessage }}
       </p>
       <button type="button" class="btn ghost danger" @click="resetAll">
@@ -411,7 +422,7 @@ async function confirmReset() {
       </button>
     </section>
     <section class="sec page-bottom">
-      <h4>{{ t('settings.about') }}</h4>
+      <h4>{{ t('settings.more') }}</h4>
       <RouterLink to="/about" class="btn ghost">{{ t('settings.about') }}</RouterLink>
       <RouterLink to="/why" class="btn ghost">{{ t('settings.whyProgram') }}</RouterLink>
     </section>
@@ -449,16 +460,25 @@ select {
   text-align-last: right;
   padding: 0 28px 0 12px;
 }
+.weekday-block {
+  padding: 10px 0 2px;
+}
+.weekday-block .k {
+  display: block;
+  font: 800 0.78rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
+  margin-bottom: 8px;
+}
 .weekdays {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  justify-content: flex-end;
+}
+.weekday-hint {
+  margin-top: 8px;
 }
 .wd {
   min-height: 44px;
-  min-width: 44px;
-  padding: 0 6px;
+  padding: 0 2px;
   border: 2px solid var(--line);
   background: var(--card);
   font: 800 0.68rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
@@ -475,5 +495,8 @@ select {
 }
 .sub.ok {
   color: var(--ok);
+}
+.import-message {
+  margin-top: 10px;
 }
 </style>
