@@ -1,8 +1,6 @@
 import type { WorkoutRecord } from '@/domain/types'
 import { startOfWeek } from '@/utils/dates'
 
-// The left gutter has to clear the widest y-axis tick (a four-digit weekly
-// volume) plus the first value label, which is centred on CHART_X_START.
 export const CHART_TICK_X = 34
 export const CHART_X_START = 58
 export const CHART_X_END = 330

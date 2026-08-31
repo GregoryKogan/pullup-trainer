@@ -546,11 +546,9 @@ onBeforeUnmount(() => {
   color: var(--ink);
 }
 
-/* Days with nothing on them stay flat, so the raised cells are the ones
-   that actually open the day sheet. */
 .day.rest {
   background: transparent;
-  border-color: color-mix(in srgb, var(--line) 30%, transparent);
+  border-color: color-mix(in srgb, var(--muted) 32%, transparent);
   box-shadow: none;
   color: var(--muted);
 }
