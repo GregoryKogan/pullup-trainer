@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ConfirmPanel from '@/components/ConfirmPanel.vue'
@@ -104,14 +104,12 @@ function showDayHint(message: string) {
   }, 2800)
 }
 
-async function selectDay(date: string) {
+function selectDay(date: string) {
   if (attemptedDates.value.has(date)) {
     selectedDate.value = date
     selectedIndex.value = null
     selectedMoveDate.value = null
     dayHint.value = ''
-    await nextTick()
-    sheetDialogRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     return
   }
 
@@ -121,8 +119,6 @@ async function selectDay(date: string) {
     selectedIndex.value = idx
     selectedMoveDate.value = date
     dayHint.value = ''
-    await nextTick()
-    sheetDialogRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   } else {
     dismissSheet()
     showDayHint(t('calendar.notScheduled'))

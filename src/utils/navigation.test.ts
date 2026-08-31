@@ -1,5 +1,10 @@
 import { describe, expect, it, beforeEach, afterEach } from 'vitest'
-import { getAppMain, scrollAppMainToTop, scrollToHash } from '@/utils/navigation'
+import {
+  getAppMain,
+  preferredScrollBehavior,
+  scrollAppMainToTop,
+  scrollToHash,
+} from '@/utils/navigation'
 
 describe('navigation scroll helpers', () => {
   let main: HTMLElement
@@ -31,6 +36,17 @@ describe('navigation scroll helpers', () => {
 
   it('getAppMain returns the scroll container', () => {
     expect(getAppMain()).toBe(main)
+  })
+
+  it('falls back to an instant jump when the user asks for reduced motion', () => {
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) =>
+      ({ matches: query.includes('reduce') }) as MediaQueryList) as typeof window.matchMedia
+    expect(preferredScrollBehavior()).toBe('auto')
+    window.matchMedia = ((query: string) =>
+      ({ matches: false, media: query }) as MediaQueryList) as typeof window.matchMedia
+    expect(preferredScrollBehavior()).toBe('smooth')
+    window.matchMedia = original
   })
 
   it('scrollAppMainToTop resets scroll position', () => {
