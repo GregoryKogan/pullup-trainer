@@ -362,7 +362,20 @@ async function expectHomeReady(page: Page) {
 
 // Resolved once per worker process. A run that crosses midnight would
 // otherwise seed one date and assert against the next.
+//
+// PULLUP_E2E_DATE pins it to a chosen day so date-edge regressions (month
+// ends, year rolls, single-digit days that are substrings of two-digit ones)
+// can be reproduced instead of waiting for the calendar to hit them. Only
+// meaningful for specs that also call freezeToday — the rest leave the browser
+// clock on the real date, which would then disagree with the seeded schedule.
 const RUN_DATE = (() => {
+  const override = process.env.PULLUP_E2E_DATE
+  if (override) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(override)) {
+      throw new Error(`PULLUP_E2E_DATE must be YYYY-MM-DD, got "${override}"`)
+    }
+    return override
+  }
   const d = new Date()
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -383,6 +396,43 @@ export function todayLocal(): string {
  */
 export async function freezeToday(page: Page, date: string = RUN_DATE) {
   await page.clock.setFixedTime(new Date(`${date}T12:00:00`))
+}
+
+/**
+ * Accessible name of a calendar day cell, anchored so that day 1 cannot also
+ * match day 11, 21 or 31.
+ */
+export function dayCellName(isoDate: string, statusPattern = 'planned'): RegExp {
+  const day = Number(isoDate.split('-')[2])
+  return new RegExp(`^${day}, (${statusPattern})$`, 'i')
+}
+
+/**
+ * Label of a reschedule option in the move sheet, matching the app's
+ * formatDisplayDate output for the default English locale.
+ */
+export function moveOptionName(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  })
+}
+
+/**
+ * Pages the calendar to the month holding `isoDate`. The grid only ever renders
+ * the 42 cells around the viewed month, so a date two days back can sit in the
+ * previous month and never be painted.
+ */
+export async function showCalendarMonth(page: Page, isoDate: string, from = RUN_DATE) {
+  const [ty, tm] = isoDate.split('-').map(Number)
+  const [fy, fm] = from.split('-').map(Number)
+  const delta = (ty - fy) * 12 + (tm - fm)
+  const name = delta < 0 ? /previous month|предыдущий месяц/i : /next month|следующий месяц/i
+  for (let i = 0; i < Math.abs(delta); i++) {
+    await page.getByRole('button', { name }).click()
+  }
 }
 
 export function addDays(isoDate: string, delta: number): string {

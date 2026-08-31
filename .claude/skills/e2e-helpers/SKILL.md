@@ -60,7 +60,27 @@ restDurationSeconds, restAutoStart, workoutRecords
 
 ## Даты
 
-`todayLocal()`, `addDays(iso, n)`, `startOfWeek(iso)`, `buildStatsHistory(today, count)`.
+`todayLocal()`, `addDays(iso, n)`, `startOfWeek(iso)`, `buildStatsHistory(today, count)`,
+`freezeToday(page, date?)`.
+
+`todayLocal()` возвращает `RUN_DATE` — дату, снятую один раз на воркер. Переменная окружения
+`PULLUP_E2E_DATE=YYYY-MM-DD` подменяет её, чтобы воспроизвести краевую дату не дожидаясь,
+пока календарь до неё дойдёт:
+
+```bash
+PULLUP_E2E_DATE=2026-09-01 npx playwright test e2e/calendar.spec.ts
+```
+
+Работает только для спек, которые вызывают `freezeToday` (`calendar`, `generator`,
+`history-export`, `progression`, `retest`, `skips`, `stats-charts`, `streak`). У остальных часы
+браузера остаются на реальной дате и разъедутся с засиженным расписанием.
+
+## Календарь
+
+- `dayCellName(iso, statusPattern?)` — якорный regex для accessible name ячейки дня
+  (`^31, (planned)$`).
+- `moveOptionName(iso)` — подпись опции переноса в шите (формат `formatDisplayDate`, EN).
+- `showCalendarMonth(page, iso, from?)` — пролистать календарь к месяцу нужной даты.
 
 ## Грабли
 
@@ -73,6 +93,15 @@ await page.clock.setFixedTime(new Date('2026-08-18T10:00:00'))
 
 Ставить **до** `prepareProgress`. `setFixedTime` фиксирует `Date.now()`, но не глушит таймеры,
 в отличие от `clock.install` — для этого приложения нужен именно первый.
+
+**Не матчи день голым числом.** `hasText: /1/` попадёт и в «Mon, Aug 31», а
+`name: /1, planned/` — и в «31, Planned». На таком 31 августа 2026 молча падал
+`calendar.spec.ts`: клик выбирал текущую дату, кнопка `Move` оставалась disabled. Бери
+`dayCellName` и `moveOptionName`.
+
+**Календарь рисует только 42 ячейки вокруг открытого месяца.** Дата «сегодня − 2» в начале
+месяца в сетку не попадает вовсе, и `.day.failed` не находится. Перед проверкой прошлой даты
+зови `showCalendarMonth(page, iso)`.
 
 **Прошлые слоты в расписании съедают сегодняшний.** При `hydrate()` слот с `date < today` без
 записи автоматически становится провалом, прогрессия и расписание сдвигаются. Сид вида

@@ -6,6 +6,7 @@ import {
   todayLocal,
   addDays,
   freezeToday,
+  showCalendarMonth,
 } from './helpers/app'
 
 test.describe('Missed workout policy', () => {
@@ -58,6 +59,7 @@ test.describe('Missed workout policy', () => {
       ],
     })
     await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+    await showCalendarMonth(page, missedDate)
     await expect(page.locator('.day.failed').first()).toBeVisible({ timeout: 5000 })
     await expect(page.locator('.day.missed')).toHaveCount(0)
   })

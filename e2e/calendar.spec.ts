@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import {
   prepareProgress,
   prepareSeededApp,
@@ -9,7 +9,14 @@ import {
   addDays,
   seedActiveWorkoutSession,
   freezeToday,
+  dayCellName,
+  moveOptionName,
+  showCalendarMonth,
 } from './helpers/app'
+
+function moveOption(page: Page, name: string) {
+  return page.locator('.optrow').getByRole('button', { name, exact: true })
+}
 
 test.describe('Calendar', () => {
   test.beforeEach(async ({ page }) => {
@@ -26,8 +33,7 @@ test.describe('Calendar', () => {
     await page.getByRole('link', { name: 'Calendar' }).click()
     await expect(page).toHaveURL(/\/calendar/)
 
-    const dayNum = String(new Date().getDate())
-    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(today) }).click()
 
     await expect(page.getByRole('button', { name: 'Start now' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Move' })).toBeVisible()
@@ -35,8 +41,7 @@ test.describe('Calendar', () => {
 
   test('start now navigates to workout', async ({ page }) => {
     await page.getByRole('link', { name: 'Calendar' }).click()
-    const dayNum = String(new Date().getDate())
-    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(today) }).click()
     await page.getByRole('button', { name: /start now|начать/i }).click()
     await expect(page).toHaveURL(/\/workout/)
   })
@@ -49,8 +54,7 @@ test.describe('Calendar', () => {
       workoutRecords: [{ date: today, result: 'success' }],
     })
     await page.getByRole('link', { name: 'Calendar' }).click()
-    const dayNum = String(new Date().getDate())
-    await page.getByRole('button', { name: new RegExp(`${dayNum}, (planned|done)`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(today, 'planned|done') }).click()
     await expect(page.getByText(/day history|история дня/i)).toBeVisible()
     await expect(page.locator('.day-history li').first()).toBeVisible()
   })
@@ -76,16 +80,14 @@ test.describe('Calendar', () => {
   test('move stays disabled when date unchanged', async ({ page }) => {
     await page.getByRole('link', { name: 'Calendar' }).click()
 
-    const dayNum = String(new Date().getDate())
-    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(today) }).click()
 
     await expect(page.getByRole('button', { name: 'Move' })).toBeDisabled()
   })
 
   test('move is hidden while workout session is active', async ({ page }) => {
     await seedActiveWorkoutSession(page, today)
-    const dayNum = String(new Date().getDate())
-    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(today) }).click()
 
     await expect(page.getByRole('button', { name: 'Move' })).toHaveCount(0)
     await expect(page.getByRole('dialog')).toContainText(/finish or leave|заверши или выйди/i)
@@ -94,11 +96,9 @@ test.describe('Calendar', () => {
   test('move reschedules when date changes', async ({ page }) => {
     await page.getByRole('link', { name: 'Calendar' }).click()
 
-    const dayNum = String(new Date().getDate())
-    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(today) }).click()
 
-    const altOption = page.locator('.opt').filter({ hasNotText: new RegExp(`${dayNum}`, 'i') }).first()
-    await altOption.click()
+    await moveOption(page, moveOptionName(addDays(today, 1))).click()
     await page.getByRole('button', { name: 'Move' }).click()
 
     await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -123,12 +123,10 @@ test.describe('Calendar', () => {
     const progress = await readProgress(page)
     const schedule = progress?.schedule as { date: string }[]
     const targetDate = schedule[1]?.date ?? slotDate
-    const slotDay = String(Number(targetDate.split('-')[2]))
-    await page.getByRole('button', { name: new RegExp(`${slotDay}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(targetDate) }).click()
 
     const tooSoon = addDays(prevDate, 1)
-    const tooSoonDay = String(Number(tooSoon.split('-')[2]))
-    await expect(page.locator('.opt').filter({ hasText: new RegExp(tooSoonDay) })).toHaveCount(0)
+    await expect(moveOption(page, moveOptionName(tooSoon))).toHaveCount(0)
   })
 
   test('failed workout shows attempted styling not missed', async ({ page }) => {
@@ -145,6 +143,7 @@ test.describe('Calendar', () => {
     await page.reload({ waitUntil: 'networkidle' })
     await dismissPwaModal(page)
     await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+    await showCalendarMonth(page, failDate)
 
     await expect(page.locator('.day.failed').first()).toBeVisible()
     await expect(page.locator('.day.missed').first()).toHaveCount(0)
@@ -163,9 +162,9 @@ test.describe('Calendar', () => {
     await page.reload({ waitUntil: 'networkidle' })
     await dismissPwaModal(page)
     await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+    await showCalendarMonth(page, failDate)
 
-    const failDay = String(Number(failDate.split('-')[2]))
-    await page.getByRole('button', { name: new RegExp(`${failDay}, attempted|попытка`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(failDate, 'attempted|попытка') }).click()
 
     await expect(page.getByRole('button', { name: /move|перенести/i })).toHaveCount(0)
     await expect(page.getByRole('button', { name: /start now|начать/i })).toHaveCount(0)
@@ -236,11 +235,9 @@ test.describe('Calendar', () => {
     })
     await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
 
-    const dayNum = String(new Date().getDate())
-    await page.getByRole('button', { name: new RegExp(`${dayNum}, planned`, 'i') }).click()
+    await page.getByRole('button', { name: dayCellName(slot1) }).click()
     const target = addDays(slot1, 1)
-    const targetDay = String(Number(target.split('-')[2]))
-    await page.locator('.opt').filter({ hasText: new RegExp(targetDay) }).first().click()
+    await moveOption(page, moveOptionName(target)).click()
     await page.getByRole('button', { name: 'Move' }).click()
 
     const progress = await readProgress(page)
