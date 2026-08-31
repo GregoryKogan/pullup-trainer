@@ -55,6 +55,13 @@ export function formatShortDate(iso: string, locale = 'en'): string {
   })
 }
 
+export function formatMonthLabel(isoMonth: string, locale = 'en'): string {
+  return parseLocalDate(`${isoMonth}-01`).toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', {
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
 export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60

@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { prepareSeededApp, todayLocal, completeWorkout } from './helpers/app'
+import {
+  prepareSeededApp,
+  todayLocal,
+  completeWorkout,
+  seedWorkoutRecord,
+  addDays,
+  dismissPwaModal,
+} from './helpers/app'
 import path from 'node:path'
 import fs from 'node:fs'
 import os from 'node:os'
@@ -57,16 +64,28 @@ test.describe('Stats', () => {
     await expect(page.locator('.chart-wrap svg.chart').nth(1)).toBeVisible()
   })
 
-  test('month filter narrows history list', async ({ page }) => {
+  test('month filter lists only months with records and narrows history', async ({ page }) => {
+    const older = addDays(todayLocal(), -70)
+    await seedWorkoutRecord(page, { date: older, result: 'success', totals: { volumeReps: 40, maxSetReps: 8 } })
+    await page.reload({ waitUntil: 'networkidle' })
+    await dismissPwaModal(page)
     await completeWorkout(page, '8')
     await page.getByRole('button', { name: /home|главная/i }).click()
     await page.getByRole('link', { name: 'Stats' }).click()
 
-    const month = todayLocal().slice(0, 7)
-    await page.locator('.month-filter').fill(month)
-    await expect(page.locator('.hist li').first()).toBeVisible()
+    const filter = page.locator('.month-filter')
+    const thisMonth = todayLocal().slice(0, 7)
+    const olderMonth = older.slice(0, 7)
+    await expect(filter.locator('option')).toHaveCount(3)
 
-    await page.locator('.month-filter').fill('2020-01')
-    await expect(page.getByText(/no workouts in this month|в этом месяце тренировок нет/i)).toBeVisible()
+    const total = await page.locator('.hist li').count()
+    await filter.selectOption(olderMonth)
+    await expect(page.locator('.hist li')).toHaveCount(1)
+
+    await filter.selectOption(thisMonth)
+    await expect(page.locator('.hist li')).toHaveCount(total - 1)
+
+    await filter.selectOption('')
+    await expect(page.locator('.hist li')).toHaveCount(total)
   })
 })

@@ -163,8 +163,7 @@
     "noStreak": "—",
     "chartEmpty": "Сделай больше тренировок — и здесь появится график.",
     "filterMonth": "Фильтр по месяцу",
-    "filterPlaceholder": "ГГГГ-ММ",
-    "filterEmpty": "В этом месяце тренировок нет."
+    "filterAll": "Все месяцы"
   },
   "settings": {
     "title": "Настройки",

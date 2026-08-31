@@ -163,8 +163,7 @@
     "noStreak": "—",
     "chartEmpty": "Complete more workouts to see the chart.",
     "filterMonth": "Filter by month",
-    "filterPlaceholder": "YYYY-MM",
-    "filterEmpty": "No workouts in this month."
+    "filterAll": "All months"
   },
   "settings": {
     "title": "Settings",

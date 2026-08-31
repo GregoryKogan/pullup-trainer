@@ -12,7 +12,7 @@ import IconActivity from '@/components/icons/lucide/IconActivity.vue'
 import IconFlame from '@/components/icons/lucide/IconFlame.vue'
 import IconPullUp from '@/components/icons/pullup/IconPullUp.vue'
 import { computeWeeklyStreak } from '@/utils/streak'
-import { formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
+import { formatMonthLabel, formatShortDate, startOfWeek, todayLocal } from '@/utils/dates'
 import {
   buildMaxRepsPoints,
   buildWeeklyBars,
@@ -93,9 +93,10 @@ const history = computed(() =>
 
 const hasMoreHistory = computed(() => filteredRecords.value.length > historyLimit)
 
-const historyFilterEmpty = computed(
-  () => historyMonthFilter.value.length > 0 && filteredRecords.value.length === 0,
-)
+const historyMonths = computed(() => {
+  const months = new Set(progressStore.records.map((r) => r.date.slice(0, 7)))
+  return [...months].sort().reverse()
+})
 
 const maxChartMax = computed(() => Math.max(1, ...maxReps.value.map((p) => p.value)))
 
@@ -281,20 +282,16 @@ function exportHistoryJson() {
     </section>
     <section class="sec page-bottom">
       <h4>{{ t('stats.history') }}</h4>
-      <label class="filter-label">
+      <label v-if="historyMonths.length > 1" class="filter-label">
         <span>{{ t('stats.filterMonth') }}</span>
-        <input
-          v-model="historyMonthFilter"
-          type="text"
-          class="month-filter"
-          inputmode="numeric"
-          pattern="\\d{4}-\\d{2}"
-          maxlength="7"
-          :placeholder="t('stats.filterPlaceholder')"
-        />
+        <select v-model="historyMonthFilter" class="month-filter">
+          <option value="">{{ t('stats.filterAll') }}</option>
+          <option v-for="m in historyMonths" :key="m" :value="m">
+            {{ formatMonthLabel(m, locale) }}
+          </option>
+        </select>
       </label>
-      <p v-if="historyFilterEmpty" class="sub chart-empty">{{ t('stats.filterEmpty') }}</p>
-      <ul v-else class="hist">
+      <ul class="hist">
         <li v-for="r in history" :key="r.id ?? r.startedAt">
           <div class="date">
             <b>{{ formatShortDate(r.date, locale) }}</b>
@@ -457,12 +454,16 @@ function exportHistoryJson() {
   color: var(--muted);
 }
 .month-filter {
+  flex: 1;
+  min-width: 0;
   min-height: 44px;
-  padding: 8px 10px;
+  padding: 0 28px 0 12px;
   border: 2px solid var(--line);
   background: var(--card);
   color: var(--ink);
   font: 700 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-align: right;
+  text-align-last: right;
 }
 .level-info {
   margin: 6px 0 0;
