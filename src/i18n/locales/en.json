@@ -170,6 +170,7 @@
     "restTimer": "Rest timer",
     "restDuration": "Duration",
     "autoStart": "Auto-start",
+    "autoStartHint": "Start the rest countdown as soon as a set is logged",
     "notifyHint": "Sound and notification when rest ends",
     "restPresets": "Presets",
     "frequency": "Frequency",

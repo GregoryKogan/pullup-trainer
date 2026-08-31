@@ -258,7 +258,7 @@ async function confirmReset() {
           </button>
         </span>
       </div>
-      <div class="setrow">
+      <div class="setrow last">
         <span class="k">{{ t('settings.autoStart') }}</span>
         <button
           type="button"
@@ -271,7 +271,8 @@ async function confirmReset() {
           <i />
         </button>
       </div>
-      <div class="setrow last">
+      <p class="sub row-hint">{{ t('settings.autoStartHint') }}</p>
+      <div class="setrow last notify-row">
         <span class="k">{{ t('settings.notify') }}</span>
         <button
           type="button"
@@ -284,7 +285,7 @@ async function confirmReset() {
           <i />
         </button>
       </div>
-      <p class="sub">{{ t('settings.notifyHint') }}</p>
+      <p class="sub row-hint">{{ t('settings.notifyHint') }}</p>
     </section>
     <section v-if="scheduleProgress" class="sec">
       <h4>{{ t('settings.frequency') }}</h4>
@@ -418,7 +419,6 @@ async function confirmReset() {
         @change="importBackupFile"
       />
       <p
-        v-if="importMessage"
         class="sub import-message"
         :class="{ ok: importMessage === t('settings.importSuccess') }"
         role="status"
@@ -507,5 +507,22 @@ select {
 }
 .import-message {
   margin-top: 10px;
+}
+.import-message:empty {
+  margin: 0;
+  height: 0;
+  overflow: hidden;
+}
+.row-hint {
+  margin: 4px 0 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--line);
+}
+.row-hint:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.notify-row {
+  padding-top: 12px;
 }
 </style>

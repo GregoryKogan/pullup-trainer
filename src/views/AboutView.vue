@@ -33,17 +33,6 @@ const router = useRouter()
       <p class="sub">{{ t('about.version', { v: APP_VERSION }) }}</p>
       <ul class="about-links">
         <li>
-          <a
-            href="https://github.com/GregoryKogan/pullup-trainer"
-            class="about-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <AppIcon name="github" />
-            {{ t('about.repo') }}
-          </a>
-        </li>
-        <li>
           <RouterLink to="/why" class="btn accent">
             <AppIcon name="book-open" />
             {{ t('about.whyLink') }}
@@ -54,6 +43,17 @@ const router = useRouter()
             <AppIcon name="library" />
             {{ t('about.sourcesLink') }}
           </RouterLink>
+        </li>
+        <li>
+          <a
+            href="https://github.com/GregoryKogan/pullup-trainer"
+            class="about-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <AppIcon name="github" />
+            {{ t('about.repo') }}
+          </a>
         </li>
         <li>
           <a

@@ -279,7 +279,7 @@ onBeforeUnmount(() => {
         <button type="button" class="today-btn" @click="goToday">{{ t('common.today') }}</button>
       </div>
     </header>
-    <p v-if="dayHint" class="day-hint" role="status" aria-live="polite">{{ dayHint }}</p>
+    <p class="day-hint" role="status" aria-live="polite">{{ dayHint }}</p>
     <div class="calgrid">
       <div v-for="d in dowKeys" :key="d" class="dow">{{ t(`calendar.dow.${d}`) }}</div>
       <button
@@ -480,6 +480,13 @@ onBeforeUnmount(() => {
   margin: 0 0 14px;
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
+}
+.day-hint:empty {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 0;
+  overflow: hidden;
 }
 .day-hint {
   margin: 0 0 12px;

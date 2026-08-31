@@ -202,29 +202,29 @@ async function accept() {
       <button type="button" class="btn ghost" @click="goBack">{{ t('onboarding.override') }}</button>
     </section>
     <div class="onboarding-foot page-bottom">
-      <div class="langrow" role="group" :aria-label="t('settings.language')">
-        <button
-          type="button"
-          class="lang"
-          :class="{ on: settingsStore.settings?.language === 'en' }"
-          :aria-pressed="settingsStore.settings?.language === 'en'"
-          @click="setLang('en')"
-        >
-          EN
-        </button>
-        <button
-          type="button"
-          class="lang"
-          :class="{ on: settingsStore.settings?.language === 'ru' }"
-          :aria-pressed="settingsStore.settings?.language === 'ru'"
-          @click="setLang('ru')"
-        >
-          RU
-        </button>
-      </div>
       <div class="links">
         <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
         <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
+      </div>
+      <div class="langrow">
+        <span class="seg" role="group" :aria-label="t('settings.language')">
+          <button
+            type="button"
+            :class="{ on: settingsStore.settings?.language === 'en' }"
+            :aria-pressed="settingsStore.settings?.language === 'en'"
+            @click="setLang('en')"
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            :class="{ on: settingsStore.settings?.language === 'ru' }"
+            :aria-pressed="settingsStore.settings?.language === 'ru'"
+            @click="setLang('ru')"
+          >
+            RU
+          </button>
+        </span>
       </div>
     </div>
   </div>
@@ -234,11 +234,13 @@ async function accept() {
 .onboarding.page {
   padding-top: 12px;
 }
-.langrow {
+.onboarding-foot {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 4px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  padding-bottom: 8px;
 }
 .step-indicator {
   margin-bottom: 14px;
@@ -276,20 +278,6 @@ async function accept() {
   flex-shrink: 0;
   color: var(--accent-text);
 }
-.lang {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0 12px;
-  border: 2px solid var(--line);
-  background: var(--card);
-  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  cursor: pointer;
-  color: var(--ink);
-}
-.lang.on {
-  background: var(--accent);
-  color: var(--accent-ink);
-}
 .field {
   display: flex;
   flex-direction: column;
@@ -321,8 +309,8 @@ async function accept() {
 }
 .links {
   display: flex;
-  gap: 16px;
-  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 4px 14px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   text-transform: uppercase;
 }
