@@ -206,26 +206,24 @@ async function accept() {
         <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
         <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
       </div>
-      <div class="langrow">
-        <span class="seg" role="group" :aria-label="t('settings.language')">
-          <button
-            type="button"
-            :class="{ on: settingsStore.settings?.language === 'en' }"
-            :aria-pressed="settingsStore.settings?.language === 'en'"
-            @click="setLang('en')"
-          >
-            EN
-          </button>
-          <button
-            type="button"
-            :class="{ on: settingsStore.settings?.language === 'ru' }"
-            :aria-pressed="settingsStore.settings?.language === 'ru'"
-            @click="setLang('ru')"
-          >
-            RU
-          </button>
-        </span>
-      </div>
+      <span class="seg" role="group" :aria-label="t('settings.language')">
+        <button
+          type="button"
+          :class="{ on: settingsStore.settings?.language === 'en' }"
+          :aria-pressed="settingsStore.settings?.language === 'en'"
+          @click="setLang('en')"
+        >
+          EN
+        </button>
+        <button
+          type="button"
+          :class="{ on: settingsStore.settings?.language === 'ru' }"
+          :aria-pressed="settingsStore.settings?.language === 'ru'"
+          @click="setLang('ru')"
+        >
+          RU
+        </button>
+      </span>
     </div>
   </div>
 </template>

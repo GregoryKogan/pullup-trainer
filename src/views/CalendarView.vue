@@ -481,13 +481,6 @@ onBeforeUnmount(() => {
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
-.day-hint:empty {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  height: 0;
-  overflow: hidden;
-}
 .day-hint {
   margin: 0 0 12px;
   padding: 10px 12px;
@@ -496,6 +489,13 @@ onBeforeUnmount(() => {
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
   text-align: center;
+}
+.day-hint:empty {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 0;
+  overflow: hidden;
 }
 .nav {
   display: flex;
@@ -545,7 +545,6 @@ onBeforeUnmount(() => {
   cursor: pointer;
   color: var(--ink);
 }
-
 .day.rest {
   background: transparent;
   border-color: color-mix(in srgb, var(--muted) 32%, transparent);

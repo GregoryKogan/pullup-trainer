@@ -39,7 +39,7 @@ const ringLabel = computed(() => {
   return `${props.label}: ${formatTime(props.remaining)}`
 })
 
-const displayTime = computed(() => (props.total > 0 ? formatTime(props.remaining) : '—'))
+const displayTime = computed(() => formatTime(props.remaining))
 
 const offset = computed(() => {
   const c = 2 * Math.PI * 52
