@@ -29,6 +29,10 @@ const today = todayLocal()
 
 const nextSlot = computed(() => progressStore.getNextSlot())
 const isWorkoutToday = computed(() => nextSlot.value?.date === today)
+const headline = computed(() => {
+  if (!nextSlot.value) return t('home.title')
+  return isWorkoutToday.value ? t('home.workoutToday') : t('home.restToday')
+})
 const canStartToday = computed(
   () => isWorkoutToday.value && nextSlot.value !== null,
 )
@@ -177,11 +181,10 @@ async function reduceAnchor() {
     <header class="head">
       <div>
         <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
-        <h1 v-if="nextSlot">{{ isWorkoutToday ? t('home.nextWorkout') : t('home.restToday') }}</h1>
+        <h1>{{ headline }}</h1>
         <p v-if="nextSlot && !isWorkoutToday" class="sub opens-on">
           {{ t('home.opensOn', { date: formatDisplayDate(nextSlot.date, locale) }) }}
         </p>
-        <h1 v-else>{{ t('home.title') }}</h1>
       </div>
       <span v-if="streakWeeks > 0" class="chip streak">
         <IconFlame :size="16" />

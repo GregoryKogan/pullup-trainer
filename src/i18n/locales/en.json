@@ -24,7 +24,7 @@
   },
   "home": {
     "title": "Your plan",
-    "nextWorkout": "Next workout",
+    "workoutToday": "Today's workout",
     "restToday": "Rest today",
     "opensOn": "Next workout: {date}",
     "openCalendar": "Open calendar",

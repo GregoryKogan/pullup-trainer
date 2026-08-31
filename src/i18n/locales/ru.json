@@ -24,7 +24,7 @@
   },
   "home": {
     "title": "Твой план",
-    "nextWorkout": "Следующая",
+    "workoutToday": "Тренировка сегодня",
     "restToday": "Сегодня отдых",
     "opensOn": "Следующая тренировка: {date}",
     "openCalendar": "Открыть календарь",
