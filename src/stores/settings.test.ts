@@ -187,5 +187,16 @@ describe('useSettingsStore', () => {
       expect(document.documentElement.dataset.theme).toBe('p01-volt-light')
       expect(meta.getAttribute('content')).toBeTruthy()
     })
+
+    it('sets color-scheme so native controls follow the resolved mode', async () => {
+      const store = useSettingsStore()
+      await store.hydrate()
+      await nextTick()
+      expect(document.documentElement.style.colorScheme).toBe('light')
+
+      await store.setThemeMode('dark')
+      await nextTick()
+      expect(document.documentElement.style.colorScheme).toBe('dark')
+    })
   })
 })

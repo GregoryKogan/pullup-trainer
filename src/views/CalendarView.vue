@@ -805,6 +805,19 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 }
+@media (hover: hover) and (pointer: fine) {
+  .day:not(.out):not(.rest):hover {
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+  .day.rest:not(.out):hover {
+    border-color: color-mix(in srgb, var(--muted) 60%, transparent);
+    color: var(--ink);
+  }
+  .opt:not(.on):hover,
+  .today-btn:hover {
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+}
 /* Landscape phones cannot fit six 44px rows plus a full-size header, so trim
    the header and let the grid keep as many rows visible as possible. */
 @media (max-height: 520px) {

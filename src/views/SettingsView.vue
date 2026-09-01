@@ -511,6 +511,11 @@ select {
   opacity: 0.5;
   cursor: not-allowed;
 }
+@media (hover: hover) and (pointer: fine) {
+  .wd:not(.on):not(:disabled):hover {
+    background: color-mix(in srgb, var(--ink) 10%, var(--card));
+  }
+}
 .sub.ok {
   color: var(--ok);
 }

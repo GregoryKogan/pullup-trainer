@@ -631,6 +631,15 @@ select:focus-visible,
     background: color-mix(in srgb, var(--accent-ink) 18%, transparent);
     opacity: 1;
   }
+
+  .seg button:not(.on):hover {
+    background: color-mix(in srgb, var(--ink) 10%, transparent);
+    color: var(--ink);
+  }
+
+  .sw:hover {
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

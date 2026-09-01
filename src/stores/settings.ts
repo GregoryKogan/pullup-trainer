@@ -34,6 +34,9 @@ export const useSettingsStore = defineStore('settings', () => {
     const palette = settings.value.palette
     const mode = resolvedMode()
     document.documentElement.dataset.theme = `${palette}-${mode}`
+    // Native controls (select popups, spinners, scrollbars) follow this, not
+    // the palette tokens.
+    document.documentElement.style.colorScheme = mode
     const meta = document.querySelector('meta[name="theme-color"]')
     if (meta) {
       const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()
