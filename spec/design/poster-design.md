@@ -122,7 +122,7 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 
 - **`.setrow`** — key (mono) / value, min-height 50px, border-bottom 2px.
 - **`.seg`** — segmented control на `--bg2`; кнопки — mono **caps**; active `.on` — accent fill (`accent-ink` на `accent`), как у всех выбранных контролов; press у неактивной — подсветка `color-mix(ink 16%)`.
-- **`.sw`** — square toggle **54×44px**, thumb 20px шириной во всю высоту трека минус 4px; `.on` — accent fill, thumb уезжает вправо; active: translate(2px,2px).
+- **`.sw`** — square toggle **54×44px**, thumb 20×20 по центру по вертикали; `.on` — accent fill, thumb уезжает вправо; active: translate(2px,2px).
 
 ### Навигация
 

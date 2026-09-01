@@ -152,10 +152,14 @@ function onTabKeydown(e: KeyboardEvent) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 14px;
   padding-bottom: 12px;
   border-bottom: 2px solid var(--line);
+}
+.langrow .seg {
+  margin-left: auto;
 }
 .lang-label {
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;

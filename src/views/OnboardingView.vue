@@ -250,6 +250,11 @@ async function accept() {
   gap: 10px 12px;
   padding-bottom: 8px;
 }
+/* Longer link labels push the picker onto its own line, where
+   space-between would align it left. Keep it on the right either way. */
+.onboarding-foot .seg {
+  margin-left: auto;
+}
 .step-indicator {
   margin-bottom: 14px;
   padding: 6px 9px;
