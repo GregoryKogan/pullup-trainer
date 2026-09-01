@@ -67,6 +67,38 @@ test.describe('Calendar', () => {
     await expect(page.getByRole('status')).toContainText(/no workout planned|не запланирована/i)
   })
 
+  // The grid fills the page, so anything that changes the height above it
+  // rescales every cell. Both the hint and a month label that wraps to a
+  // second line used to do exactly that.
+  test('day hint does not resize the grid', async ({ page }) => {
+    await page.getByRole('link', { name: 'Calendar' }).click()
+    const cell = page.locator('.calgrid button.day').first()
+    const before = await cell.boundingBox()
+
+    await page.locator('.calgrid button.day.rest:not(.out)').first().click()
+    await expect(page.getByRole('status')).toContainText(/no workout planned|не запланирована/i)
+
+    const after = await cell.boundingBox()
+    expect(after?.y).toBeCloseTo(before?.y ?? -1, 1)
+    expect(after?.height).toBeCloseTo(before?.height ?? -1, 1)
+  })
+
+  test('paging months keeps every cell the same size', async ({ page }) => {
+    await page.getByRole('link', { name: 'Calendar' }).click()
+    const cell = page.locator('.calgrid button.day').first()
+
+    for (const width of [393, 320]) {
+      await page.setViewportSize({ width, height: 700 })
+      const first = await cell.boundingBox()
+      for (let i = 0; i < 12; i++) {
+        await page.getByRole('button', { name: /next month|следующий месяц/i }).click()
+        const box = await cell.boundingBox()
+        expect(box?.y).toBeCloseTo(first?.y ?? -1, 1)
+        expect(box?.height).toBeCloseTo(first?.height ?? -1, 1)
+      }
+    }
+  })
+
   test('legend today swatch stays small', async ({ page }) => {
     await page.getByRole('link', { name: 'Calendar' }).click()
 

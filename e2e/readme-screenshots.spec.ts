@@ -9,9 +9,13 @@ import {
   clearRestGate,
   addDays,
   buildStatsHistory,
+  todayLocal,
 } from './helpers/app'
 
-const TODAY = '2026-08-18'
+// The browser clock is left running (the rest capture needs a live countdown),
+// so the seed date has to track the real one or the seeded slot falls into the
+// past and no workout is loadable.
+const TODAY = todayLocal()
 const SCREENSHOT_DIR = path.join('docs', 'readme', 'screenshots')
 
 const README_SEED = {

@@ -416,6 +416,9 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.calendar-wrap {
+  position: relative;
+}
 .head {
   flex-wrap: nowrap;
   align-items: flex-start;
@@ -426,6 +429,7 @@ onBeforeUnmount(() => {
 }
 .head h1 {
   font-size: clamp(1.2rem, 5vw, 1.5rem);
+  min-height: 1.9em;
   overflow-wrap: anywhere;
 }
 .day-history {
@@ -478,20 +482,30 @@ onBeforeUnmount(() => {
   color: var(--muted);
 }
 .day-hint {
-  margin: 0 0 12px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  z-index: 5;
+  margin: 0;
   padding: 10px 12px;
   background: var(--card);
   border: 2px solid var(--line);
+  border-radius: 2px;
+  box-shadow: 4px 4px 0 var(--shadow);
   font: 700 0.72rem/1.3 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
   text-align: center;
+  transition: opacity 0.15s ease;
 }
 .day-hint:empty {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  height: 0;
-  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .day-hint {
+    transition: none;
+  }
 }
 .nav {
   display: flex;
