@@ -122,13 +122,33 @@ async function accept() {
 <template>
   <div class="onboarding page">
     <h1 class="sr-only">{{ t('onboarding.introTitle') }}</h1>
-    <div class="onboarding-stack">
+    <div class="onboarding-top">
       <p class="step-indicator kicker">
         <span class="step-dots" aria-hidden="true">
           <i v-for="n in 3" :key="n" :class="{ on: n <= stepNumber }" />
         </span>
         {{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}
       </p>
+      <span class="seg lang-seg" role="group" :aria-label="t('settings.language')">
+        <button
+          type="button"
+          :class="{ on: settingsStore.settings?.language === 'en' }"
+          :aria-pressed="settingsStore.settings?.language === 'en'"
+          @click="setLang('en')"
+        >
+          EN
+        </button>
+        <button
+          type="button"
+          :class="{ on: settingsStore.settings?.language === 'ru' }"
+          :aria-pressed="settingsStore.settings?.language === 'ru'"
+          @click="setLang('ru')"
+        >
+          RU
+        </button>
+      </span>
+    </div>
+    <div class="onboarding-stack">
       <section v-if="step === 'intro'" class="panel">
         <p class="kicker">{{ t('onboarding.introTitle') }}</p>
         <p>{{ t('onboarding.introBody') }}</p>
@@ -205,28 +225,8 @@ async function accept() {
       </section>
     </div>
     <div class="onboarding-foot">
-      <div class="links">
-        <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
-        <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
-      </div>
-      <span class="seg" role="group" :aria-label="t('settings.language')">
-        <button
-          type="button"
-          :class="{ on: settingsStore.settings?.language === 'en' }"
-          :aria-pressed="settingsStore.settings?.language === 'en'"
-          @click="setLang('en')"
-        >
-          EN
-        </button>
-        <button
-          type="button"
-          :class="{ on: settingsStore.settings?.language === 'ru' }"
-          :aria-pressed="settingsStore.settings?.language === 'ru'"
-          @click="setLang('ru')"
-        >
-          RU
-        </button>
-      </span>
+      <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
+      <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
     </div>
   </div>
 </template>
@@ -235,33 +235,46 @@ async function accept() {
 .onboarding.page {
   padding-top: 12px;
 }
-/* A fixed offset, not auto margins: centring made the step indicator drift
-   whenever the card below it changed height — between languages and on every
-   step. The footer still gets the leftover space. */
+/* The header and the links are pinned; only the card centres in what is left,
+   so nothing the eye tracks moves when the language or the step changes. */
 .onboarding-stack {
-  margin-top: clamp(16px, 13vh, 132px);
-  margin-bottom: auto;
+  margin: auto 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
-/* Two fixed rows rather than one wrapping row: the Russian links are wide
-   enough to push the picker onto a second line on some phones, and because
-   the card above is vertically centred, a footer that changes height moves
-   the whole screen on every language change. */
 .onboarding-foot {
   padding-top: 16px;
   padding-bottom: 8px;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 20px;
+  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
 }
-.onboarding-foot .seg {
-  align-self: flex-end;
+.onboarding-foot a {
+  color: var(--ink);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 4px;
+}
+/* Paired with the step indicator so the picker has one fixed home. In the
+   footer it sat beside links whose Russian labels are wide enough to wrap
+   it onto its own line, which read as the control jumping corners. */
+.onboarding-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.lang-seg {
+  flex-shrink: 0;
 }
 .step-indicator {
-  margin-bottom: 14px;
+  margin-bottom: 0;
   padding: 6px 9px;
   display: inline-flex;
   align-self: flex-start;
@@ -324,20 +337,6 @@ async function accept() {
   width: 50px;
   min-height: 50px;
   font: 800 1.5rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-}
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
-  font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
-  text-transform: uppercase;
-}
-.links a {
-  color: var(--ink);
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 4px;
 }
 .sub.error {
   color: var(--bad);
