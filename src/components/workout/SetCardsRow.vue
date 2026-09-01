@@ -15,6 +15,10 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+
+function isUnder(s: (typeof props.sets)[number]) {
+  return !!s.doneFlag && s.done !== undefined && s.done < s.planned
+}
 const setsRowScroll = ref<HTMLElement | null>(null)
 const showScrollHint = ref(false)
 let resizeObserver: ResizeObserver | null = null
@@ -43,21 +47,21 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="sets-wrap">
-    <div ref="setsRowScroll" class="setsrow-scroll" :aria-label="t('workout.setsRow')">
-      <div class="setsrow">
-        <div
+    <div ref="setsRowScroll" class="setsrow-scroll">
+      <ol class="setsrow" :aria-label="t('workout.setsRow')">
+        <li
           v-for="(s, i) in sets"
           :key="i"
           class="s"
-          :class="{ done: s.doneFlag, now: s.current, max: s.isMax }"
+          :class="{ done: s.doneFlag, under: isUnder(s), now: s.current, max: s.isMax }"
           :aria-label="t('workout.setLabel', { n: i + 1 })"
           :aria-current="s.current ? 'step' : undefined"
         >
           <span v-if="s.doneFlag" class="check"><AppIcon name="check" :size="12" /></span>
           <b>{{ s.done ?? s.planned }}</b>
           <span v-if="s.isMax" class="tag">{{ t('workout.maxTag') }}</span>
-        </div>
-      </div>
+        </li>
+      </ol>
     </div>
     <p v-if="showScrollHint" class="scroll-hint">{{ t('workout.setsScrollHint') }}</p>
   </div>
@@ -82,6 +86,9 @@ onBeforeUnmount(() => {
 .setsrow {
   display: flex;
   gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .setsrow .s {
   flex: 0 0 62px;
@@ -115,6 +122,15 @@ onBeforeUnmount(() => {
 }
 .setsrow .s.done b {
   color: var(--ok);
+}
+.setsrow .s.done.under {
+  border-color: var(--warn);
+}
+.setsrow .s.done.under b {
+  color: var(--warn);
+}
+.setsrow .s.done.under .check {
+  color: var(--warn);
 }
 .setsrow .s.now {
   background: var(--accent);

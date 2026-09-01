@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppIcon from '@/components/icons/AppIcon.vue'
 import IconTimer from '@/components/icons/lucide/IconTimer.vue'
@@ -34,10 +34,32 @@ const emit = defineEmits<{
   preset: [seconds: number]
 }>()
 
-const ringLabel = computed(() => {
-  if (props.total <= 0) return `${props.label}: ${t('workout.chooseRest')}`
-  return `${props.label}: ${formatTime(props.remaining)}`
-})
+const ANNOUNCE_EVERY_SECONDS = 30
+const ANNOUNCE_TAIL_SECONDS = 5
+
+const ringLabel = ref('')
+
+watch(
+  () => [props.total, props.remaining, props.paused] as const,
+  ([total, remaining, paused]) => {
+    if (total <= 0) {
+      ringLabel.value = `${props.label}: ${t('workout.chooseRest')}`
+      return
+    }
+    if (paused) {
+      ringLabel.value = `${props.label}: ${t('workout.pause')} ${formatTime(remaining)}`
+      return
+    }
+    if (
+      remaining === total ||
+      remaining <= ANNOUNCE_TAIL_SECONDS ||
+      remaining % ANNOUNCE_EVERY_SECONDS === 0
+    ) {
+      ringLabel.value = `${props.label}: ${formatTime(remaining)}`
+    }
+  },
+  { immediate: true },
+)
 
 const displayTime = computed(() => formatTime(props.remaining))
 
@@ -129,7 +151,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
       <div class="restrow">
         <button type="button" class="mini skip-btn" @click="emit('skip')">
           <AppIcon name="arrow-right" :size="15" />
-          {{ $t('workout.skipRest') }}
+          {{ t('workout.skipRest') }}
         </button>
         <button
           v-if="total > 0 && !paused"
@@ -138,7 +160,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           @click="emit('pause')"
         >
           <AppIcon name="pause" :size="15" />
-          {{ $t('workout.pause') }}
+          {{ t('workout.pause') }}
         </button>
         <button
           v-else-if="total > 0 && paused"
@@ -147,14 +169,14 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           @click="emit('resume')"
         >
           <AppIcon name="play" :size="15" />
-          {{ $t('workout.resume') }}
+          {{ t('workout.resume') }}
         </button>
         <button v-if="total > 0" type="button" class="mini reset-btn" @click="emit('reset')">
           <AppIcon name="reset" :size="15" />
-          {{ $t('workout.reset') }}
+          {{ t('workout.reset') }}
         </button>
       </div>
-      <p class="resthint">{{ $t('workout.restHint') }}</p>
+      <p class="resthint">{{ t('workout.restHint') }}</p>
     </section>
   </div>
 </template>
@@ -204,7 +226,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   text-transform: uppercase;
 }
 .ring .bg {
-  stroke: var(--line);
+  stroke: color-mix(in srgb, var(--muted) 40%, transparent);
   fill: none;
   stroke-width: 7;
 }
@@ -213,6 +235,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   fill: none;
   stroke-width: 7;
   stroke-linecap: butt;
+  transition: stroke-dashoffset 0.95s linear;
 }
 .ring-num {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
@@ -278,6 +301,12 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   box-shadow: 3px 3px 0 var(--shadow);
   color: var(--ink);
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.mini:active:not(:disabled):not(.inactive) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--shadow);
 }
 .mini:focus-visible {
   outline: 3px solid var(--accent2);
@@ -307,5 +336,19 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   color: var(--muted);
   margin: 10px 0 0;
   text-align: center;
+}
+@media (hover: hover) and (pointer: fine) {
+  .mini:hover:not(:disabled):not(.inactive) {
+    box-shadow: 5px 5px 0 var(--shadow);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ring .fg {
+    transition: none;
+  }
+  .mini:active:not(:disabled):not(.inactive) {
+    transform: none;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
 }
 </style>

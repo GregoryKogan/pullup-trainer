@@ -32,10 +32,11 @@ const stepNumber = computed(() => {
 
 const recommendText = computed(() => {
   const rec = recommendation.value
-  const params = { ...rec.explanationParams }
+  const params: Record<string, string | number> = { ...rec.explanationParams }
   if ('level' in params && params.level) {
     params.level = t(`levels.${params.level}`)
   }
+  params.max = t('onboarding.pullupsCount', rec.anchor)
   return t(rec.explanationKey, params)
 })
 
@@ -342,5 +343,6 @@ async function accept() {
 .zero-panel {
   margin-bottom: 14px;
   background: var(--bg2);
+  box-shadow: 3px 3px 0 var(--shadow);
 }
 </style>

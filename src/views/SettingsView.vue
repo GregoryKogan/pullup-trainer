@@ -208,7 +208,7 @@ async function confirmReset() {
 </script>
 
 <template>
-  <div v-if="settings" class="page">
+  <div v-if="settings" class="page page-end-space">
     <header class="head">
       <div>
         <p class="kicker">{{ t('settings.kicker') }}</p>
@@ -430,7 +430,7 @@ async function confirmReset() {
         {{ t('settings.resetAll') }}
       </button>
     </section>
-    <section class="sec page-bottom">
+    <section class="sec">
       <h4>{{ t('settings.more') }}</h4>
       <RouterLink to="/about" class="btn ghost">{{ t('settings.about') }}</RouterLink>
       <RouterLink to="/why" class="btn ghost">{{ t('settings.whyProgram') }}</RouterLink>

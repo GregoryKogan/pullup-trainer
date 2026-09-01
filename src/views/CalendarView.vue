@@ -31,12 +31,11 @@ let dayHintTimer: ReturnType<typeof setTimeout> | null = null
 const today = computed(() => todayLocal())
 const dowKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
-const monthLabel = computed(() =>
-  viewMonth.value.toLocaleDateString(locale.value === 'ru' ? 'ru-RU' : 'en-US', {
-    month: 'long',
-    year: 'numeric',
-  }),
-)
+const monthLabel = computed(() => {
+  const tag = locale.value === 'ru' ? 'ru-RU' : 'en-US'
+  const month = viewMonth.value.toLocaleDateString(tag, { month: 'long' })
+  return `${month} ${viewMonth.value.getFullYear()}`
+})
 
 const successDates = computed(
   () => new Set(progressStore.records.filter((r) => r.kind === 'workout' && r.result === 'success').map((r) => r.date)),
@@ -141,7 +140,7 @@ const dayRecords = computed(() => {
 })
 
 function recordSummary(r: (typeof progressStore.records)[0]) {
-  if (r.kind === 'test') return `${r.sets[0]?.done ?? 0} ${t('workout.reps')}`
+  if (r.kind === 'test') return t('workout.repsCount', r.sets[0]?.done ?? 0)
   return r.sets.map((s) => s.done).join('·') || '—'
 }
 
@@ -368,6 +367,7 @@ onBeforeUnmount(() => {
             <p v-else class="day-history-empty">{{ t('calendar.dayHistoryEmpty') }}</p>
           </template>
           <template v-else>
+            <p v-if="!moveBlocked" class="opt-label">{{ t('calendar.moveLabel') }}</p>
             <div v-if="!moveBlocked" class="optrow">
               <button
                 v-for="opt in moveOptions"
@@ -448,7 +448,7 @@ onBeforeUnmount(() => {
   min-width: 0;
 }
 .head h1 {
-  font-size: clamp(1.2rem, 5vw, 1.5rem);
+  font-size: clamp(1.05rem, 4.6vw, 1.5rem);
   min-height: 1.9em;
   overflow-wrap: anywhere;
 }
@@ -539,14 +539,21 @@ onBeforeUnmount(() => {
   padding: 0 13px;
   background: var(--card);
   border: 2px solid var(--line);
+  border-radius: 2px;
   box-shadow: 3px 3px 0 var(--shadow);
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-transform: uppercase;
   cursor: pointer;
   color: var(--ink);
 }
+.today-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
 .calgrid {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
+  max-height: 448px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: auto repeat(6, minmax(44px, 1fr));
@@ -571,9 +578,19 @@ onBeforeUnmount(() => {
   background: var(--card);
   border: 2px solid var(--line);
   box-shadow: 2px 2px 0 var(--shadow);
-  font: 800 0.95rem/1 'Arial Black', system-ui, sans-serif;
+  font: 800 1.05rem/1 'Arial Black', system-ui, sans-serif;
   cursor: pointer;
   color: var(--ink);
+  transition: background 0.12s ease;
+}
+.day:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+.day.rest:active,
+.day.out:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
 }
 .day.rest {
   background: transparent;
@@ -622,8 +639,8 @@ onBeforeUnmount(() => {
 }
 .day.planned::after {
   content: '';
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   flex-shrink: 0;
   background: var(--accent2);
 }
@@ -709,6 +726,17 @@ onBeforeUnmount(() => {
   background: var(--accent);
   color: var(--accent-ink);
 }
+.opt:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+.opt-label {
+  margin: 0;
+  font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .sheetcard {
   position: relative;
 }
@@ -752,6 +780,15 @@ onBeforeUnmount(() => {
   max-width: 480px;
   max-height: 70dvh;
   overflow-y: auto;
+  animation: sheet-card-in 0.22s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes sheet-card-in {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: none;
+  }
 }
 @media (max-width: 420px) {
   .sheet-backdrop .btnrow {
@@ -759,6 +796,30 @@ onBeforeUnmount(() => {
   }
   .sheet-backdrop .btnrow .btn {
     width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .day,
+  .today-btn,
+  .opt {
+    transition: none;
+  }
+  .day:active,
+  .opt:active {
+    transform: none;
+    box-shadow: 2px 2px 0 var(--shadow);
+  }
+  .day.rest:active,
+  .day.out:active {
+    transform: none;
+    box-shadow: none;
+  }
+  .today-btn:active {
+    transform: none;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .sheet-backdrop .sheetcard {
+    animation: none;
   }
 }
 </style>

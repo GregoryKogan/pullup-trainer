@@ -184,7 +184,8 @@ function onTabKeydown(e: KeyboardEvent) {
   min-height: 100dvh;
 }
 .pwa-scroll {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding: max(16px, env(safe-area-inset-top, 0px)) 16px 12px;
 }
@@ -225,6 +226,14 @@ function onTabKeydown(e: KeyboardEvent) {
 .tab.on {
   background: var(--accent);
   color: var(--accent-ink);
+}
+.tab {
+  transition: background 0.12s ease, color 0.12s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
+  }
 }
 .note {
   font-size: 0.75rem;

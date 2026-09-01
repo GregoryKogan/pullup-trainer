@@ -333,7 +333,7 @@ function confirmExit() {
       </button>
       <p class="top-progress" aria-hidden="true">{{ setProgressLabel }}</p>
       <span class="sr-only">{{ headerA11yLabel }}</span>
-      <time class="clock" aria-hidden="true">{{ formatTime(elapsed) }}</time>
+      <span class="clock" aria-hidden="true">{{ formatTime(elapsed) }}</span>
     </div>
     <p id="workout-exit-hint" class="sr-only">{{ t('workout.exitWarn') }}</p>
     <SetCardsRow :sets="setCards" />
@@ -571,6 +571,7 @@ function confirmExit() {
 .max-instruction {
   margin: 0 0 18px;
   max-width: 22em;
+  text-wrap: balance;
 }
 .min-label {
   margin: 0 0 6px;

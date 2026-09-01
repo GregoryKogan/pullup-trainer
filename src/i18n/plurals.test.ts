@@ -25,4 +25,28 @@ describe('pluralization', () => {
   it('leaves English pluralization on the default rule', () => {
     expect([1, 2, 5].map((n) => t(n, 'en'))).toEqual(['Pick 1 day', 'Pick 2 days', 'Pick 5 days'])
   })
+
+  it('agrees on rep and pull-up counts in both locales', () => {
+    const reps = (n: number, locale: 'en' | 'ru') =>
+      i18n.global.t('workout.repsCount', n, { locale })
+    const pullups = (n: number, locale: 'en' | 'ru') =>
+      i18n.global.t('onboarding.pullupsCount', n, { locale })
+
+    expect([1, 2, 5].map((n) => reps(n, 'en'))).toEqual(['1 rep', '2 reps', '5 reps'])
+    expect([1, 2, 5].map((n) => reps(n, 'ru'))).toEqual([
+      '1 повторение',
+      '2 повторения',
+      '5 повторений',
+    ])
+    expect([1, 2, 5].map((n) => pullups(n, 'en'))).toEqual([
+      '1 pull-up',
+      '2 pull-ups',
+      '5 pull-ups',
+    ])
+    expect([1, 2, 5].map((n) => pullups(n, 'ru'))).toEqual([
+      '1 подтягивание',
+      '2 подтягивания',
+      '5 подтягиваний',
+    ])
+  })
 })

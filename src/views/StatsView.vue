@@ -102,12 +102,12 @@ const historyMonths = computed(() => {
   return [...months].sort().reverse()
 })
 
-const maxChartMax = computed(() => Math.max(1, ...maxReps.value.map((p) => p.value)))
+const maxChartMax = computed(() => Math.max(1, ...displayMaxRepsValues.value))
 
-const weeklyChartMax = computed(() => Math.max(1, ...weeklyBars.value.map((b) => b.vol)))
+const weeklyChartMax = computed(() => Math.max(1, ...displayWeeklyValues.value))
 
 function recordLabel(r: (typeof progressStore.records)[0]) {
-  if (r.kind === 'test') return `${r.sets[0]?.done ?? 0} ${t('workout.reps')}`
+  if (r.kind === 'test') return t('workout.repsCount', r.sets[0]?.done ?? 0)
   const sets = r.sets.map((s) => s.done).join('·')
   return sets || '—'
 }
@@ -124,7 +124,7 @@ function exportHistoryJson() {
 </script>
 
 <template>
-  <div class="page">
+  <div class="page page-end-space">
     <header class="head">
       <div>
         <p class="kicker">{{ t('stats.kicker') }}</p>
@@ -134,25 +134,25 @@ function exportHistoryJson() {
     </header>
     <div class="kpis">
       <div class="kpi">
-        <b>{{ maxReps[maxReps.length - 1]?.value ?? 0 }}</b>
         <span class="kpi-label">
           <IconTrendingUp :size="14" class="kpi-icon" />
           {{ t('stats.lastSessionBestSet') }}
         </span>
+        <b>{{ maxReps[maxReps.length - 1]?.value ?? 0 }}</b>
       </div>
       <div class="kpi">
-        <b>{{ weekVolume }}</b>
         <span class="kpi-label">
           <IconPullUp :size="14" class="kpi-icon" />
           {{ t('stats.repsThisWeek') }}
         </span>
+        <b>{{ weekVolume }}</b>
       </div>
       <div class="kpi">
-        <b class="streak-num">{{ streakWeeks }}</b>
         <span class="kpi-label">
           <IconFlame :size="14" class="kpi-icon" />
           {{ t('stats.weeklyStreakLabel') }}
         </span>
+        <b class="streak-num">{{ streakWeeks }}</b>
       </div>
     </div>
     <section class="sec">
@@ -308,7 +308,7 @@ function exportHistoryJson() {
         </li>
       </ul>
     </section>
-    <section class="sec page-bottom">
+    <section class="sec">
       <h4>{{ t('stats.history') }}</h4>
       <label v-if="historyMonths.length > 1" class="filter-label">
         <span>{{ t('stats.filterMonth') }}</span>
@@ -319,7 +319,8 @@ function exportHistoryJson() {
           </option>
         </select>
       </label>
-      <ul class="hist">
+      <p v-if="history.length === 0" class="sub hist-empty">{{ t('stats.historyEmpty') }}</p>
+      <ul v-else class="hist">
         <li v-for="r in history" :key="r.id ?? r.startedAt">
           <div class="date">
             <b>{{ formatShortDate(r.date, locale) }}</b>
@@ -356,6 +357,7 @@ function exportHistoryJson() {
 .kpi {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
   background: var(--card);
   border: 2px solid var(--line);
@@ -366,7 +368,7 @@ function exportHistoryJson() {
 .kpi b {
   flex: 0 0 auto;
   min-width: 2.2ch;
-  text-align: center;
+  text-align: right;
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 2rem;
   line-height: 1;
@@ -374,7 +376,7 @@ function exportHistoryJson() {
 .kpi-label {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font: 700 0.7rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }
@@ -466,6 +468,9 @@ function exportHistoryJson() {
 }
 .history-toggle {
   margin-bottom: 8px;
+}
+.hist-empty {
+  margin: 12px 0 4px;
 }
 .filter-label {
   display: flex;

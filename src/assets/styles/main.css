@@ -214,9 +214,15 @@ html:not([data-theme$='-light']) .app-shell::before {
   text-decoration: none;
 }
 
-.btn:active {
+.btn:active:not(:disabled) {
   transform: translate(3px, 3px);
   box-shadow: 1px 1px 0 var(--shadow);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  box-shadow: none;
 }
 
 .btn.accent {
@@ -258,6 +264,11 @@ html:not([data-theme$='-light']) .app-shell::before {
   justify-content: center;
 }
 
+.iconbtn:active:not(:disabled):not(.inactive) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+
 .iconbtn.inactive,
 .iconbtn:disabled {
   opacity: 0.35;
@@ -278,11 +289,6 @@ html:not([data-theme$='-light']) .app-shell::before {
 .chip svg {
   width: 16px;
   height: 16px;
-}
-
-.resthint svg {
-  width: 13px;
-  height: 13px;
 }
 
 .calgrid .day svg {
@@ -321,6 +327,7 @@ html:not([data-theme$='-light']) .app-shell::before {
   text-decoration: none;
   margin: 0 2px;
   border-radius: 2px;
+  transition: background 0.12s ease, opacity 0.12s ease;
 }
 
 .tabbar a.on {
@@ -343,15 +350,21 @@ html:not([data-theme$='-light']) .app-shell::before {
 
 .grid2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 10px;
   margin-top: 12px;
 }
 
-@media (max-width: 420px) {
-  .grid2 {
-    grid-template-columns: 1fr;
-  }
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.tile .kicker {
+  margin: 0;
 }
 
 .tile .big {
@@ -359,8 +372,15 @@ html:not([data-theme$='-light']) .app-shell::before {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 2.4rem;
   font-weight: 900;
-  line-height: 1.05;
-  margin: 8px 0 2px;
+  line-height: 1;
+  margin: 0;
+  text-align: right;
+}
+
+@media (max-width: 420px) {
+  .tile {
+    padding: 12px 14px;
+  }
 }
 
 .sec {
@@ -447,11 +467,19 @@ select:focus-visible,
   background: transparent;
   color: var(--muted);
   font: 800 0.7rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
 .seg button.on {
   background: var(--ink);
   color: var(--bg);
+}
+
+.seg button:not(.on):active {
+  background: color-mix(in srgb, var(--ink) 16%, transparent);
+  color: var(--ink);
 }
 
 .sw {
@@ -476,7 +504,12 @@ select:focus-visible,
   height: 20px;
   margin-top: -10px;
   background: var(--muted);
-  transition: left 0.12s ease;
+  transition: left 0.12s ease, background 0.12s ease;
+}
+
+.sw:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--shadow);
 }
 
 .sw.on {
@@ -539,13 +572,57 @@ select:focus-visible,
   box-shadow: 0 -6px 0 var(--shadow);
 }
 
+.modal-overlay:not(.modal-full) > .modal-card {
+  animation: sheet-in 0.22s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(18px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover:not(:disabled) {
+    box-shadow: 6px 6px 0 var(--shadow);
+  }
+
+  .iconbtn:hover:not(:disabled):not(.inactive) {
+    box-shadow: 5px 5px 0 var(--shadow);
+  }
+
+  .tabbar a:not(.on):hover {
+    background: color-mix(in srgb, var(--accent-ink) 18%, transparent);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .btn:active {
+  .btn:active:not(:disabled) {
     transform: none;
     box-shadow: 4px 4px 0 var(--shadow);
   }
 
-  .sw i {
+  .iconbtn:active:not(:disabled):not(.inactive) {
+    transform: none;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+
+  .sw:active {
+    transform: none;
+    box-shadow: 2px 2px 0 var(--shadow);
+  }
+
+  .sw i,
+  .seg button,
+  .tabbar a {
     transition: none;
+  }
+
+  .modal-overlay:not(.modal-full) > .modal-card {
+    animation: none;
   }
 }

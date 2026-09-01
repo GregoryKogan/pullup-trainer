@@ -28,7 +28,7 @@ HTML-мокап: `mockups/poster-p01-volt.html`.
 ## Реализация в приложении
 
 ```
-theme-tokens.css  ← 13 CSS-переменных × 14 палитр × dark/light
+theme-tokens.css  ← 14 CSS-переменных × 14 палитр × dark/light
        ↓ @import
 main.css          ← глобальные utility-классы, layout shell
        ↓
@@ -71,7 +71,7 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 
 ## Цветовые токены
 
-13 переменных на тему: `--bg`, `--bg2`, `--card`, `--ink`, `--muted`, `--line`, `--accent`, `--accent-ink`, `--accent2`, `--ok`, `--warn`, `--bad`, `--shadow`.
+14 переменных на тему: `--bg`, `--bg2`, `--card`, `--ink`, `--muted`, `--line`, `--accent`, `--accent-ink`, `--accent-text`, `--accent2`, `--ok`, `--warn`, `--bad`, `--shadow`.
 
 ### P01 Volt — dark (эталон)
 
@@ -84,6 +84,7 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 | `--muted` | `#A3A397` | вторичный текст |
 | `--line` | `#000000` | все рамки |
 | `--accent` | `#C6FF3B` | kicker, primary, контур цифры, tab-bar, meter |
+| `--accent-text` | `#C6FF3B` | акцент как **цвет текста** (в светлых палитрах темнее `--accent`) |
 | `--accent-ink` | `#0E0E0B` | текст на акценте |
 | `--accent2` | `#FFD22E` | streak chip, planned days, focus outline |
 | `--ok` / `--warn` / `--bad` | `#4CE08A` / `#FFC24D` / `#FF5D4D` | семантика |
@@ -103,23 +104,23 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 - **`.head`** — flex header; `h1/h2` display caps.
 - **`.subpage-head`** — back button + title stack для подстраниц.
 - **`.sub`** — muted 0.8rem.
-- **`.grid2`** / **`.tile .big`** — KPI-сетка; на `<420px` — одна колонка.
+- **`.grid2`** / **`.tile`** — KPI-плашки, всегда одна колонка. `.tile` — строка `kicker слева / .big справа`, без вертикального пустого места.
 
 ### Кнопки
 
-- **`.btn`** — min-height **50px**, full width, display caps, shadow 4px; active: translate(3px,3px) → shadow 1px (отключается в `prefers-reduced-motion`).
+- **`.btn`** — min-height **50px**, full width, display caps, shadow 4px; active: translate(3px,3px) → shadow 1px (отключается в `prefers-reduced-motion`); `:disabled` — opacity 0.4, без тени, без press-анимации.
 - **`.btn.accent`** — accent fill + accent-ink text.
 - **`.btn.ghost`** — transparent, muted text.
 - **`.btn.outline`** — card fill, ink text (Dismiss в PWA modal).
 - **`.btnrow`** — horizontal flex, gap 10px; сбрасывает margin-top у кнопок.
-- **`.iconbtn`** — 44×44, shadow 3px; `.inactive`/`:disabled` — opacity 0.35.
+- **`.iconbtn`** — 44×44, shadow 3px; active: translate(2px,2px) → shadow 1px; `.inactive`/`:disabled` — opacity 0.35, без тени и press-анимации.
 - **`.text-link`** — underline, min-height 44px.
 
 ### Формы
 
 - **`.setrow`** — key (mono) / value, min-height 50px, border-bottom 2px.
-- **`.seg`** — segmented control на `--bg2`; active `.on` — ink on bg.
-- **`.sw`** — square toggle **46×44px**, thumb 18×18; `.on` — accent fill.
+- **`.seg`** — segmented control на `--bg2`; кнопки — mono **caps**; active `.on` — ink on bg; press у неактивной — подсветка `color-mix(ink 16%)`.
+- **`.sw`** — square toggle **54×44px**, thumb 20×20; `.on` — accent fill; active: translate(2px,2px).
 
 ### Навигация
 
@@ -135,7 +136,10 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 ### Layout helpers
 
 - **`.page`** — flex column, min-height 100%.
-- **`.page-bottom`** — margin-top auto.
+- **`.page-bottom`** — margin-top auto. Только для того, что действительно нужно прижать к низу
+  (footer онбординга, KPI Home). На контентных секциях длинных страниц даёт дыру на высоких
+  вьюпортах — там `.page-end-space`.
+- **`.page-end-space`** — запас под tab bar в конце скроллящейся страницы.
 - **`.sr-only`**, **`.danger`**.
 
 ## Компоненты
@@ -150,13 +154,14 @@ Mono badge в header Home: fill **`--accent2`**, accent-ink text, flame icon (Lu
 
 ### Set cards ([`SetCardsRow`](../../src/components/workout/SetCardsRow.vue))
 
-Квадраты **62×62**, horizontal scroll + snap. `.done` — green border + check; `.now` — accent fill.
+Список `<ol>` из квадратов **62×62**, horizontal scroll + snap. `.done` — ok border + check; `.done.under` (сделано меньше плана) — warn border, число и галочка warn; `.now` — accent fill.
 
 ### Rest timer ([`RestTimerRing`](../../src/components/workout/RestTimerRing.vue))
 
 Двухфазный layout:
-- **`.rest-hero`** — SVG ring (stroke accent, linecap **butt**), mono time, timer icon label.
-- **`.rest-dock.panel`** — presets 90s/3m/5m, ±15s, skip/pause/reset; mini buttons 44px на `--bg`.
+- **`.rest-hero`** — SVG ring (stroke accent, linecap **butt**), трек — `color-mix(muted 40%)` (чистый `--line` в тёмной теме сливается с фоном), mono time, timer icon label.
+- **`.rest-dock.panel`** — presets 90s/3m/5m, ±15s, skip/pause/reset; mini buttons 44px на `--bg`, mono caps, press translate(2px,2px).
+- Живой регион озвучивает не каждый тик, а рубежи: старт, каждые 30 с и последние 5 с.
 - Hint: «Sound and notification when rest ends» (switch в Settings).
 
 ### Workout screen ([`WorkoutView`](../../src/views/WorkoutView.vue))
@@ -165,14 +170,16 @@ Full-viewport, без tab bar. Фазы: **reps** (hero: ContourNumber + pullup 
 
 ### Calendar ([`CalendarView`](../../src/views/CalendarView.vue))
 
-- Ячейки **44px**, display font.
+- Ячейки min **44px**, display font; высота ряда ограничена (`.calgrid { max-height }`), чтобы на высоких вьюпортах клетки не растягивались в полосы.
+- Заголовок месяца — `«<месяц> <год>»` (без локальных суффиксов вроде «г.»), максимум 2 строки: позиция сетки не должна зависеть от длины названия.
 - `.today` — accent fill; `.planned` — dot `accent2`; `.done`/`.missed` — ok/bad borders + icons.
 - `.sel` — **inset box-shadow** `0 0 0 3px accent2` (не outline).
 - Bottom sheet: grab handle, move options, cascade note.
 
 ### Stats ([`StatsView`](../../src/views/StatsView.vue))
 
-- `.kpis` — 3-col grid.
+- `.kpis` — одна колонка; каждая `.kpi` — строка `лейбл слева / число справа` (та же грамматика, что `.tile` и `.setrow`).
+- Максимум оси Y считается по **отображаемому** срезу серии, а не по всей истории.
 - SVG line + bar charts (accent stroke/fill, `--line` grid).
 - `.hist` list + `.pill.ok` / `.pill` fail styling.
 
@@ -180,13 +187,20 @@ Full-viewport, без tab bar. Фазы: **reps** (hero: ContourNumber + pullup 
 
 Секции `.sec`: Rest (duration ±15, presets seg, auto-start sw, notify sw), Theme (palette `<select>`, mode seg, language seg), Schedule (frequency 2/3, weekday toggles `.wd`), Data (export/import full-width buttons, reset danger), About (version, links to /about, /why).
 
+### Home ([`HomeView`](../../src/views/HomeView.vue))
+
+Kicker — дата-штамп, `h1` — «Today's workout / Rest today». В карточке следующего слота
+заголовок — **план подходов** (`5 + 5 + 5 + 4 + MAX`), когда слот на сегодня: дату не дублируем,
+она уже в kicker. Для будущего слота заголовок — дата, план идёт строкой ниже.
+KPI-плашки прижаты к низу экрана (`.page-bottom`) — выше 1100px высоты вьюпорта прижим снимается.
+
 ### Onboarding ([`OnboardingView`](../../src/views/OnboardingView.vue))
 
 3 шага: intro → max test (rep-stepper) → frequency recommendation. Step indicator: `.step-dots` + kicker. Zero-pullups panel.
 
 ### Result ([`ResultView`](../../src/views/ResultView.vue))
 
-Centered `.panel.result`: border ok/bad, 64px check/x icon, volume summary, btnrow Home/Calendar.
+Centered `.panel.result`: border ok/bad, 64px check/x icon, сводка `«{done} / {planned} reps»`, btnrow Home/Calendar. Появление — fade+slide панели и pop иконки.
 
 ### About / Why ([`AboutView`](../../src/views/AboutView.vue), [`WhyProgramView`](../../src/views/WhyProgramView.vue))
 
@@ -196,7 +210,7 @@ Centered `.panel.result`: border ok/bad, 64px check/x icon, volume summary, btnr
 
 | Компонент | Паттерн |
 |---|---|
-| [`PwaInstallModal`](../../src/components/PwaInstallModal.vue) | `.modal-full`; platform tabs; step list + SVG illus; lang seg; Install + Dismiss outline |
+| [`PwaInstallModal`](../../src/components/PwaInstallModal.vue) | `.modal-full`; скроллящийся контент растягивается (`flex: 1 1 auto`), футер прижат к низу; platform tabs; step list + SVG illus; lang seg; Install + Dismiss outline |
 | [`ConfirmPanel`](../../src/components/ConfirmPanel.vue) | bottom `.modal-overlay` + `.modal-card`; `role="alertdialog"`; focus trap |
 | Calendar sheet | Teleport; `.sheet-backdrop` + `.sheetcard.panel` |
 
@@ -217,9 +231,15 @@ Spec assets: `assets/icons/lucide/` (12 SVG), `assets/icons/pullup/` (3 SVG).
 
 ## Motion
 
-- Button press: `transform: translate(3px, 3px)` + shadow shrink.
+- Press: `.btn` — translate(3px,3px); `.iconbtn` / `.mini` / `.today-btn` — translate(2px,2px);
+  `.opt` / `.day` / `.sw` — translate(1–2px). Во всех случаях тень схлопывается до 1px.
+- Hover (только `hover: hover and pointer: fine`): тень **растёт** на 1–2px — «поднятие» плаката,
+  без изменения геометрии.
+- Модалки и bottom sheet: slide-in **только через `transform`**. Анимировать `opacity` контейнера
+  нельзя — axe считает контраст с учётом наследуемой прозрачности и валит скан на модалке.
+- Result: fade+slide панели, pop иконки.
 - ScrollToTopFab: opacity transition 0.15s.
-- `@media (prefers-reduced-motion: reduce)` — transform и transitions отключены.
+- `@media (prefers-reduced-motion: reduce)` — все transform-press, transitions и keyframes отключены.
 
 ## Доступность
 

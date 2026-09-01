@@ -65,8 +65,9 @@
     "repsPlaceholder": "1",
     "recommendTitle": "Your starting point",
     "recommend": {
-      "l": "Level: {level}. Your max is {m} pull-ups. Your first cycle starts at step 1."
+      "l": "Level: {level}. Your max is {max}. Your first cycle starts at step 1."
     },
+    "pullupsCount": "{n} pull-up | {n} pull-ups",
     "accept": "Start program",
     "override": "Change max",
     "repsInvalid": "Enter 1 or more pull-ups.",
@@ -79,7 +80,7 @@
     "setOf": "Set {current} of {total}",
     "setLabel": "Set {n}",
     "doNow": "Do now",
-    "reps": "reps",
+    "repsCount": "{n} rep | {n} reps",
     "doneMax": "Done",
     "logDifferent": "Enter reps",
     "maxDoneLabel": "How many did you do?",
@@ -109,11 +110,11 @@
     "exitWarn": "Leaving counts as fail.",
     "resultSuccess": "Workout complete",
     "resultFail": "Workout incomplete",
-    "resultVolume": "{done} of {planned} planned",
+    "resultVolume": "{done} / {planned} reps",
     "resultNext": "Next: step {step}",
     "resultRetry": "Try this step again next time.",
     "resultNextDate": "Next workout: {date}",
-    "volume": "{n} reps total",
+    "volume": "{n} rep total | {n} reps total",
     "focusReps": "reps · set {n}"
   },
   "calendar": {
@@ -127,6 +128,7 @@
     "closeSheet": "Close",
     "dayHistory": "Day history",
     "dayHistoryEmpty": "No workouts logged on this day yet.",
+    "moveLabel": "Move to",
     "notScheduled": "This day has no workout planned.",
     "moveUnchanged": "Pick a different date to move this workout.",
     "moveLimitReached": "Already as late as this workout can go.",
@@ -156,6 +158,7 @@
     "maxChartSub": "tests + best sets",
     "weeklyVolume": "Weekly volume",
     "history": "History",
+    "historyEmpty": "No workouts logged yet.",
     "export": "Export history JSON",
     "partial": "Not finished",
     "showAll": "Show all",

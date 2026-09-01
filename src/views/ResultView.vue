@@ -58,7 +58,7 @@ onMounted(() => {
       </div>
       <p ref="statusRef" tabindex="-1" class="kicker status-kicker">{{ success ? t('workout.resultSuccess') : t('workout.resultFail') }}</p>
       <p v-if="planned > 0" class="summary">{{ t('workout.resultVolume', { done, planned }) }}</p>
-      <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', { n: volume }) }}</p>
+      <p v-else-if="volume > 0" class="summary">{{ t('workout.volume', volume) }}</p>
       <p v-if="success && nextStep" class="sub">{{ t('workout.resultNext', { step: nextStep }) }}</p>
       <p v-else-if="!success" class="sub">{{ t('workout.resultRetry') }}</p>
       <p v-if="nextSlotDate" class="sub next-date">
@@ -81,6 +81,17 @@ onMounted(() => {
 .result {
   margin-top: 0;
   text-align: center;
+  animation: result-in 0.28s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes result-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .result.ok {
   border-color: var(--ok);
@@ -93,6 +104,17 @@ onMounted(() => {
   justify-content: center;
   margin-bottom: 12px;
   color: var(--ok);
+  animation: result-mark-in 0.32s cubic-bezier(0.2, 1.3, 0.4, 1) 0.14s both;
+}
+@keyframes result-mark-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .icon svg {
   width: 64px;
@@ -130,5 +152,11 @@ onMounted(() => {
 
 .btnrow .btn {
   width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .result,
+  .icon {
+    animation: none;
+  }
 }
 </style>

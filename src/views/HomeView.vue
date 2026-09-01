@@ -63,15 +63,19 @@ const showRestNotReady = computed(
 const retestAtMin = computed(() => retestReps.value <= REP_COUNT_MIN)
 const retestAtMax = computed(() => retestReps.value >= REP_COUNT_MAX)
 
-const setsPreview = computed(() => {
+const planSummary = computed(() => {
   const p = progressStore.progress
   if (!p || !nextSlot.value) return ''
   const s = session(p.state.anchor, nextSlot.value.stepRef)
   const parts = s.sets.map((x) =>
     x.type === 'max' ? t('home.planMax') : String(x.planned),
   )
-  return t('home.planPreview', { sets: parts.join(' + ') })
+  return parts.join(' + ')
 })
+
+const setsPreview = computed(() =>
+  planSummary.value ? t('home.planPreview', { sets: planSummary.value }) : '',
+)
 
 const maxReps = computed(() => {
   let max = 0
@@ -275,8 +279,11 @@ async function reduceAnchor() {
 
     <section v-if="nextSlot" class="panel next">
       <p class="next-label">{{ isWorkoutToday ? t('home.todayLabel') : t('home.nextLabel') }}</p>
-      <h2 class="workout-date">{{ formatDisplayDate(nextSlot.date, locale) }}</h2>
-      <p v-if="setsPreview" class="sets">{{ setsPreview }}</p>
+      <h2 v-if="isWorkoutToday && planSummary" class="workout-plan">{{ planSummary }}</h2>
+      <template v-else>
+        <h2 class="workout-date">{{ formatDisplayDate(nextSlot.date, locale) }}</h2>
+        <p v-if="setsPreview" class="sets">{{ setsPreview }}</p>
+      </template>
       <div class="meter" aria-hidden="true"><i :style="{ width: `${progressPercent}%` }" /></div>
       <p v-if="cycleInfo" class="sub step-progress">
         <IconAboveBar :size="16" class="step-icon" />
@@ -303,7 +310,7 @@ async function reduceAnchor() {
     </section>
     <p v-else class="sub">{{ t('home.noProgress') }}</p>
 
-    <div class="grid2">
+    <div class="grid2 page-bottom">
       <section class="panel tile">
         <p class="kicker">{{ t('home.maxReps') }}</p>
         <b class="big">{{ maxReps }}</b>
@@ -325,6 +332,15 @@ async function reduceAnchor() {
 </template>
 
 <style scoped>
+.grid2.page-bottom {
+  margin-top: auto;
+  padding-top: 12px;
+}
+@media (min-height: 1100px) {
+  .grid2.page-bottom {
+    margin-top: 12px;
+  }
+}
 .chip.streak {
   display: inline-flex;
   margin-left: auto;
@@ -350,11 +366,18 @@ async function reduceAnchor() {
   text-transform: uppercase;
   color: var(--muted);
 }
-.next h2.workout-date {
+.next h2.workout-date,
+.next h2.workout-plan {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.3rem;
   margin: 6px 0 0;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.next h2.workout-plan {
+  font-size: clamp(1.15rem, 6.4vw, 1.55rem);
+  letter-spacing: 0.01em;
+  color: var(--ink);
 }
 .sets {
   display: block;
@@ -418,6 +441,11 @@ async function reduceAnchor() {
 }
 .next .btn {
   text-decoration: none;
+}
+.zero-panel {
+  margin: 0 0 14px;
+  background: var(--bg2);
+  box-shadow: 3px 3px 0 var(--shadow);
 }
 .retest-kicker {
   display: inline-flex;
