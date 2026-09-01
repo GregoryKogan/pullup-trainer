@@ -7,6 +7,7 @@ const props = defineProps<{
   visible: boolean
   message: string
   title?: string
+  destructive?: boolean
 }>()
 
 const emit = defineEmits<{ confirm: []; cancel: [] }>()
@@ -35,7 +36,13 @@ const { panelRef } = useModalA11y(toRef(props, 'visible'), {
         <p id="confirm-title" class="confirm-title">{{ dialogTitle }}</p>
         <p id="confirm-desc" class="confirm-msg">{{ message }}</p>
         <div class="btnrow">
-          <button type="button" class="btn accent" data-modal-primary @click="emit('confirm')">
+          <button
+            type="button"
+            class="btn"
+            :class="destructive ? 'destructive' : 'accent'"
+            data-modal-primary
+            @click="emit('confirm')"
+          >
             {{ t('common.confirm') }}
           </button>
           <button type="button" class="btn ghost" @click="emit('cancel')">{{ t('common.cancel') }}</button>

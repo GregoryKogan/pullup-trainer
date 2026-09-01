@@ -437,6 +437,7 @@ async function confirmReset() {
     </section>
     <ConfirmPanel
       :visible="showResetConfirm"
+      destructive
       :title="t('settings.resetTitle')"
       :message="t('settings.resetConfirm')"
       @confirm="confirmReset"

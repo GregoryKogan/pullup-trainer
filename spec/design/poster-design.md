@@ -112,6 +112,8 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 - **`.btn.accent`** — accent fill + accent-ink text.
 - **`.btn.ghost`** — transparent, muted text.
 - **`.btn.outline`** — card fill, ink text (Dismiss в PWA modal).
+- **`.btn.destructive`** — `--bad` fill, `--bg` text; primary в подтверждении необратимого
+  действия (сброс данных), чтобы «Подтвердить» не выглядел как happy path.
 - **`.btnrow`** — horizontal flex, gap 10px; сбрасывает margin-top у кнопок.
 - **`.iconbtn`** — 44×44, shadow 3px; active: translate(2px,2px) → shadow 1px; `.inactive`/`:disabled` — opacity 0.35, без тени и press-анимации.
 - **`.text-link`** — underline, min-height 44px.
@@ -211,7 +213,7 @@ Centered `.panel.result`: border ok/bad, 64px check/x icon, сводка `«{don
 | Компонент | Паттерн |
 |---|---|
 | [`PwaInstallModal`](../../src/components/PwaInstallModal.vue) | `.modal-full`; скроллящийся контент растягивается (`flex: 1 1 auto`), футер прижат к низу; platform tabs; step list + SVG illus; lang seg; Install + Dismiss outline |
-| [`ConfirmPanel`](../../src/components/ConfirmPanel.vue) | bottom `.modal-overlay` + `.modal-card`; `role="alertdialog"`; focus trap |
+| [`ConfirmPanel`](../../src/components/ConfirmPanel.vue) | bottom `.modal-overlay` + `.modal-card`; `role="alertdialog"`; focus trap; проп `destructive` красит primary в `--bad` |
 | Calendar sheet | Teleport; `.sheet-backdrop` + `.sheetcard.panel` |
 
 Backdrop: semi-transparent через `color-mix`, не flat poster shadow.

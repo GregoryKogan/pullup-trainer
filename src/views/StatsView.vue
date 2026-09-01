@@ -116,12 +116,6 @@ function chartDateLabel(date: string) {
   return formatShortDate(date, locale.value)
 }
 
-function dateLabelAnchor(index: number, total: number) {
-  if (total <= 1) return 'middle'
-  if (index === 0) return 'start'
-  if (index === total - 1) return 'end'
-  return 'middle'
-}
 
 function exportHistoryJson() {
   const lang = settingsStore.settings?.language ?? 'en'
@@ -170,7 +164,7 @@ function exportHistoryJson() {
       <p class="sub">{{ t('stats.maxChartSub') }}</p>
       <p v-if="maxReps.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
       <div v-else class="chart-wrap">
-        <svg class="chart" viewBox="0 0 354 158" role="img" :aria-label="t('stats.maxChart')">
+        <svg class="chart" viewBox="0 0 372 158" role="img" :aria-label="t('stats.maxChart')">
           <title>{{ t('stats.maxChart') }}</title>
           <text class="chart-tick" :x="CHART_TICK_X" :y="CHART_Y_BASE + 4" text-anchor="end">0</text>
           <text
@@ -220,7 +214,7 @@ function exportHistoryJson() {
               class="chart-label"
               :x="chartX(i, displayMaxReps.length)"
               y="148"
-              :text-anchor="dateLabelAnchor(i, displayMaxReps.length)"
+              text-anchor="middle"
             >
               {{ chartDateLabel(p.date) }}
             </text>
@@ -249,7 +243,7 @@ function exportHistoryJson() {
       </h4>
       <p v-if="weeklyBars.length === 0" class="sub chart-empty">{{ t('stats.chartEmpty') }}</p>
       <div v-else class="chart-wrap">
-        <svg class="chart" viewBox="0 0 354 148" role="img" :aria-label="t('stats.weeklyVolume')">
+        <svg class="chart" viewBox="0 0 372 148" role="img" :aria-label="t('stats.weeklyVolume')">
           <title>{{ t('stats.weeklyVolume') }}</title>
           <text class="chart-tick" :x="CHART_TICK_X" :y="CHART_Y_BASE + 4" text-anchor="end">0</text>
           <text
@@ -293,7 +287,7 @@ function exportHistoryJson() {
               class="chart-label"
               :x="chartX(i, displayWeeklyBars.length)"
               y="144"
-              :text-anchor="dateLabelAnchor(i, displayWeeklyBars.length)"
+              text-anchor="middle"
             >
               {{ chartDateLabel(b.week) }}
             </text>

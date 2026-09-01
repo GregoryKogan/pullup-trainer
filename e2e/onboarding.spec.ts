@@ -31,7 +31,7 @@ test.describe('Onboarding', () => {
     await dismissPwaModal(page)
 
     await expect(page.getByRole('button', { name: /^start$/i })).toHaveCount(0)
-    await expect(page.getByText(/max test done/i)).toBeVisible()
+    await expect(page.getByText(/counts as hard work/i)).toBeVisible()
 
     const today = todayLocal()
     const progress = (await readProgress(page)) as {

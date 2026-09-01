@@ -491,9 +491,11 @@ function confirmExit() {
       @cancel="showExitConfirm = false"
     />
   </div>
-  <div v-else-if="loadFailed" class="panel load-error">
-    <p class="sub">{{ t('workout.loadError') }}</p>
-    <button type="button" class="btn accent" @click="router.push('/')">{{ t('nav.home') }}</button>
+  <div v-else-if="loadFailed" class="load-error-page">
+    <div class="panel load-error">
+      <p class="sub">{{ t('workout.loadError') }}</p>
+      <button type="button" class="btn accent" @click="router.push('/')">{{ t('nav.home') }}</button>
+    </div>
   </div>
 </template>
 
@@ -623,8 +625,14 @@ function confirmExit() {
   font: 800 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   margin-bottom: 8px;
 }
+.load-error-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .load-error {
-  margin-top: 24px;
   text-align: center;
 }
 </style>

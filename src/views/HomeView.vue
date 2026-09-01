@@ -234,6 +234,7 @@ async function reduceAnchor() {
 
     <section v-if="showRetest" class="panel retest">
       <p class="kicker">{{ t('onboarding.testTitle') }}</p>
+      <p>{{ t('onboarding.testBody') }}</p>
       <label class="field">
         <span>{{ t('onboarding.repsLabel') }}</span>
         <div class="rep-stepper">
