@@ -183,6 +183,23 @@ onBeforeUnmount(() => {
     font-size: 1rem;
   }
 }
+@media (max-height: 520px) {
+  .sets-wrap {
+    margin-bottom: 8px;
+  }
+  .setsrow .s {
+    flex-basis: 50px;
+    width: 50px;
+    min-height: 50px;
+    padding-bottom: 9px;
+  }
+  .setsrow b {
+    font-size: 1.05rem;
+  }
+  .scroll-hint {
+    display: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .setsrow .s.done {
     animation: none;

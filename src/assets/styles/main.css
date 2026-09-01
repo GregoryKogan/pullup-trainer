@@ -90,6 +90,14 @@ html:not([data-theme$='-light']) .app-shell::before {
   overflow: hidden;
 }
 
+/* The workout screen is sized to fit so the action dock is always reachable.
+   On landscape phones it cannot, so let it scroll rather than clip. */
+@media (max-height: 520px) {
+  .app-main--fit {
+    overflow-y: auto;
+  }
+}
+
 .page {
   flex: 1;
   min-height: 100%;

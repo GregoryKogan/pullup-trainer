@@ -490,6 +490,7 @@ function confirmExit() {
     </div>
     <ConfirmPanel
       :visible="showExitConfirm"
+      destructive
       :title="t('workout.exitTitle')"
       :message="t('workout.exitWarn')"
       @confirm="confirmExit"
@@ -630,6 +631,81 @@ function confirmExit() {
   display: block;
   font: 800 0.78rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   margin-bottom: 8px;
+}
+/* Landscape phones: the stage cannot fit at full scale, so tighten every
+   gap and let the column grow past the viewport instead of clipping. */
+@media (max-height: 520px) {
+  .workout {
+    flex: 1 0 auto;
+  }
+  .workout-stage {
+    flex: 0 0 auto;
+  }
+  .top {
+    padding: 2px 0 8px;
+  }
+  .workout-hero {
+    flex: 0 0 auto;
+    padding: 0 0 10px;
+  }
+  .hero-icon {
+    display: none;
+  }
+  .workout-hero .kicker {
+    margin-bottom: 8px;
+  }
+  .workout-hero .sub {
+    margin-top: 4px;
+  }
+  .rep {
+    margin: 0 0 4px;
+  }
+  .max-instruction {
+    display: none;
+  }
+  .min-label {
+    margin: 0;
+  }
+  .rep-stepper {
+    margin-bottom: 8px;
+  }
+  .rep-stepper input,
+  .rep-step {
+    min-height: 46px;
+  }
+  .fewer-label {
+    margin-bottom: 6px;
+  }
+  .workout-dock .panel {
+    padding: 10px;
+  }
+  .workout-dock .btn {
+    min-height: 46px;
+  }
+}
+
+/* Landscape has width to spare: put the hero beside the dock so the whole
+   stage fits without scrolling. */
+@media (max-height: 520px) and (min-width: 560px) {
+  .workout-stage {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+  .workout-hero {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0;
+  }
+  .workout-dock {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-top: 0;
+  }
+  .max-instruction {
+    display: block;
+    margin: 0 0 10px;
+  }
 }
 .load-error-page {
   flex: 1;

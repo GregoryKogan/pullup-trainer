@@ -15,9 +15,10 @@ const { t } = useI18n()
 
 const dialogTitle = computed(() => props.title ?? t('common.confirm'))
 
+// A destructive dialog opens on Cancel so a stray Enter cannot delete data.
 const { panelRef } = useModalA11y(toRef(props, 'visible'), {
   onEscape: () => emit('cancel'),
-  initialFocusSelector: '[data-modal-primary]',
+  initialFocusSelector: props.destructive ? '[data-modal-cancel]' : '[data-modal-primary]',
 })
 </script>
 
@@ -45,7 +46,9 @@ const { panelRef } = useModalA11y(toRef(props, 'visible'), {
           >
             {{ t('common.confirm') }}
           </button>
-          <button type="button" class="btn ghost" @click="emit('cancel')">{{ t('common.cancel') }}</button>
+          <button type="button" class="btn ghost" data-modal-cancel @click="emit('cancel')">
+            {{ t('common.cancel') }}
+          </button>
         </div>
       </div>
     </div>

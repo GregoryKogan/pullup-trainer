@@ -33,6 +33,11 @@ const text = computed(() => String(props.value))
     transform: none;
   }
 }
+@media (max-height: 520px) {
+  .contour-number {
+    font-size: clamp(2.5rem, min(18vw, 17vh), 6rem);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .contour-number-wrap {
     animation: none;

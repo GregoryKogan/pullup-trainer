@@ -98,10 +98,12 @@ const cycleInfo = computed(() => {
   return { step: p.state.stepInCycle, cycle: p.state.cycleIndex + 1 }
 })
 
+// Workouts finished in this round, not the one about to start: a full bar has
+// to mean a finished round.
 const progressPercent = computed(() => {
   const p = progressStore.progress
   if (!p) return 0
-  return Math.round((p.state.stepInCycle / 6) * 100)
+  return Math.round(((p.state.stepInCycle - 1) / 6) * 100)
 })
 
 const levelInfo = computed(() => {
@@ -326,7 +328,7 @@ async function reduceAnchor() {
       <p v-else class="sub">{{ t('home.noProgress') }}</p>
     </div>
 
-    <div class="grid2 page-bottom">
+    <div class="grid2">
       <section class="panel tile">
         <p class="kicker">{{ t('home.bestSet') }}</p>
         <b class="big">{{ maxReps }}</b>
@@ -351,10 +353,6 @@ async function reduceAnchor() {
 .home-stack {
   display: flex;
   flex-direction: column;
-}
-.grid2.page-bottom {
-  margin-top: 0;
-  padding-top: 12px;
 }
 .head-main {
   width: 100%;

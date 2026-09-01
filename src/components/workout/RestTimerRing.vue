@@ -354,6 +354,7 @@ function isSuggested(seconds: number) {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  white-space: nowrap;
 }
 .skip-btn,
 .reset-btn {
@@ -367,6 +368,51 @@ function isSuggested(seconds: number) {
   color: var(--muted);
   margin: 10px 0 0;
   text-align: center;
+}
+@media (max-height: 520px) {
+  .rest-layout {
+    flex: 0 0 auto;
+  }
+  .rest-hero {
+    flex: 0 0 auto;
+    padding: 0 0 10px;
+  }
+  .ring {
+    width: clamp(96px, min(52vw, 30vh), 160px);
+    height: clamp(96px, min(52vw, 30vh), 160px);
+  }
+  .ring-stack {
+    gap: 8px;
+  }
+  .rest-prompt-icon {
+    display: none;
+  }
+  .rest-dock {
+    padding: 10px 12px max(10px, env(safe-area-inset-bottom, 0px));
+  }
+  .presets,
+  .restrow {
+    margin-bottom: 6px;
+  }
+  .resthint {
+    margin-top: 6px;
+  }
+}
+@media (max-height: 520px) and (min-width: 560px) {
+  .rest-layout {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+  .rest-hero {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0;
+  }
+  .rest-dock {
+    flex: 1 1 0;
+    min-width: 0;
+  }
 }
 @media (hover: hover) and (pointer: fine) {
   .mini:hover:not(:disabled):not(.inactive) {

@@ -805,6 +805,23 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 }
+/* Landscape phones cannot fit six 44px rows plus a full-size header, so trim
+   the header and let the grid keep as many rows visible as possible. */
+@media (max-height: 520px) {
+  .head {
+    padding: 2px 0 8px;
+  }
+  .head h1 {
+    font-size: 1.1rem;
+    min-height: 0;
+  }
+  .calgrid {
+    max-height: none;
+  }
+  .legend {
+    padding: 10px 0 6px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .day,
   .today-btn,
