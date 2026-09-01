@@ -23,26 +23,6 @@ const text = computed(() => String(props.value))
   line-height: 1;
   animation: contour-in 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
-@keyframes contour-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@media (max-height: 520px) {
-  .contour-number {
-    font-size: clamp(2.5rem, min(18vw, 17vh), 6rem);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .contour-number-wrap {
-    animation: none;
-  }
-}
 .contour-number {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: clamp(5rem, min(28vw, 26vh), 9rem);
@@ -54,11 +34,31 @@ const text = computed(() => String(props.value))
   paint-order: stroke fill;
   -webkit-font-smoothing: antialiased;
 }
+@keyframes contour-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 @supports not (-webkit-text-stroke: 1px #000) {
   .contour-number {
     color: var(--accent-text);
     -webkit-text-stroke: 0;
     paint-order: normal;
+  }
+}
+@media (max-height: 520px) {
+  .contour-number {
+    font-size: clamp(2.5rem, min(24vw, 22vh), 6rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contour-number-wrap {
+    animation: none;
   }
 }
 </style>

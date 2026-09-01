@@ -639,7 +639,8 @@ function confirmExit() {
     flex: 1 0 auto;
   }
   .workout-stage {
-    flex: 0 0 auto;
+    flex: 1 0 auto;
+    justify-content: center;
   }
   .top {
     padding: 2px 0 8px;
