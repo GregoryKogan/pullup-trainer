@@ -49,7 +49,12 @@ const canStartEarlyToday = computed(() => {
   if (!p || !slot || slot.date === today) return false
   const idx = p.schedule.findIndex((s) => s.date === slot.date)
   if (idx < 0) return false
-  return canStartEarly(p.schedule, idx, today, p.lastWorkoutDate)
+  return canStartEarly(p.schedule, idx, {
+    today,
+    lastWorkoutDate: p.lastWorkoutDate,
+    frequencyDays: p.frequencyDays,
+    weekdays: p.weekdays,
+  })
 })
 const showRestNotReady = computed(
   () => nextSlot.value !== null && !isWorkoutToday.value && !canStartEarlyToday.value,

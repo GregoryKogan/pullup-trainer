@@ -7,7 +7,12 @@ import AppIcon from '@/components/icons/AppIcon.vue'
 import { useModalA11y } from '@/composables/use-modal-a11y'
 import { useProgressStore } from '@/stores/progress'
 import { useWorkoutSessionStore } from '@/stores/workout-session'
-import { rescheduleWorkout, getRescheduleOptions, canStartEarly } from '@/domain/schedule'
+import {
+  rescheduleWorkout,
+  getRescheduleOptions,
+  canStartEarly,
+  type ScheduleContext,
+} from '@/domain/schedule'
 import { formatDisplayDate, formatLocalDate, todayLocal } from '@/utils/dates'
 
 const { t, locale } = useI18n()
@@ -148,25 +153,38 @@ const isNextSlotSelected = computed(() => {
   return !!slot && !!next && slot.date === next.date
 })
 
-const moveOptions = computed(() => {
+const scheduleContext = computed<ScheduleContext | null>(() => {
   const p = progressStore.progress
-  if (selectedIndex.value === null || !p) return []
-  return getRescheduleOptions(
-    schedule.value,
-    selectedIndex.value,
-    today.value,
-    p.lastWorkoutDate,
-  )
+  if (!p) return null
+  return {
+    today: today.value,
+    lastWorkoutDate: p.lastWorkoutDate,
+    frequencyDays: p.frequencyDays,
+    weekdays: p.weekdays,
+  }
+})
+
+const moveOptions = computed(() => {
+  const ctx = scheduleContext.value
+  if (selectedIndex.value === null || !ctx) return []
+  return getRescheduleOptions(schedule.value, selectedIndex.value, ctx)
+})
+
+const moveForwardBlocked = computed(() => {
+  const slot = selectedSlot.value
+  if (!slot || moveOptions.value.length === 0) return false
+  return !moveOptions.value.some((o) => o > slot.date)
 })
 
 const canStartSelectedNow = computed(() => {
   const p = progressStore.progress
+  const ctx = scheduleContext.value
   const slot = selectedSlot.value
-  if (!p || !slot || !isNextSlotSelected.value) return false
+  if (!p || !ctx || !slot || !isNextSlotSelected.value) return false
   if (slot.date === today.value) return true
   const idx = p.schedule.findIndex((s) => s.date === slot.date)
   if (idx < 0) return false
-  return canStartEarly(p.schedule, idx, today.value, p.lastWorkoutDate)
+  return canStartEarly(p.schedule, idx, ctx)
 })
 
 const needsEarlyStartConfirm = computed(() => {
@@ -212,7 +230,10 @@ const moveBlocked = computed(() => {
 
 async function applyMove() {
   if (moveBlocked.value) return
-  if (selectedIndex.value === null || !selectedMoveDate.value || !progressStore.progress) return
+  const ctx = scheduleContext.value
+  if (selectedIndex.value === null || !selectedMoveDate.value || !progressStore.progress || !ctx) {
+    return
+  }
   if (moveUnchanged.value) {
     showDayHint(t('calendar.moveUnchanged'))
     return
@@ -221,8 +242,7 @@ async function applyMove() {
     schedule.value,
     selectedIndex.value,
     selectedMoveDate.value,
-    today.value,
-    progressStore.progress.lastWorkoutDate,
+    ctx,
   )
   if (!moved) return
   await progressStore.updateProgress({ ...progressStore.progress, schedule: moved })
@@ -367,7 +387,7 @@ onBeforeUnmount(() => {
             </p>
             <p v-if="!moveBlocked" id="calendar-sheet-desc" class="shift-note">
               <AppIcon name="info" />
-              {{ t('calendar.shiftNote') }}
+              {{ moveForwardBlocked ? t('calendar.moveLimitReached') : t('calendar.shiftNote') }}
             </p>
             <div v-if="dayRecords.length" class="day-history">
               <p class="day-history-title">{{ t('calendar.dayHistory') }}</p>

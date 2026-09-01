@@ -129,6 +129,7 @@
     "dayHistoryEmpty": "No workouts logged on this day yet.",
     "notScheduled": "This day has no workout planned.",
     "moveUnchanged": "Pick a different date to move this workout.",
+    "moveLimitReached": "Already as late as this workout can go.",
     "moveBlockedActive": "Finish or leave the workout before moving this day.",
     "attemptedLocked": "This workout is already logged.",
     "nextMonth": "Next month",

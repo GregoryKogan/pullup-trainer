@@ -84,7 +84,7 @@
       "body": [
         "If a scheduled day passes without a logged workout, the app records it as a failed session on the next open. That keeps progression honest and enforces at least two calendar days between any two sessions, including automatic fails [32].",
         "Strength is maintained for up to about three weeks without training, then decay speeds up [29]. Adolescent athletes lost nothing after three weeks off [30]. A break of two weeks or less: resume the same step. A longer break: take a fresh max test or tap the optional easier plan (−10%).",
-        "Starting early is the same as moving the next workout to today in the calendar: later slots shift by the same delta, and early start is blocked until two calendar days have passed since your last session. Calendar reschedule moves a slot within ±3 days, subject to the same rest gaps [31].",
+        "Starting early is the same as moving the next workout to today in the calendar: later slots shift by the same delta, and early start is blocked until two calendar days have passed since your last session. Calendar reschedule moves a slot within ±3 days, subject to the same rest gaps [31]. The window is measured from where the program would place that slot, not from wherever it has already been moved to, so a workout cannot be pushed back indefinitely one move at a time.",
         "Exiting a workout before completion counts as failure with whatever reps you logged. Missed slots are not made up; the schedule moves on."
       ]
     },
@@ -155,40 +155,285 @@
   },
   "sourcesTitle": "Open-access sources",
   "sources": [
-    { "id": 1, "title": "Ralston et al. Weekly set volume and strength", "journal": "Sports Med", "year": "2017", "url": "https://link.springer.com/article/10.1007/s40279-017-0762-7", "badge": "confirmed" },
-    { "id": 2, "title": "Baz-Valle et al. Training volume and hypertrophy", "journal": "J Hum Kinet", "year": "2022", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8884877/", "badge": "confirmed" },
-    { "id": 3, "title": "Robinson et al. Proximity to failure, strength, and hypertrophy", "journal": "Sports Med", "year": "2024", "url": "https://doi.org/10.1007/s40279-024-02069-2", "badge": "confirmed" },
-    { "id": 4, "title": "Grgic et al. Training to failure versus non-failure", "journal": "J Sport Health Sci", "year": "2021", "url": "https://doi.org/10.1016/j.jshs.2021.01.007", "badge": "confirmed" },
-    { "id": 5, "title": "Zhang et al. Autoregulation versus fixed loading", "journal": "Front Physiol", "year": "2021", "url": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2021.651112/full", "badge": "confirmed" },
-    { "id": 6, "title": "Hickmott et al. Load autoregulation meta-analysis", "journal": "Sports Med Open", "year": "2022", "url": "https://link.springer.com/article/10.1186/s40798-021-00404-9", "badge": "confirmed" },
-    { "id": 7, "title": "Rogerson et al. Deloading practices in strength sports", "journal": "Sports Med Open", "year": "2024", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10948666/", "badge": "confirmed" },
-    { "id": 8, "title": "Micke et al. Repeated 1RM testing", "journal": "J Sports Sci Med", "year": "2025", "url": "https://pubmed.ncbi.nlm.nih.gov/40469860/", "badge": "confirmed" },
-    { "id": 9, "title": "Schoenfeld et al. Training frequency and hypertrophy", "journal": "Sports Med", "year": "2016", "url": "https://link.springer.com/article/10.1007/s40279-016-0543-8", "badge": "confirmed" },
-    { "id": 10, "title": "Ralston et al. Training frequency for upper-body strength", "journal": "Sports Med Open", "year": "2018", "url": "https://link.springer.com/article/10.1186/s40798-018-0149-9", "badge": "confirmed" },
-    { "id": 11, "title": "Peake et al. Recovery after exercise", "journal": "J Appl Physiol", "year": "2017", "url": "https://journals.physiology.org/doi/10.1152/japplphysiol.00971.2016", "badge": "confirmed" },
-    { "id": 12, "title": "ACSM 2026 resistance training guidelines update", "journal": "acsm.org", "year": "2026", "url": "https://www.acsm.org/resistance-training-guidelines-update-2026/", "badge": "confirmed" },
-    { "id": 13, "title": "Radaelli et al. Dose response in the lat pulldown", "journal": "J Strength Cond Res", "year": "2015", "url": "https://pubmed.ncbi.nlm.nih.gov/25546444/", "badge": "confirmed" },
-    { "id": 14, "title": "Pelland et al. The resistance training dose response", "journal": "Sports Med", "year": "2025", "url": "https://link.springer.com/article/10.1007/s40279-025-02344-w", "badge": "confirmed" },
-    { "id": 15, "title": "Sánchez-Moreno et al. Velocity loss in pull-up training", "journal": "J Strength Cond Res", "year": "2020", "url": "https://pubmed.ncbi.nlm.nih.gov/32213783/", "badge": "confirmed" },
-    { "id": 16, "title": "Refalo et al. Training to failure and neuromuscular fatigue", "journal": "Sports Med Open", "year": "2023", "url": "https://doi.org/10.1186/s40798-023-00554-y", "badge": "confirmed" },
-    { "id": 17, "title": "Refalo et al. Proximity to failure and hypertrophy", "journal": "Sports Med", "year": "2023", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9935748/", "badge": "confirmed" },
-    { "id": 18, "title": "Vieira et al. Training to failure versus not to failure", "journal": "J Strength Cond Res", "year": "2021", "url": "https://doi.org/10.1519/JSC.0000000000003936", "badge": "confirmed" },
-    { "id": 19, "title": "Hermann et al. Failure versus reps in reserve for endurance", "journal": "Med Sci Sports Exerc", "year": "2025", "url": "https://doi.org/10.1249/MSS.0000000000003728", "badge": "confirmed" },
-    { "id": 20, "title": "de Salles et al. Rest intervals between sets", "journal": "Sports Med", "year": "2009", "url": "https://pubmed.ncbi.nlm.nih.gov/19691365/", "badge": "confirmed" },
-    { "id": 21, "title": "Grgic et al. Rest intervals and strength", "journal": "Sports Med", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/28933024/", "badge": "confirmed" },
-    { "id": 22, "title": "Rahimi. Rest intervals and squat volume", "journal": "J Sports Sci Med", "year": "2005", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3899651/", "badge": "confirmed" },
-    { "id": 23, "title": "Singer et al. Rest intervals and hypertrophy: a Bayesian meta-analysis", "journal": "Front Sports Act Living", "year": "2024", "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2024.1429789/full", "badge": "confirmed" },
-    { "id": 24, "title": "Davidson & Barillas. Short versus long rest, a preprint", "journal": "medRxiv", "year": "2025", "url": "https://www.medrxiv.org/content/10.1101/2025.09.22.25336351v2", "badge": "single" },
-    { "id": 25, "title": "Roig et al. Eccentric versus concentric training: a meta-analysis", "journal": "Br J Sports Med", "year": "2009", "url": "https://pubmed.ncbi.nlm.nih.gov/18981046/", "badge": "confirmed" },
-    { "id": 26, "title": "Douglas et al. Chronic adaptations to eccentric training", "journal": "Sports Med", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/27647157/", "badge": "confirmed" },
-    { "id": 27, "title": "Spudić & Nosaka. Eccentric-only versus concentric-only training", "journal": "Sports Med Open", "year": "2025", "url": "https://link.springer.com/article/10.1186/s40798-025-00887-w", "badge": "confirmed" },
-    { "id": 28, "title": "Zhang & Fan. Eccentric tempo and pull-up performance", "journal": "Front Sports Act Living", "year": "2026", "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2026.1800713/full", "badge": "single" },
-    { "id": 29, "title": "McMaster et al. Strength retention during detraining", "journal": "Sports Med", "year": "2013", "url": "https://doi.org/10.1007/s40279-013-0031-3", "badge": "confirmed" },
-    { "id": 30, "title": "Gavanda et al. Three weeks of detraining in adolescents", "journal": "Int J Exerc Sci", "year": "2020", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7241623/", "badge": "confirmed" },
-    { "id": 31, "title": "Beshears et al. Flexible versus rigid exercise scheduling", "journal": "Management Science", "year": "2021", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8734590/", "badge": "extrapolation" },
-    { "id": 32, "title": "Stetson et al. Guilt and exercise relapse", "journal": "Ann Behav Med", "year": "2005", "url": "https://link.springer.com/article/10.1207/s15324796abm3001_4", "badge": "extrapolation" },
-    { "id": 33, "title": "Prestes et al. Rest-pause versus traditional sets", "journal": "J Strength Cond Res", "year": "2017", "url": "https://pubmed.ncbi.nlm.nih.gov/28617715/", "badge": "confirmed" },
-    { "id": 34, "title": "Helms et al. Accuracy of reps-in-reserve ratings", "journal": "Strength Cond J", "year": "2016", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/", "badge": "confirmed" },
-    { "id": 35, "title": "Grgic et al. Weekly frequency and hypertrophy", "journal": "J Sci Med Sport", "year": "2019", "url": "https://www.jsams.org/article/S1440-2440(18)30862-4/abstract", "badge": "confirmed" }
+    {
+      "id": 1,
+      "title": "Ralston et al. Weekly set volume and strength",
+      "journal": "Sports Med",
+      "year": "2017",
+      "url": "https://link.springer.com/article/10.1007/s40279-017-0762-7",
+      "badge": "confirmed"
+    },
+    {
+      "id": 2,
+      "title": "Baz-Valle et al. Training volume and hypertrophy",
+      "journal": "J Hum Kinet",
+      "year": "2022",
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8884877/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 3,
+      "title": "Robinson et al. Proximity to failure, strength, and hypertrophy",
+      "journal": "Sports Med",
+      "year": "2024",
+      "url": "https://doi.org/10.1007/s40279-024-02069-2",
+      "badge": "confirmed"
+    },
+    {
+      "id": 4,
+      "title": "Grgic et al. Training to failure versus non-failure",
+      "journal": "J Sport Health Sci",
+      "year": "2021",
+      "url": "https://doi.org/10.1016/j.jshs.2021.01.007",
+      "badge": "confirmed"
+    },
+    {
+      "id": 5,
+      "title": "Zhang et al. Autoregulation versus fixed loading",
+      "journal": "Front Physiol",
+      "year": "2021",
+      "url": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2021.651112/full",
+      "badge": "confirmed"
+    },
+    {
+      "id": 6,
+      "title": "Hickmott et al. Load autoregulation meta-analysis",
+      "journal": "Sports Med Open",
+      "year": "2022",
+      "url": "https://link.springer.com/article/10.1186/s40798-021-00404-9",
+      "badge": "confirmed"
+    },
+    {
+      "id": 7,
+      "title": "Rogerson et al. Deloading practices in strength sports",
+      "journal": "Sports Med Open",
+      "year": "2024",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10948666/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 8,
+      "title": "Micke et al. Repeated 1RM testing",
+      "journal": "J Sports Sci Med",
+      "year": "2025",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/40469860/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 9,
+      "title": "Schoenfeld et al. Training frequency and hypertrophy",
+      "journal": "Sports Med",
+      "year": "2016",
+      "url": "https://link.springer.com/article/10.1007/s40279-016-0543-8",
+      "badge": "confirmed"
+    },
+    {
+      "id": 10,
+      "title": "Ralston et al. Training frequency for upper-body strength",
+      "journal": "Sports Med Open",
+      "year": "2018",
+      "url": "https://link.springer.com/article/10.1186/s40798-018-0149-9",
+      "badge": "confirmed"
+    },
+    {
+      "id": 11,
+      "title": "Peake et al. Recovery after exercise",
+      "journal": "J Appl Physiol",
+      "year": "2017",
+      "url": "https://journals.physiology.org/doi/10.1152/japplphysiol.00971.2016",
+      "badge": "confirmed"
+    },
+    {
+      "id": 12,
+      "title": "ACSM 2026 resistance training guidelines update",
+      "journal": "acsm.org",
+      "year": "2026",
+      "url": "https://www.acsm.org/resistance-training-guidelines-update-2026/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 13,
+      "title": "Radaelli et al. Dose response in the lat pulldown",
+      "journal": "J Strength Cond Res",
+      "year": "2015",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/25546444/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 14,
+      "title": "Pelland et al. The resistance training dose response",
+      "journal": "Sports Med",
+      "year": "2025",
+      "url": "https://link.springer.com/article/10.1007/s40279-025-02344-w",
+      "badge": "confirmed"
+    },
+    {
+      "id": 15,
+      "title": "Sánchez-Moreno et al. Velocity loss in pull-up training",
+      "journal": "J Strength Cond Res",
+      "year": "2020",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/32213783/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 16,
+      "title": "Refalo et al. Training to failure and neuromuscular fatigue",
+      "journal": "Sports Med Open",
+      "year": "2023",
+      "url": "https://doi.org/10.1186/s40798-023-00554-y",
+      "badge": "confirmed"
+    },
+    {
+      "id": 17,
+      "title": "Refalo et al. Proximity to failure and hypertrophy",
+      "journal": "Sports Med",
+      "year": "2023",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9935748/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 18,
+      "title": "Vieira et al. Training to failure versus not to failure",
+      "journal": "J Strength Cond Res",
+      "year": "2021",
+      "url": "https://doi.org/10.1519/JSC.0000000000003936",
+      "badge": "confirmed"
+    },
+    {
+      "id": 19,
+      "title": "Hermann et al. Failure versus reps in reserve for endurance",
+      "journal": "Med Sci Sports Exerc",
+      "year": "2025",
+      "url": "https://doi.org/10.1249/MSS.0000000000003728",
+      "badge": "confirmed"
+    },
+    {
+      "id": 20,
+      "title": "de Salles et al. Rest intervals between sets",
+      "journal": "Sports Med",
+      "year": "2009",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/19691365/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 21,
+      "title": "Grgic et al. Rest intervals and strength",
+      "journal": "Sports Med",
+      "year": "2017",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/28933024/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 22,
+      "title": "Rahimi. Rest intervals and squat volume",
+      "journal": "J Sports Sci Med",
+      "year": "2005",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3899651/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 23,
+      "title": "Singer et al. Rest intervals and hypertrophy: a Bayesian meta-analysis",
+      "journal": "Front Sports Act Living",
+      "year": "2024",
+      "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2024.1429789/full",
+      "badge": "confirmed"
+    },
+    {
+      "id": 24,
+      "title": "Davidson & Barillas. Short versus long rest, a preprint",
+      "journal": "medRxiv",
+      "year": "2025",
+      "url": "https://www.medrxiv.org/content/10.1101/2025.09.22.25336351v2",
+      "badge": "single"
+    },
+    {
+      "id": 25,
+      "title": "Roig et al. Eccentric versus concentric training: a meta-analysis",
+      "journal": "Br J Sports Med",
+      "year": "2009",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/18981046/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 26,
+      "title": "Douglas et al. Chronic adaptations to eccentric training",
+      "journal": "Sports Med",
+      "year": "2017",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/27647157/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 27,
+      "title": "Spudić & Nosaka. Eccentric-only versus concentric-only training",
+      "journal": "Sports Med Open",
+      "year": "2025",
+      "url": "https://link.springer.com/article/10.1186/s40798-025-00887-w",
+      "badge": "confirmed"
+    },
+    {
+      "id": 28,
+      "title": "Zhang & Fan. Eccentric tempo and pull-up performance",
+      "journal": "Front Sports Act Living",
+      "year": "2026",
+      "url": "https://www.frontiersin.org/journals/sports-and-active-living/articles/10.3389/fspor.2026.1800713/full",
+      "badge": "single"
+    },
+    {
+      "id": 29,
+      "title": "McMaster et al. Strength retention during detraining",
+      "journal": "Sports Med",
+      "year": "2013",
+      "url": "https://doi.org/10.1007/s40279-013-0031-3",
+      "badge": "confirmed"
+    },
+    {
+      "id": 30,
+      "title": "Gavanda et al. Three weeks of detraining in adolescents",
+      "journal": "Int J Exerc Sci",
+      "year": "2020",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7241623/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 31,
+      "title": "Beshears et al. Flexible versus rigid exercise scheduling",
+      "journal": "Management Science",
+      "year": "2021",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8734590/",
+      "badge": "extrapolation"
+    },
+    {
+      "id": 32,
+      "title": "Stetson et al. Guilt and exercise relapse",
+      "journal": "Ann Behav Med",
+      "year": "2005",
+      "url": "https://link.springer.com/article/10.1207/s15324796abm3001_4",
+      "badge": "extrapolation"
+    },
+    {
+      "id": 33,
+      "title": "Prestes et al. Rest-pause versus traditional sets",
+      "journal": "J Strength Cond Res",
+      "year": "2017",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/28617715/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 34,
+      "title": "Helms et al. Accuracy of reps-in-reserve ratings",
+      "journal": "Strength Cond J",
+      "year": "2016",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/",
+      "badge": "confirmed"
+    },
+    {
+      "id": 35,
+      "title": "Grgic et al. Weekly frequency and hypertrophy",
+      "journal": "J Sci Med Sport",
+      "year": "2019",
+      "url": "https://www.jsams.org/article/S1440-2440(18)30862-4/abstract",
+      "badge": "confirmed"
+    }
   ]
 }

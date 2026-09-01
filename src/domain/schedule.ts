@@ -2,6 +2,18 @@ import type { ScheduleSlot, Weekday, ReturnPolicy, WorkoutRecord } from './types
 import { addDays, daysBetween, parseLocalDate, formatLocalDate } from '@/utils/dates'
 
 export const MIN_REST_DAYS = 2
+export const MAX_MOVE_DAYS = 3
+
+export interface ScheduleContext {
+  today: string
+  lastWorkoutDate: string | null
+  frequencyDays: 2 | 3
+  weekdays: Weekday[]
+}
+
+export function minGapDays(frequencyDays: 2 | 3): number {
+  return frequencyDays === 3 ? 2 : 3
+}
 
 const WEEKDAY_INDEX: Record<Weekday, number> = {
   mon: 1,
@@ -35,8 +47,7 @@ export function buildInitialSchedule(
     if (i === 0) {
       cursor = nextWeekdayOnOrAfter(startDate, weekdays)
     } else {
-      const minGap = frequencyDays === 3 ? 2 : 3
-      cursor = addDays(cursor, minGap)
+      cursor = addDays(cursor, minGapDays(frequencyDays))
       cursor = nextWeekdayOnOrAfter(cursor, weekdays)
     }
     slots.push({ date: cursor, stepRef: stepRefs[i] })
@@ -72,29 +83,56 @@ export function extendSchedule(
   const result = [...schedule]
   let cursor = last.date
   for (const stepRef of newStepRefs) {
-    const minGap = frequencyDays === 3 ? 2 : 3
-    cursor = addDays(cursor, minGap)
+    cursor = addDays(cursor, minGapDays(frequencyDays))
     cursor = nextWeekdayOnOrAfter(cursor, weekdays)
     result.push({ date: cursor, stepRef })
   }
   return result
 }
 
+export function intendedSlotDate(
+  schedule: ScheduleSlot[],
+  slotIndex: number,
+  ctx: ScheduleContext,
+): string {
+  const prevDate = slotIndex > 0 ? schedule[slotIndex - 1].date : null
+  const from = prevDate ? addDays(prevDate, minGapDays(ctx.frequencyDays)) : ctx.today
+  return nextWeekdayOnOrAfter(from, ctx.weekdays)
+}
+
+export function latestAllowedMoveDate(
+  schedule: ScheduleSlot[],
+  slotIndex: number,
+  ctx: ScheduleContext,
+): string {
+  return addDays(intendedSlotDate(schedule, slotIndex, ctx), MAX_MOVE_DAYS)
+}
+
+function exceedsMoveWindow(
+  schedule: ScheduleSlot[],
+  slotIndex: number,
+  candidate: string,
+  ctx: ScheduleContext,
+): boolean {
+  if (daysBetween(schedule[slotIndex].date, candidate) <= 0) return false
+  return daysBetween(latestAllowedMoveDate(schedule, slotIndex, ctx), candidate) > 0
+}
+
 export function rescheduleWorkout(
   schedule: ScheduleSlot[],
   slotIndex: number,
   newDate: string,
-  today: string,
-  lastWorkoutDate: string | null = null,
+  ctx: ScheduleContext,
 ): ScheduleSlot[] | null {
   if (slotIndex < 0 || slotIndex >= schedule.length) return null
-  if (daysBetween(today, newDate) < 0) return null
-  if (lastWorkoutDate && daysBetween(lastWorkoutDate, newDate) < MIN_REST_DAYS) return null
+  if (daysBetween(ctx.today, newDate) < 0) return null
+  if (ctx.lastWorkoutDate && daysBetween(ctx.lastWorkoutDate, newDate) < MIN_REST_DAYS) return null
   const prevDate = slotIndex > 0 ? schedule[slotIndex - 1].date : null
   const nextDate = slotIndex < schedule.length - 1 ? schedule[slotIndex + 1].date : null
 
   if (prevDate && daysBetween(prevDate, newDate) < MIN_REST_DAYS) return null
   if (nextDate && daysBetween(newDate, nextDate) < 0) return null
+  if (exceedsMoveWindow(schedule, slotIndex, newDate, ctx)) return null
 
   const oldDate = schedule[slotIndex].date
   const delta = daysBetween(oldDate, newDate)
@@ -116,10 +154,9 @@ export function rescheduleWorkout(
 export function canStartEarly(
   schedule: ScheduleSlot[],
   slotIndex: number,
-  today: string,
-  lastWorkoutDate: string | null,
+  ctx: ScheduleContext,
 ): boolean {
-  return rescheduleWorkout(schedule, slotIndex, today, today, lastWorkoutDate) !== null
+  return rescheduleWorkout(schedule, slotIndex, ctx.today, ctx) !== null
 }
 
 export function findScheduleSlotIndex(schedule: ScheduleSlot[], date: string): number {
@@ -135,20 +172,20 @@ export function detectReturnPolicy(lastWorkoutDate: string | null, today: string
 export function getRescheduleOptions(
   schedule: ScheduleSlot[],
   slotIndex: number,
-  today: string,
-  lastWorkoutDate: string | null = null,
+  ctx: ScheduleContext,
 ): string[] {
   if (slotIndex < 0 || slotIndex >= schedule.length) return []
   const prevDate = slotIndex > 0 ? schedule[slotIndex - 1].date : null
   const nextDate = slotIndex < schedule.length - 1 ? schedule[slotIndex + 1].date : null
   const current = schedule[slotIndex].date
   const options: string[] = []
-  for (let d = -3; d <= 3; d++) {
+  for (let d = -MAX_MOVE_DAYS; d <= MAX_MOVE_DAYS; d++) {
     const candidate = addDays(current, d)
-    if (daysBetween(today, candidate) < 0) continue
-    if (lastWorkoutDate && daysBetween(lastWorkoutDate, candidate) < MIN_REST_DAYS) continue
+    if (daysBetween(ctx.today, candidate) < 0) continue
+    if (ctx.lastWorkoutDate && daysBetween(ctx.lastWorkoutDate, candidate) < MIN_REST_DAYS) continue
     if (prevDate && daysBetween(prevDate, candidate) < MIN_REST_DAYS) continue
     if (nextDate && daysBetween(candidate, nextDate) < 0) continue
+    if (exceedsMoveWindow(schedule, slotIndex, candidate, ctx)) continue
     options.push(candidate)
   }
   return options
@@ -165,8 +202,7 @@ function appendNextScheduleSlot(
   frequencyDays: 2 | 3,
   weekdays: Weekday[],
 ): ScheduleSlot[] {
-  const minGap = frequencyDays === 3 ? 2 : 3
-  let cursor = addDays(lastDate, minGap)
+  let cursor = addDays(lastDate, minGapDays(frequencyDays))
   cursor = nextWeekdayOnOrAfter(cursor, weekdays)
   result.push({ date: cursor, stepRef })
   return result

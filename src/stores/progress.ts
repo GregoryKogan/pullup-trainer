@@ -96,7 +96,12 @@ export const useProgressStore = defineStore('progress', () => {
     if (slot.date === today) return true
     const idx = p.schedule.findIndex((s) => s.date === slot.date)
     if (idx < 0) return false
-    const moved = rescheduleWorkout(p.schedule, idx, today, today, p.lastWorkoutDate)
+    const moved = rescheduleWorkout(p.schedule, idx, today, {
+      today,
+      lastWorkoutDate: p.lastWorkoutDate,
+      frequencyDays: p.frequencyDays,
+      weekdays: p.weekdays,
+    })
     if (!moved) return false
     await updateProgress({ ...p, schedule: moved })
     return true

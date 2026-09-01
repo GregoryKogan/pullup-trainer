@@ -136,6 +136,54 @@ test.describe('Calendar', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0)
   })
 
+  // Every move cascaded the following slot, which re-opened the +-3 window and
+  // let a workout be pushed back three days at a time without limit. The clock
+  // is pinned to a Monday so the seeded slot sits exactly where the generator
+  // would put it and the allowance is a clean three days.
+  test('repeated moves cannot push a workout past its window', async ({ page }) => {
+    const monday = '2026-11-02'
+    await freezeToday(page, monday)
+    await prepareProgress(page, {
+      anchor: 7,
+      today: monday,
+      weekdays: ['mon', 'wed', 'fri'],
+      schedule: [
+        { date: monday, stepRef: 1 },
+        { date: addDays(monday, 2), stepRef: 1 },
+        { date: addDays(monday, 4), stepRef: 1 },
+      ],
+    })
+    await page.getByRole('navigation').getByRole('link', { name: 'Calendar' }).click()
+
+    const headDate = async () =>
+      ((await readProgress(page))?.schedule as { date: string }[])[0].date
+    let applied = 0
+    let exhausted = false
+
+    for (let i = 0; i < 10; i++) {
+      const current = await headDate()
+      await page.getByRole('button', { name: dayCellName(current, 'planned') }).click()
+      const labels = await page.locator('.optrow .opt').allInnerTexts()
+      const target = [3, 2, 1]
+        .map((d) => moveOptionName(addDays(current, d)))
+        .find((name) => labels.includes(name))
+      if (!target) {
+        await expect(page.getByRole('dialog')).toContainText(/already as late/i)
+        await page.getByRole('button', { name: 'Close' }).click()
+        exhausted = true
+        break
+      }
+      await moveOption(page, target).click()
+      await page.getByRole('button', { name: 'Move' }).click()
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+      applied++
+    }
+
+    expect(applied).toBeGreaterThan(0)
+    expect(exhausted).toBe(true)
+    expect(await headDate()).toBe(addDays(monday, 3))
+  })
+
   test('move options exclude dates within 48h of previous workout', async ({ page }) => {
     const prevDate = addDays(today, -5)
     const slotDate = addDays(today, 2)
