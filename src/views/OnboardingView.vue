@@ -235,25 +235,30 @@ async function accept() {
 .onboarding.page {
   padding-top: 12px;
 }
+/* A fixed offset, not auto margins: centring made the step indicator drift
+   whenever the card below it changed height — between languages and on every
+   step. The footer still gets the leftover space. */
 .onboarding-stack {
-  margin: auto 0;
+  margin-top: clamp(16px, 13vh, 132px);
+  margin-bottom: auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
+/* Two fixed rows rather than one wrapping row: the Russian links are wide
+   enough to push the picker onto a second line on some phones, and because
+   the card above is vertically centred, a footer that changes height moves
+   the whole screen on every language change. */
 .onboarding-foot {
   padding-top: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px 12px;
   padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
 }
-/* Longer link labels push the picker onto its own line, where
-   space-between would align it left. Keep it on the right either way. */
 .onboarding-foot .seg {
-  margin-left: auto;
+  align-self: flex-end;
 }
 .step-indicator {
   margin-bottom: 14px;
