@@ -370,7 +370,7 @@ html:not([data-theme$='-light']) .app-shell::before {
 .tile .big {
   display: block;
   font-family: 'Arial Black', system-ui, sans-serif;
-  font-size: 2.4rem;
+  font-size: clamp(1.9rem, 9vw, 2.4rem);
   font-weight: 900;
   line-height: 1;
   margin: 0;
@@ -380,6 +380,16 @@ html:not([data-theme$='-light']) .app-shell::before {
 @media (max-width: 420px) {
   .tile {
     padding: 12px 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .tile {
+    gap: 10px;
+  }
+
+  .tile .kicker {
+    letter-spacing: 0.1em;
   }
 }
 

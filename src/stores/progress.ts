@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 import type { ActiveProgress, BuiltinLState, Weekday, WorkoutRecord } from '@/domain/types'
-import { buildBuiltinScheduleSlots, rescheduleWorkout } from '@/domain/schedule'
+import {
+  buildBuiltinScheduleSlots,
+  firstTrainingDateAfterTest,
+  rescheduleWorkout,
+} from '@/domain/schedule'
 import { settlePastMissedWorkouts } from '@/domain/settlement'
 import { levelFromM } from '@/domain/levels'
 import { loadProgress, saveProgress, loadAllRecords, addRecord } from '@/db/repositories/progress'
@@ -61,8 +65,14 @@ export const useProgressStore = defineStore('progress', () => {
     progress.value = {
       frequencyDays: 3,
       weekdays: DEFAULT_WEEKDAYS,
-      schedule: buildBuiltinScheduleSlots(today, 1, 8, 3, DEFAULT_WEEKDAYS),
-      lastWorkoutDate: null,
+      schedule: buildBuiltinScheduleSlots(
+        firstTrainingDateAfterTest(today, 3),
+        1,
+        8,
+        3,
+        DEFAULT_WEEKDAYS,
+      ),
+      lastWorkoutDate: today,
       state: createState(m, today),
     }
     await persist()
@@ -130,13 +140,13 @@ export const useProgressStore = defineStore('progress', () => {
       frequencyDays: p.frequencyDays,
       weekdays: p.weekdays,
       schedule: buildBuiltinScheduleSlots(
-        today,
+        firstTrainingDateAfterTest(today, p.frequencyDays),
         stepRef,
         Math.max(p.schedule.length, 8),
         p.frequencyDays,
         p.weekdays,
       ),
-      lastWorkoutDate: p.lastWorkoutDate,
+      lastWorkoutDate: today,
       state: {
         ...p.state,
         anchor: m,

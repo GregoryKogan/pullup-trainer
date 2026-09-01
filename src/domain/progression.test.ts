@@ -114,6 +114,7 @@ describe('applyBuiltinLResult', () => {
 describe('needsRetest', () => {
   it('prompts after break longer than 14 days', () => {
     expect(needsRetest(0, 0, '2026-08-16', '2026-07-01')).toBe(true)
+    expect(needsRetest(0, 0, '2026-08-16', '2026-07-01', '2026-08-16')).toBe(false)
   })
 
   it('does not prompt within 14 days without cycle milestone', () => {

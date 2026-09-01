@@ -31,6 +31,7 @@
     "openCalendar": "Open calendar",
     "startEarly": "Start early",
     "restNotReady": "At least 48 hours of rest since your last workout.",
+    "restAfterTest": "The max test counts as hard work. First workout after at least 48 hours of rest.",
     "maxReps": "Max reps",
     "totalReps": "Total pull-ups",
     "planPreview": "Plan: {sets}",

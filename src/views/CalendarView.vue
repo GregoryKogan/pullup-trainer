@@ -502,10 +502,11 @@ onBeforeUnmount(() => {
   color: var(--muted);
 }
 .day-hint {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 8px;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(444px, calc(100% - 36px));
+  bottom: calc(78px + env(safe-area-inset-bottom, 0px));
   z-index: 5;
   margin: 0;
   padding: 10px 12px;
@@ -551,11 +552,10 @@ onBeforeUnmount(() => {
   box-shadow: 1px 1px 0 var(--shadow);
 }
 .calgrid {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1 0 auto;
   max-height: 448px;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   grid-template-rows: auto repeat(6, minmax(44px, 1fr));
   gap: 5px;
 }

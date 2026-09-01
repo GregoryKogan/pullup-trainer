@@ -81,8 +81,10 @@ export function needsRetest(
   lastRetestCycleIndex: number,
   today: string,
   lastWorkoutDate: string | null,
+  lastRetestDate?: string | null,
 ): boolean {
-  if (lastWorkoutDate) {
+  const breakAnswered = !!lastRetestDate && !!lastWorkoutDate && lastRetestDate > lastWorkoutDate
+  if (lastWorkoutDate && !breakAnswered) {
     const gap = daysBetween(lastWorkoutDate, today)
     if (gap > 14) return true
   }

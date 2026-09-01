@@ -35,6 +35,13 @@ export function nextWeekdayOnOrAfter(fromIso: string, weekdays: Weekday[]): stri
   return formatLocalDate(d)
 }
 
+export function firstTrainingDateAfterTest(
+  testDate: string,
+  frequencyDays: 2 | 3,
+): string {
+  return addDays(testDate, minGapDays(frequencyDays))
+}
+
 export function buildInitialSchedule(
   startDate: string,
   stepRefs: number[],
@@ -164,8 +171,13 @@ export function findScheduleSlotIndex(schedule: ScheduleSlot[], date: string): n
   return idx >= 0 ? idx : 0
 }
 
-export function detectReturnPolicy(lastWorkoutDate: string | null, today: string): ReturnPolicy {
+export function detectReturnPolicy(
+  lastWorkoutDate: string | null,
+  today: string,
+  lastRetestDate?: string | null,
+): ReturnPolicy {
   if (!lastWorkoutDate) return 'continue'
+  if (lastRetestDate && lastRetestDate > lastWorkoutDate) return 'continue'
   return daysBetween(lastWorkoutDate, today) > 14 ? 'retest' : 'continue'
 }
 

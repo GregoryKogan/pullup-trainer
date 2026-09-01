@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { useProgressStore } from '@/stores/progress'
 import { db } from '@/db/database'
+import { canStartEarly, MIN_REST_DAYS } from '@/domain/schedule'
+import { daysBetween } from '@/utils/dates'
 import type { WorkoutRecord } from '@/domain/types'
 
 const TODAY = '2026-08-18'
@@ -48,7 +50,7 @@ describe('useProgressStore', () => {
       expect(store.progress?.state.cycleIndex).toBe(0)
       expect(store.progress?.frequencyDays).toBe(3)
       expect(store.progress?.weekdays).toEqual(['mon', 'wed', 'fri'])
-      expect(store.progress?.lastWorkoutDate).toBeNull()
+      expect(store.progress?.lastWorkoutDate).toBe(TODAY)
 
       const stored = await db.activeProgress.get('singleton')
       expect(stored?.data?.state.anchor).toBe(7)
@@ -61,6 +63,28 @@ describe('useProgressStore', () => {
       expect(dates.length).toBeGreaterThanOrEqual(8)
       expect(dates.every((d) => d >= TODAY)).toBe(true)
       expect([...dates].sort()).toEqual(dates)
+    })
+
+    it('leaves the test day free and rests 48h before the first workout', async () => {
+      const store = useProgressStore()
+      await store.initFromTest(7)
+      const first = store.progress!.schedule[0].date
+      expect(first).not.toBe(TODAY)
+      expect(daysBetween(TODAY, first)).toBeGreaterThanOrEqual(MIN_REST_DAYS)
+    })
+
+    it('blocks an early start on the test day', async () => {
+      const store = useProgressStore()
+      await store.initFromTest(7)
+      const p = store.progress!
+      expect(
+        canStartEarly(p.schedule, 0, {
+          today: TODAY,
+          lastWorkoutDate: p.lastWorkoutDate,
+          frequencyDays: p.frequencyDays,
+          weekdays: p.weekdays,
+        }),
+      ).toBe(false)
     })
 
     it('rejects a test result below the minimum of 1', async () => {
@@ -135,6 +159,17 @@ describe('useProgressStore', () => {
       expect(store.progress?.state.lastRetestCycleIndex).toBe(2)
       expect(store.progress?.state.stepInCycle).toBe(4)
       expect(store.progress?.schedule[0].stepRef).toBe(4)
+    })
+
+    it('rests 48h after the retest before the next workout', async () => {
+      const store = useProgressStore()
+      await store.initFromTest(7)
+      await store.applyRetest(9)
+
+      expect(store.progress?.lastWorkoutDate).toBe(TODAY)
+      const first = store.progress!.schedule[0].date
+      expect(first).not.toBe(TODAY)
+      expect(daysBetween(TODAY, first)).toBeGreaterThanOrEqual(MIN_REST_DAYS)
     })
 
     it('ignores a retest below the minimum of 1', async () => {

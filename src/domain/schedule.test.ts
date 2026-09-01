@@ -3,6 +3,7 @@ import {
   buildInitialSchedule,
   rescheduleWorkout,
   detectReturnPolicy,
+  firstTrainingDateAfterTest,
   findScheduleSlotIndex,
   getRescheduleOptions,
   advanceScheduleAfterWorkout,
@@ -163,6 +164,9 @@ describe('schedule', () => {
   it('detectReturnPolicy', () => {
     expect(detectReturnPolicy('2026-08-01', '2026-08-10')).toBe('continue')
     expect(detectReturnPolicy('2026-07-01', '2026-08-01')).toBe('retest')
+    // A recalibration after the break answers the prompt.
+    expect(detectReturnPolicy('2026-07-01', '2026-08-01', '2026-08-01')).toBe('continue')
+    expect(detectReturnPolicy('2026-07-01', '2026-08-01', '2026-06-01')).toBe('retest')
   })
 
   it('local date format roundtrip', () => {
@@ -214,5 +218,12 @@ describe('schedule', () => {
     const next = advanceScheduleAfterWorkout(schedule, 1, false, 2, 3, [...WEEKDAYS])
     expect(next).toHaveLength(2)
     expect(next.map((s) => s.date)).toEqual(['2026-08-03', '2026-08-09'])
+  })
+})
+
+describe('firstTrainingDateAfterTest', () => {
+  it('leaves the minimum rest gap after a max test', () => {
+    expect(firstTrainingDateAfterTest('2026-08-18', 3)).toBe('2026-08-20')
+    expect(firstTrainingDateAfterTest('2026-08-18', 2)).toBe('2026-08-21')
   })
 })

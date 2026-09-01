@@ -228,7 +228,9 @@ export async function seedProgress(page: Page, options: SeedOptions = {}) {
     cycleIndex: options.state?.cycleIndex ?? 0,
     stepInCycle: options.state?.stepInCycle ?? stepRef,
     failStreak: options.state?.failStreak ?? 0,
-    lastRetestDate: options.state?.lastRetestDate ?? today,
+    // Defaulting this to today would claim the user recalibrated after the very
+    // break the seed is setting up, which now suppresses the return prompt.
+    lastRetestDate: options.state?.lastRetestDate ?? options.lastWorkoutDate ?? today,
     lastRetestCycleIndex: options.state?.lastRetestCycleIndex ?? 0,
     cycleBestMax: options.state?.cycleBestMax ?? 0,
   }

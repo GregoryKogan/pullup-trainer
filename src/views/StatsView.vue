@@ -116,6 +116,13 @@ function chartDateLabel(date: string) {
   return formatShortDate(date, locale.value)
 }
 
+function dateLabelAnchor(index: number, total: number) {
+  if (total <= 1) return 'middle'
+  if (index === 0) return 'start'
+  if (index === total - 1) return 'end'
+  return 'middle'
+}
+
 function exportHistoryJson() {
   const lang = settingsStore.settings?.language ?? 'en'
   const data = exportHistory(progressStore.records, APP_VERSION, lang)
@@ -213,7 +220,7 @@ function exportHistoryJson() {
               class="chart-label"
               :x="chartX(i, displayMaxReps.length)"
               y="148"
-              text-anchor="middle"
+              :text-anchor="dateLabelAnchor(i, displayMaxReps.length)"
             >
               {{ chartDateLabel(p.date) }}
             </text>
@@ -286,7 +293,7 @@ function exportHistoryJson() {
               class="chart-label"
               :x="chartX(i, displayWeeklyBars.length)"
               y="144"
-              text-anchor="middle"
+              :text-anchor="dateLabelAnchor(i, displayWeeklyBars.length)"
             >
               {{ chartDateLabel(b.week) }}
             </text>
@@ -393,7 +400,7 @@ function exportHistoryJson() {
 }
 .chart {
   width: 100%;
-  min-width: 280px;
+  min-width: 256px;
 }
 @media (max-width: 420px) {
   .chart-tick,

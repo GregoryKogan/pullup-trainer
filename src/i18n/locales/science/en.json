@@ -43,6 +43,7 @@
       "title": "Frequency: 3 sessions per week, 2 calendar days apart",
       "body": [
         "The default schedule is three non-consecutive days per week, for example Monday, Wednesday, and Friday. Sessions must be at least two calendar days apart (about 48 hours).",
+        "A max test is a set to failure, so it counts as a session. The test day carries no workout: at the start and at every retest, the first workout lands at least two calendar days later [11].",
         "Training a muscle group twice per week beats once per week for hypertrophy in meta-analysis [9]. For upper-body strength, three or more weekly sessions beat one when volume is matched [10]. After a session that lowers strength by no more than 20%, strength is usually restored within about two days [11].",
         "Two sessions per week is a valid option, especially at advanced levels when progress stalls. ACSM guidelines recommend training every major muscle group at least twice per week [12]."
       ]

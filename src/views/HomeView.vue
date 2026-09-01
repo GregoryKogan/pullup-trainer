@@ -119,15 +119,21 @@ const streakWeeks = computed(() => {
   return computeWeeklyStreak(progressStore.records, freq, today)
 })
 
+const testedToday = computed(() =>
+  progressStore.records.some((r) => r.kind === 'test' && r.date === today),
+)
+
 const needsRetestPrompt = computed(() => {
   const p = progressStore.progress
   if (!p) return false
-  if (detectReturnPolicy(p.lastWorkoutDate, today) === 'retest') return true
+  const lastRetestDate = p.state.lastRetestDate ?? null
+  if (detectReturnPolicy(p.lastWorkoutDate, today, lastRetestDate) === 'retest') return true
   return needsRetest(
     p.state.cycleIndex,
     p.state.lastRetestCycleIndex ?? 0,
     today,
     p.lastWorkoutDate,
+    lastRetestDate,
   )
 })
 
@@ -304,7 +310,9 @@ async function reduceAnchor() {
           {{ t('home.startEarly') }}
           <AppIcon name="arrow-right" />
         </button>
-        <p v-if="showRestNotReady" class="sub rest-not-ready">{{ t('home.restNotReady') }}</p>
+        <p v-if="showRestNotReady" class="sub rest-not-ready">
+          {{ testedToday ? t('home.restAfterTest') : t('home.restNotReady') }}
+        </p>
         <RouterLink to="/calendar" class="btn ghost calendar-link">{{ t('home.openCalendar') }}</RouterLink>
       </template>
     </section>
