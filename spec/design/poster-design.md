@@ -121,8 +121,8 @@ Vue SFC           ← scoped layout/state; глобальные классы в 
 ### Формы
 
 - **`.setrow`** — key (mono) / value, min-height 50px, border-bottom 2px.
-- **`.seg`** — segmented control на `--bg2`; кнопки — mono **caps**; active `.on` — ink on bg; press у неактивной — подсветка `color-mix(ink 16%)`.
-- **`.sw`** — square toggle **54×44px**, thumb 20×20; `.on` — accent fill; active: translate(2px,2px).
+- **`.seg`** — segmented control на `--bg2`; кнопки — mono **caps**; active `.on` — accent fill (`accent-ink` на `accent`), как у всех выбранных контролов; press у неактивной — подсветка `color-mix(ink 16%)`.
+- **`.sw`** — square toggle **54×44px**, thumb 20px шириной во всю высоту трека минус 4px; `.on` — accent fill, thumb уезжает вправо; active: translate(2px,2px).
 
 ### Навигация
 
@@ -172,7 +172,7 @@ Full-viewport, без tab bar. Фазы: **reps** (hero: ContourNumber + pullup 
 
 ### Calendar ([`CalendarView`](../../src/views/CalendarView.vue))
 
-- Ячейки min **44px**, display font; высота ряда ограничена (`.calgrid { max-height }`), чтобы на высоких вьюпортах клетки не растягивались в полосы.
+- Ячейки min **44px**, display font; сетка заполняет свободную высоту (`flex: 1 1 auto`), но ограничена `max-height`, чтобы на высоких вьюпортах клетки не растягивались в полосы. Легенда прижата к низу (`margin-top: auto`).
 - Заголовок месяца — `«<месяц> <год>»` (без локальных суффиксов вроде «г.»), максимум 2 строки: позиция сетки не должна зависеть от длины названия.
 - `.today` — accent fill; `.planned` — dot `accent2`; `.done`/`.missed` — ok/bad borders + icons.
 - `.sel` — **inset box-shadow** `0 0 0 3px accent2` (не outline).
@@ -212,7 +212,7 @@ Centered `.panel.result`: border ok/bad, 64px check/x icon, сводка `«{don
 
 | Компонент | Паттерн |
 |---|---|
-| [`PwaInstallModal`](../../src/components/PwaInstallModal.vue) | `.modal-full`; скроллящийся контент растягивается (`flex: 1 1 auto`), футер прижат к низу; platform tabs; step list + SVG illus; lang seg; Install + Dismiss outline |
+| [`PwaInstallModal`](../../src/components/PwaInstallModal.vue) | `.modal-full`; скроллящийся контент растягивается (`flex: 1 1 auto`), футер прижат к низу; platform tabs; step list; lang seg; Install accent + Dismiss outline. Без Install (не Chromium) Dismiss становится accent — на экране всегда есть ровно одно primary-действие |
 | [`ConfirmPanel`](../../src/components/ConfirmPanel.vue) | bottom `.modal-overlay` + `.modal-card`; `role="alertdialog"`; focus trap; проп `destructive` красит primary в `--bad` |
 | Calendar sheet | Teleport; `.sheet-backdrop` + `.sheetcard.panel` |
 

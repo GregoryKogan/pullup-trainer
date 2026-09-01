@@ -16,11 +16,13 @@ const props = withDefaults(
     paused?: boolean
     minSeconds?: number
     maxSeconds?: number
+    defaultSeconds?: number
   }>(),
   {
     paused: false,
     minSeconds: REST_MIN_SECONDS,
     maxSeconds: REST_MAX_SECONDS,
+    defaultSeconds: 0,
   },
 )
 
@@ -71,6 +73,14 @@ const offset = computed(() => {
 
 const atMin = computed(() => props.remaining <= props.minSeconds)
 const atMax = computed(() => props.remaining >= props.maxSeconds)
+
+const almostDone = computed(
+  () => props.total > 0 && !props.paused && props.remaining > 0 && props.remaining <= 5,
+)
+
+function isSuggested(seconds: number) {
+  return props.total === 0 && seconds === props.defaultSeconds
+}
 </script>
 
 <template>
@@ -79,7 +89,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
       <p class="sr-only" aria-live="polite" aria-atomic="true">{{ ringLabel }}</p>
       <div class="ring-stack">
         <template v-if="total > 0">
-          <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <svg class="ring" :class="{ ending: almostDone }" viewBox="0 0 120 120" aria-hidden="true">
             <circle class="bg" cx="60" cy="60" r="52" />
             <circle
               class="fg"
@@ -117,12 +127,14 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           :key="sec"
           type="button"
           class="mini preset"
-          :class="{ on: total === sec }"
+          :class="{ on: total === sec, suggested: isSuggested(sec) }"
           :aria-pressed="total === sec"
+          :aria-describedby="isSuggested(sec) ? 'rest-default-hint' : undefined"
           @click="emit('preset', sec)"
         >
           {{ formatTime(sec) }}
         </button>
+        <span id="rest-default-hint" class="sr-only">{{ t('workout.restDefault') }}</span>
       </div>
       <div v-if="total > 0" class="restrow">
         <button
@@ -176,7 +188,7 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
           {{ t('workout.reset') }}
         </button>
       </div>
-      <p class="resthint">{{ t('workout.restHint') }}</p>
+      <p v-if="total === 0" class="resthint">{{ t('workout.restHint') }}</p>
     </section>
   </div>
 </template>
@@ -242,6 +254,21 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
   font-weight: 800;
   fill: var(--ink);
 }
+.ring.ending .fg {
+  stroke: var(--accent2);
+}
+.ring.ending .ring-num {
+  fill: var(--accent2);
+  animation: ring-tick 1s steps(2, jump-none) infinite;
+}
+@keyframes ring-tick {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.45;
+  }
+}
 .ring-lab {
   margin: 0;
   display: inline-flex;
@@ -280,6 +307,10 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 .presets .mini.on {
   background: var(--accent);
   color: var(--accent-ink);
+}
+.presets .mini.suggested {
+  border-color: var(--accent-text);
+  color: var(--accent-text);
 }
 .restrow {
   display: flex;
@@ -345,6 +376,9 @@ const atMax = computed(() => props.remaining >= props.maxSeconds)
 @media (prefers-reduced-motion: reduce) {
   .ring .fg {
     transition: none;
+  }
+  .ring.ending .ring-num {
+    animation: none;
   }
   .mini:active:not(:disabled):not(.inactive) {
     transform: none;

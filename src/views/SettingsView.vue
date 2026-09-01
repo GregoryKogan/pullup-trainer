@@ -219,8 +219,7 @@ async function confirmReset() {
       <h4>{{ t('settings.restTimer') }}</h4>
       <div class="setrow">
         <span class="k">{{ t('settings.restDuration') }}</span>
-        <span class="v">
-          <b>{{ formatTime(settings.restDurationSeconds) }}</b>
+        <span class="v rest-stepper">
           <button
             type="button"
             class="iconbtn"
@@ -231,6 +230,7 @@ async function confirmReset() {
           >
             <AppIcon name="minus" />
           </button>
+          <b>{{ formatTime(settings.restDurationSeconds) }}</b>
           <button
             type="button"
             class="iconbtn"
@@ -469,6 +469,14 @@ select {
   text-align: right;
   text-align-last: right;
   padding: 0 28px 0 12px;
+}
+.rest-stepper {
+  flex-wrap: nowrap;
+}
+.rest-stepper b {
+  min-width: 4.5ch;
+  text-align: center;
+  font-size: 0.95rem;
 }
 .weekday-block {
   padding: 10px 0 2px;

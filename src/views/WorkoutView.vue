@@ -189,9 +189,8 @@ function onBeforeUnload(e: BeforeUnloadEvent) {
 watch(
   () => workoutStore.restRunning,
   (running) => {
-    if (running && settingsStore.settings?.restAutoStart) {
-      restTimer.start(restDuration.value)
-    }
+    if (!running) return
+    restTimer.start(settingsStore.settings?.restAutoStart ? restDuration.value : 0)
   },
 )
 
@@ -216,7 +215,7 @@ function finishSet(done: number) {
 async function openFewer() {
   const set = currentSet.value
   fewerValue.value = set?.planned ?? 0
-  maxDoneValue.value = set?.type === 'max' ? (set.planned + 20) : (set?.planned ?? 0)
+  maxDoneValue.value = (set?.planned ?? 0) + 20
   showFewer.value = true
   await nextTick()
   document.getElementById('fewer-input')?.focus()
@@ -236,6 +235,11 @@ function onFewerInput(event: Event) {
 
 function onMaxDoneInput(event: Event) {
   syncRepInput(event, (value) => { maxDoneInput.value = value }, maxDoneLimit.value, 0)
+}
+
+function skipRest() {
+  restTimer.skip()
+  workoutStore.restRunning = false
 }
 
 async function applyRestPreset(seconds: number) {
@@ -348,6 +352,7 @@ function confirmExit() {
           <p class="sub max-instruction">{{ t('workout.maxSetInstruction') }}</p>
           <p class="min-label">{{ t('workout.maxSetMinLabel') }}</p>
           <ContourNumber
+            :key="`max-${current}`"
             class="rep"
             :value="currentSet.planned"
             aria-live="polite"
@@ -360,14 +365,13 @@ function confirmExit() {
         <template v-else>
           <p class="kicker">{{ t('workout.doNow') }}</p>
           <ContourNumber
+            :key="`work-${current}`"
             class="rep"
             :value="currentSet.planned"
             aria-live="polite"
             aria-atomic="true"
           />
-          <p class="sub" aria-live="polite">
-            {{ t('workout.focusReps', { n: current + 1 }) }}
-          </p>
+          <p class="sub" aria-live="polite">{{ t('workout.focusReps') }}</p>
         </template>
       </div>
       <RestTimerRing
@@ -377,13 +381,14 @@ function confirmExit() {
         :paused="restTimer.paused.value"
         :min-seconds="restMin"
         :max-seconds="restMax"
+        :default-seconds="restDuration"
         :label="t('workout.rest')"
         @minus="restTimer.adjust(-15)"
         @plus="restTimer.adjust(15)"
         @reset="restTimer.reset()"
         @pause="restTimer.pause()"
         @resume="restTimer.resume()"
-        @skip="workoutStore.restRunning = false"
+        @skip="skipRest"
         @preset="applyRestPreset"
       />
       <div
@@ -571,12 +576,13 @@ function confirmExit() {
   text-transform: uppercase;
 }
 .max-instruction {
-  margin: 0 0 18px;
-  max-width: 22em;
+  margin: 0 0 28px;
+  max-width: 20em;
+  letter-spacing: 0.08em;
   text-wrap: balance;
 }
 .min-label {
-  margin: 0 0 6px;
+  margin: 0 0 2px;
   font: 800 0.72rem/1.35 ui-monospace, 'SF Mono', Menlo, monospace;
   letter-spacing: 0.14em;
   text-transform: uppercase;

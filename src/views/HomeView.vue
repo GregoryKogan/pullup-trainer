@@ -210,118 +210,125 @@ async function reduceAnchor() {
 <template>
   <div class="page">
     <header class="head">
-      <div>
-        <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
+      <div class="head-main">
+        <div class="head-top">
+          <p class="kicker">{{ formatDisplayDate(today, locale) }}</p>
+          <span v-if="streakWeeks > 0" class="chip streak">
+            <IconFlame :size="16" aria-hidden="true" />
+            <span aria-hidden="true">{{ t('home.streakWeeks', { n: streakWeeks }) }}</span>
+            <span class="sr-only">{{ t('stats.weeklyStreakLabel') }}: {{ streakWeeks }}</span>
+          </span>
+        </div>
         <h1>{{ headline }}</h1>
       </div>
-      <span v-if="streakWeeks > 0" class="chip streak">
-        <IconFlame :size="16" />
-        {{ t('home.streakWeeks', { n: streakWeeks }) }}
-      </span>
     </header>
 
-    <section v-if="needsRetestPrompt && !showRetest" class="panel retest">
-      <p class="kicker retest-kicker">
-        <IconTarget :size="16" class="kicker-icon" />
-        {{ t('home.retestTitle') }}
-      </p>
-      <p class="sub">{{ t('home.retestBody') }}</p>
-      <div class="btnrow">
-        <button type="button" class="btn accent" @click="showRetest = true">{{ t('home.retestNow') }}</button>
-        <button type="button" class="btn ghost" @click="reduceAnchor">{{ t('home.retestReduce') }}</button>
-      </div>
-    </section>
-
-    <section v-if="showRetest" class="panel retest">
-      <p class="kicker">{{ t('onboarding.testTitle') }}</p>
-      <p>{{ t('onboarding.testBody') }}</p>
-      <label class="field">
-        <span>{{ t('onboarding.repsLabel') }}</span>
-        <div class="rep-stepper">
-          <button
-            type="button"
-            class="iconbtn rep-step"
-            :class="{ inactive: retestAtMin }"
-            :aria-label="t('onboarding.repsDecrease')"
-            :disabled="retestAtMin"
-            @click="adjustRetestReps(-1)"
-          >
-            <AppIcon name="minus" />
-          </button>
-          <input
-            id="retest-reps"
-            v-model.number="retestReps"
-            type="number"
-            min="1"
-            :max="REP_COUNT_MAX"
-            step="1"
-            inputmode="numeric"
-            :placeholder="t('onboarding.repsPlaceholder')"
-            @keydown="blockRepFractionKey"
-            @input="onRetestRepsInput"
-          />
-          <button
-            type="button"
-            class="iconbtn rep-step"
-            :class="{ inactive: retestAtMax }"
-            :aria-label="t('onboarding.repsIncrease')"
-            :disabled="retestAtMax"
-            @click="adjustRetestReps(1)"
-          >
-            <AppIcon name="plus" />
-          </button>
-        </div>
-      </label>
-      <p v-if="retestError" class="sub error">{{ retestError }}</p>
-      <p class="sub hint">{{ t('onboarding.testHint') }}</p>
-      <div v-if="showRetestZeroMessage" class="panel zero-panel">
-        <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
-        <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
-      </div>
-      <div class="btnrow retest-actions">
-        <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
-        <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
-      </div>
-    </section>
-
-    <section v-if="nextSlot" class="panel next">
-      <p class="next-label">{{ isWorkoutToday ? t('home.todayLabel') : t('home.nextLabel') }}</p>
-      <h2 v-if="isWorkoutToday && planSummary" class="workout-plan">{{ planSummary }}</h2>
-      <template v-else>
-        <h2 class="workout-date">{{ formatDisplayDate(nextSlot.date, locale) }}</h2>
-        <p v-if="setsPreview" class="sets">{{ setsPreview }}</p>
-      </template>
-      <div class="meter" aria-hidden="true"><i :style="{ width: `${progressPercent}%` }" /></div>
-      <p v-if="cycleInfo" class="sub step-progress">
-        <IconAboveBar :size="16" class="step-icon" />
-        {{ t('home.stepProgress', { step: cycleInfo.step, cycle: cycleInfo.cycle }) }}
-      </p>
-      <p v-if="levelInfo" class="sub">{{ levelInfo }}</p>
-      <button
-        v-if="canStartToday"
-        type="button"
-        class="btn accent"
-        @click="startWorkout(nextSlot!.date)"
-      >
-        {{ t('common.start') }}
-        <AppIcon name="arrow-right" />
-      </button>
-      <template v-else>
-        <button v-if="canStartEarlyToday" type="button" class="btn accent" @click="requestEarlyStart">
-          {{ t('home.startEarly') }}
-          <AppIcon name="arrow-right" />
-        </button>
-        <p v-if="showRestNotReady" class="sub rest-not-ready">
-          {{ testedToday ? t('home.restAfterTest') : t('home.restNotReady') }}
+    <div class="home-stack">
+      <section v-if="needsRetestPrompt && !showRetest" class="panel retest">
+        <p class="kicker retest-kicker">
+          <IconTarget :size="16" class="kicker-icon" />
+          {{ t('home.retestTitle') }}
         </p>
-        <RouterLink to="/calendar" class="btn ghost calendar-link">{{ t('home.openCalendar') }}</RouterLink>
-      </template>
-    </section>
-    <p v-else class="sub">{{ t('home.noProgress') }}</p>
+        <p class="sub">{{ t('home.retestBody') }}</p>
+        <div class="btnrow">
+          <button type="button" class="btn accent" @click="showRetest = true">{{ t('home.retestNow') }}</button>
+          <button type="button" class="btn ghost" @click="reduceAnchor">{{ t('home.retestReduce') }}</button>
+        </div>
+      </section>
+
+      <section v-if="showRetest" class="panel retest">
+        <p class="kicker">{{ t('onboarding.testTitle') }}</p>
+        <p>{{ t('onboarding.testBody') }}</p>
+        <label class="field">
+          <span>{{ t('onboarding.repsLabel') }}</span>
+          <div class="rep-stepper">
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: retestAtMin }"
+              :aria-label="t('onboarding.repsDecrease')"
+              :disabled="retestAtMin"
+              @click="adjustRetestReps(-1)"
+            >
+              <AppIcon name="minus" />
+            </button>
+            <input
+              id="retest-reps"
+              v-model.number="retestReps"
+              type="number"
+              min="1"
+              :max="REP_COUNT_MAX"
+              step="1"
+              inputmode="numeric"
+              :placeholder="t('onboarding.repsPlaceholder')"
+              @keydown="blockRepFractionKey"
+              @input="onRetestRepsInput"
+            />
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: retestAtMax }"
+              :aria-label="t('onboarding.repsIncrease')"
+              :disabled="retestAtMax"
+              @click="adjustRetestReps(1)"
+            >
+              <AppIcon name="plus" />
+            </button>
+          </div>
+        </label>
+        <p v-if="retestError" class="sub error">{{ retestError }}</p>
+        <p class="sub hint">{{ t('onboarding.testHint') }}</p>
+        <div v-if="showRetestZeroMessage" class="panel zero-panel">
+          <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
+          <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
+        </div>
+        <div class="btnrow retest-actions">
+          <button type="button" class="btn accent" @click="submitRetest">{{ t('common.confirm') }}</button>
+          <button type="button" class="btn ghost" @click="showRetest = false">{{ t('common.cancel') }}</button>
+        </div>
+      </section>
+
+      <section v-if="nextSlot" class="panel next">
+        <p class="next-label">{{ isWorkoutToday ? t('home.todayLabel') : t('home.nextLabel') }}</p>
+        <h2 v-if="isWorkoutToday && planSummary" class="workout-plan">{{ planSummary }}</h2>
+        <template v-else>
+          <h2 class="workout-date">{{ formatDisplayDate(nextSlot.date, locale) }}</h2>
+          <p v-if="setsPreview" class="sets">{{ setsPreview }}</p>
+        </template>
+        <div class="meter" aria-hidden="true"><i :style="{ width: `${progressPercent}%` }" /></div>
+        <p v-if="cycleInfo" class="sub step-progress">
+          <IconAboveBar :size="16" class="step-icon" />
+          {{ t('home.stepProgress', { step: cycleInfo.step, cycle: cycleInfo.cycle }) }}
+        </p>
+        <p v-if="levelInfo" class="sub">{{ levelInfo }}</p>
+        <div class="next-actions">
+          <button
+            v-if="canStartToday"
+            type="button"
+            class="btn accent"
+            @click="startWorkout(nextSlot!.date)"
+          >
+            {{ t('common.start') }}
+            <AppIcon name="arrow-right" />
+          </button>
+          <template v-else>
+            <button v-if="canStartEarlyToday" type="button" class="btn accent" @click="requestEarlyStart">
+              {{ t('home.startEarly') }}
+              <AppIcon name="arrow-right" />
+            </button>
+            <p v-if="showRestNotReady" class="sub rest-not-ready">
+              {{ testedToday ? t('home.restAfterTest') : t('home.restNotReady') }}
+            </p>
+            <RouterLink to="/calendar" class="btn ghost calendar-link">{{ t('home.openCalendar') }}</RouterLink>
+          </template>
+        </div>
+      </section>
+      <p v-else class="sub">{{ t('home.noProgress') }}</p>
+    </div>
 
     <div class="grid2 page-bottom">
       <section class="panel tile">
-        <p class="kicker">{{ t('home.maxReps') }}</p>
+        <p class="kicker">{{ t('home.bestSet') }}</p>
         <b class="big">{{ maxReps }}</b>
       </section>
       <section class="panel tile">
@@ -341,18 +348,26 @@ async function reduceAnchor() {
 </template>
 
 <style scoped>
+.home-stack {
+  display: flex;
+  flex-direction: column;
+}
 .grid2.page-bottom {
-  margin-top: auto;
+  margin-top: 0;
   padding-top: 12px;
 }
-@media (min-height: 1100px) {
-  .grid2.page-bottom {
-    margin-top: 12px;
-  }
+.head-main {
+  width: 100%;
+}
+.head-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 .chip.streak {
   display: inline-flex;
-  margin-left: auto;
+  flex-shrink: 0;
   align-items: center;
   gap: 6px;
   font: 800 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
@@ -379,12 +394,13 @@ async function reduceAnchor() {
 .next h2.workout-plan {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.3rem;
+  line-height: 1.1;
   margin: 6px 0 0;
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
 .next h2.workout-plan {
-  font-size: clamp(1.15rem, 6.4vw, 1.55rem);
+  font-size: clamp(1.1rem, 6.2vw, 1.75rem);
   letter-spacing: 0.01em;
   color: var(--ink);
 }
@@ -404,6 +420,21 @@ async function reduceAnchor() {
   display: block;
   height: 100%;
   background: var(--accent);
+  transform-origin: left center;
+  animation: meter-fill 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes meter-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .meter i {
+    animation: none;
+  }
 }
 .field {
   display: flex;

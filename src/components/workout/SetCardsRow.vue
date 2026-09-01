@@ -94,6 +94,7 @@ onBeforeUnmount(() => {
   flex: 0 0 62px;
   width: 62px;
   min-height: 62px;
+  padding-bottom: 11px;
   scroll-snap-align: center;
   border-radius: 2px;
   background: var(--card);
@@ -156,8 +157,16 @@ onBeforeUnmount(() => {
 .setsrow .s.now .tag {
   color: var(--accent-ink);
 }
-.setsrow .s.max b {
-  margin-bottom: 7px;
+.setsrow .s.done {
+  animation: set-logged 0.32s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes set-logged {
+  from {
+    transform: scale(0.88);
+  }
+  to {
+    transform: none;
+  }
 }
 .scroll-hint {
   margin: 6px 0 0;
@@ -172,6 +181,11 @@ onBeforeUnmount(() => {
   }
   .setsrow b {
     font-size: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setsrow .s.done {
+    animation: none;
   }
 }
 </style>

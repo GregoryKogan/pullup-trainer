@@ -325,7 +325,7 @@ function exportHistoryJson() {
         <li v-for="r in history" :key="r.id ?? r.startedAt">
           <div class="date">
             <b>{{ formatShortDate(r.date, locale) }}</b>
-            <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
+            <span v-if="r.kind === 'test'">{{ t('onboarding.testTitle') }}</span>
           </div>
           <div class="info"><b>{{ recordLabel(r) }}</b></div>
           <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{

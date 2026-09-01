@@ -122,87 +122,89 @@ async function accept() {
 <template>
   <div class="onboarding page">
     <h1 class="sr-only">{{ t('onboarding.introTitle') }}</h1>
-    <p class="step-indicator kicker">
-      <span class="step-dots" aria-hidden="true">
-        <i v-for="n in 3" :key="n" :class="{ on: n <= stepNumber }" />
-      </span>
-      {{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}
-    </p>
-    <section v-if="step === 'intro'" class="panel">
-      <p class="kicker">{{ t('onboarding.introTitle') }}</p>
-      <p>{{ t('onboarding.introBody') }}</p>
-      <button type="button" class="btn accent" @click="goTest">{{ t('common.next') }}</button>
-    </section>
-    <section v-else-if="step === 'test'" class="panel">
-      <div class="test-head">
-        <IconPullUp :size="28" class="test-icon" />
-        <p class="kicker">{{ t('onboarding.testTitle') }}</p>
-      </div>
-      <p>{{ t('onboarding.testBody') }}</p>
-      <label class="field">
-        <span>{{ t('onboarding.repsLabel') }}</span>
-        <div class="rep-stepper">
-          <button
-            type="button"
-            class="iconbtn rep-step"
-            :class="{ inactive: repsAtMin }"
-            :aria-label="t('onboarding.repsDecrease')"
-            :disabled="repsAtMin"
-            @click="adjustReps(-1)"
-          >
-            <AppIcon name="minus" />
-          </button>
-          <input
-            id="onboarding-reps"
-            v-model.number="reps"
-            type="number"
-            min="1"
-            :max="REP_COUNT_MAX"
-            step="1"
-            inputmode="numeric"
-            :placeholder="t('onboarding.repsPlaceholder')"
-            @keydown="blockRepFractionKey"
-            @input="onRepsInput"
-          />
-          <button
-            type="button"
-            class="iconbtn rep-step"
-            :class="{ inactive: repsAtMax }"
-            :aria-label="t('onboarding.repsIncrease')"
-            :disabled="repsAtMax"
-            @click="adjustReps(1)"
-          >
-            <AppIcon name="plus" />
-          </button>
+    <div class="onboarding-stack">
+      <p class="step-indicator kicker">
+        <span class="step-dots" aria-hidden="true">
+          <i v-for="n in 3" :key="n" :class="{ on: n <= stepNumber }" />
+        </span>
+        {{ t('onboarding.stepOf', { current: stepNumber, total: 3 }) }}
+      </p>
+      <section v-if="step === 'intro'" class="panel">
+        <p class="kicker">{{ t('onboarding.introTitle') }}</p>
+        <p>{{ t('onboarding.introBody') }}</p>
+        <button type="button" class="btn accent" @click="goTest">{{ t('common.next') }}</button>
+      </section>
+      <section v-else-if="step === 'test'" class="panel">
+        <div class="test-head">
+          <IconPullUp :size="28" class="test-icon" />
+          <p class="kicker">{{ t('onboarding.testTitle') }}</p>
         </div>
-      </label>
-      <p v-if="repsError" class="sub error">{{ repsError }}</p>
-      <p class="sub hint">{{ t('onboarding.testHint') }}</p>
-      <button
-        type="button"
-        class="text-link zero-link"
-        aria-controls="onboarding-zero-note"
-        :aria-expanded="showZeroMessage"
-        @click="toggleZeroMessage"
-      >
-        {{ t('onboarding.cannotDoPullupsLink') }}
-      </button>
-      <div v-if="showZeroMessage" id="onboarding-zero-note" class="panel zero-panel">
-        <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
-        <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
-      </div>
-      <div class="btnrow">
-        <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
-        <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
-      </div>
-    </section>
-    <section v-else class="panel">
-      <p class="kicker">{{ t('onboarding.recommendTitle') }}</p>
-      <p>{{ recommendText }}</p>
-      <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
-      <button type="button" class="btn ghost" @click="goBack">{{ t('onboarding.override') }}</button>
-    </section>
-    <div class="onboarding-foot page-bottom">
+        <p>{{ t('onboarding.testBody') }}</p>
+        <label class="field">
+          <span>{{ t('onboarding.repsLabel') }}</span>
+          <div class="rep-stepper">
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: repsAtMin }"
+              :aria-label="t('onboarding.repsDecrease')"
+              :disabled="repsAtMin"
+              @click="adjustReps(-1)"
+            >
+              <AppIcon name="minus" />
+            </button>
+            <input
+              id="onboarding-reps"
+              v-model.number="reps"
+              type="number"
+              min="1"
+              :max="REP_COUNT_MAX"
+              step="1"
+              inputmode="numeric"
+              :placeholder="t('onboarding.repsPlaceholder')"
+              @keydown="blockRepFractionKey"
+              @input="onRepsInput"
+            />
+            <button
+              type="button"
+              class="iconbtn rep-step"
+              :class="{ inactive: repsAtMax }"
+              :aria-label="t('onboarding.repsIncrease')"
+              :disabled="repsAtMax"
+              @click="adjustReps(1)"
+            >
+              <AppIcon name="plus" />
+            </button>
+          </div>
+        </label>
+        <p v-if="repsError" class="sub error">{{ repsError }}</p>
+        <p class="sub hint">{{ t('onboarding.testHint') }}</p>
+        <button
+          type="button"
+          class="text-link zero-link"
+          aria-controls="onboarding-zero-note"
+          :aria-expanded="showZeroMessage"
+          @click="toggleZeroMessage"
+        >
+          {{ t('onboarding.cannotDoPullupsLink') }}
+        </button>
+        <div v-if="showZeroMessage" id="onboarding-zero-note" class="panel zero-panel">
+          <p class="kicker">{{ t('onboarding.cannotDoPullupsTitle') }}</p>
+          <p>{{ t('onboarding.cannotDoPullupsBody') }}</p>
+        </div>
+        <div class="btnrow">
+          <button type="button" class="btn ghost" @click="goBack">{{ t('common.back') }}</button>
+          <button type="button" class="btn accent" @click="submitTest">{{ t('common.next') }}</button>
+        </div>
+      </section>
+      <section v-else class="panel">
+        <p class="kicker">{{ t('onboarding.recommendTitle') }}</p>
+        <p>{{ recommendText }}</p>
+        <button type="button" class="btn accent" @click="accept">{{ t('onboarding.accept') }}</button>
+        <button type="button" class="btn ghost" @click="goBack">{{ t('onboarding.override') }}</button>
+      </section>
+    </div>
+    <div class="onboarding-foot">
       <div class="links">
         <RouterLink class="text-link" to="/about">{{ t('home.aboutLink') }}</RouterLink>
         <RouterLink class="text-link" to="/why">{{ t('home.whyLink') }}</RouterLink>
@@ -233,7 +235,14 @@ async function accept() {
 .onboarding.page {
   padding-top: 12px;
 }
+.onboarding-stack {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
 .onboarding-foot {
+  padding-top: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -32,7 +32,7 @@
     "startEarly": "Start early",
     "restNotReady": "At least 48 hours of rest since your last workout.",
     "restAfterTest": "The max test counts as hard work. First workout after at least 48 hours of rest.",
-    "maxReps": "Max reps",
+    "bestSet": "Best set",
     "totalReps": "Total pull-ups",
     "planPreview": "Plan: {sets}",
     "planMax": "max",
@@ -43,9 +43,9 @@
     "aboutLink": "About",
     "whyLink": "Why this program",
     "retestTitle": "Time for a retest",
-    "retestBody": "Long break — retest your max or try an easier plan.",
+    "retestBody": "Long break. Retest your max, or drop it 10% and keep going.",
     "retestNow": "Retest max",
-    "retestReduce": "Easier plan (−10%)"
+    "retestReduce": "Easier plan"
   },
   "levels": {
     "L1": "Beginner",
@@ -66,7 +66,7 @@
     "repsPlaceholder": "1",
     "recommendTitle": "Your starting point",
     "recommend": {
-      "l": "Level: {level}. Your max is {max}. Your first cycle starts at step 1."
+      "l": "Level: {level}. Your max is {max}. You start at workout 1 of 6."
     },
     "pullupsCount": "{n} pull-up | {n} pull-ups",
     "accept": "Start program",
@@ -86,13 +86,13 @@
     "logDifferent": "Enter reps",
     "maxDoneLabel": "How many did you do?",
     "maxSetKicker": "Max-effort set",
-    "maxSetInstruction": "Do as many pull-ups as you can",
+    "maxSetInstruction": "As many as you can",
     "maxSetMinLabel": "at least",
     "maxTag": "MAX",
     "maxSetA11y": "Set {n}, max effort. Do as many pull-ups as you can, at least {min}.",
     "fewerLabelReps": "Reps completed",
     "rest": "REST",
-    "restHint": "Rest is optional — tap Skip",
+    "restHint": "Rest is optional",
     "adjustMinus": "−15 sec",
     "adjustPlus": "+15 sec",
     "adjustStep": "15 sec",
@@ -112,11 +112,12 @@
     "resultSuccess": "Workout complete",
     "resultFail": "Workout incomplete",
     "resultVolume": "{done} / {planned} reps",
-    "resultNext": "Next: step {step}",
-    "resultRetry": "Try this step again next time.",
-    "resultNextDate": "Next workout: {date}",
+    "resultNext": "Next: workout {step} of 6",
+    "resultRetry": "Same workout next time.",
+    "resultNextDate": "On {date}",
     "volume": "{n} rep total | {n} reps total",
-    "focusReps": "reps · set {n}"
+    "focusReps": "reps",
+    "restDefault": "Your default"
   },
   "calendar": {
     "title": "Calendar",
@@ -131,7 +132,7 @@
     "dayHistoryEmpty": "No workouts logged on this day yet.",
     "moveLabel": "Move to",
     "notScheduled": "This day has no workout planned.",
-    "moveUnchanged": "Pick a different date to move this workout.",
+    "moveUnchanged": "Pick another date to move this workout.",
     "moveLimitReached": "Already as late as this workout can go.",
     "moveBlockedActive": "Finish or leave the workout before moving this day.",
     "attemptedLocked": "This workout is already logged.",
@@ -167,7 +168,8 @@
     "success": "Done",
     "chartEmpty": "Complete more workouts to see the chart.",
     "filterMonth": "Filter by month",
-    "filterAll": "All months"
+    "filterAll": "All months",
+    "workoutLabel": "Workout"
   },
   "settings": {
     "title": "Settings",

@@ -21,6 +21,22 @@ const text = computed(() => String(props.value))
   width: 100%;
   text-align: center;
   line-height: 1;
+  animation: contour-in 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes contour-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contour-number-wrap {
+    animation: none;
+  }
 }
 .contour-number {
   font-family: 'Arial Black', system-ui, sans-serif;

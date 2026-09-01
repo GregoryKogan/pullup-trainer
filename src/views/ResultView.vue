@@ -127,6 +127,10 @@ onMounted(() => {
   margin-bottom: 12px;
   outline: none;
 }
+.result.fail .status-kicker {
+  background: var(--bad);
+  color: var(--bg);
+}
 .summary {
   font-family: 'Arial Black', system-ui, sans-serif;
   font-size: 1.7rem;

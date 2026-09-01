@@ -128,33 +128,19 @@ function onTabKeydown(e: KeyboardEvent) {
               </li>
             </ol>
           </div>
-          <div class="illus" aria-hidden="true">
-            <svg v-if="activeTab === 'ios'" viewBox="0 0 200 120" width="200" height="120">
-              <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
-              <rect x="140" y="18" width="40" height="14" fill="var(--accent)" />
-              <path d="M150 25h20M160 20v10" stroke="var(--accent-ink)" stroke-width="2" />
-              <rect x="30" y="50" width="120" height="8" fill="var(--muted)" />
-              <rect x="30" y="70" width="90" height="8" fill="var(--muted)" />
-            </svg>
-            <svg v-else-if="activeTab === 'android'" viewBox="0 0 200 120" width="200" height="120">
-              <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
-              <rect x="150" y="16" width="28" height="28" fill="var(--accent)" />
-              <rect x="30" y="55" width="100" height="10" fill="var(--accent)" />
-              <rect x="30" y="75" width="80" height="8" fill="var(--muted)" />
-            </svg>
-            <svg v-else viewBox="0 0 200 120" width="200" height="120">
-              <rect x="10" y="10" width="180" height="100" fill="var(--card)" stroke="var(--line)" stroke-width="2" />
-              <rect x="30" y="30" width="140" height="12" fill="var(--accent)" />
-              <rect x="30" y="55" width="90" height="8" fill="var(--muted)" />
-              <rect x="30" y="75" width="110" height="8" fill="var(--muted)" />
-            </svg>
-          </div>
         </div>
         <div class="pwa-footer">
           <button v-if="canInstall" type="button" class="btn accent" @click="emit('install')">
             {{ t('common.install') }}
           </button>
-          <button type="button" class="btn outline" @click="emit('dismiss')">{{ t('common.dismiss') }}</button>
+          <button
+            type="button"
+            class="btn"
+            :class="canInstall ? 'outline' : 'accent'"
+            @click="emit('dismiss')"
+          >
+            {{ t('common.dismiss') }}
+          </button>
         </div>
       </div>
     </div>
@@ -266,10 +252,5 @@ function onTabKeydown(e: KeyboardEvent) {
   border: 2px solid var(--line);
   font-weight: 800;
   flex-shrink: 0;
-}
-.illus {
-  display: flex;
-  justify-content: center;
-  margin: 12px 0;
 }
 </style>

@@ -220,6 +220,12 @@ const moveUnchanged = computed(() => {
   return selectedMoveDate.value === selectedSlot.value.date
 })
 
+const moveSheetNote = computed(() => {
+  if (moveForwardBlocked.value) return t('calendar.moveLimitReached')
+  if (moveUnchanged.value) return t('calendar.moveUnchanged')
+  return t('calendar.shiftNote')
+})
+
 const moveBlocked = computed(() => {
   const slot = selectedSlot.value
   const active = workoutStore.active
@@ -356,7 +362,7 @@ onBeforeUnmount(() => {
               <p class="day-history-title">{{ t('calendar.dayHistory') }}</p>
               <ul>
                 <li v-for="r in dayRecords" :key="r.id ?? r.startedAt">
-                  <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
+                  <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : t('stats.workoutLabel') }}</span>
                   <b>{{ recordSummary(r) }}</b>
                   <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
                     r.result === 'success' ? t('stats.success') : t('stats.partial')
@@ -387,13 +393,13 @@ onBeforeUnmount(() => {
             </p>
             <p v-if="!moveBlocked" id="calendar-sheet-desc" class="shift-note">
               <AppIcon name="info" />
-              {{ moveForwardBlocked ? t('calendar.moveLimitReached') : t('calendar.shiftNote') }}
+              {{ moveSheetNote }}
             </p>
             <div v-if="dayRecords.length" class="day-history">
               <p class="day-history-title">{{ t('calendar.dayHistory') }}</p>
               <ul>
                 <li v-for="r in dayRecords" :key="r.id ?? r.startedAt">
-                  <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : r.programName }}</span>
+                  <span>{{ r.kind === 'test' ? t('onboarding.testTitle') : t('stats.workoutLabel') }}</span>
                   <b>{{ recordSummary(r) }}</b>
                   <span class="pill" :class="r.result === 'success' ? 'ok' : 'part'">{{
                     r.result === 'success' ? t('stats.success') : t('stats.partial')
@@ -552,8 +558,8 @@ onBeforeUnmount(() => {
   box-shadow: 1px 1px 0 var(--shadow);
 }
 .calgrid {
-  flex: 1 0 auto;
-  max-height: 448px;
+  flex: 1 1 auto;
+  max-height: 540px;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   grid-template-rows: auto repeat(6, minmax(44px, 1fr));
@@ -578,7 +584,7 @@ onBeforeUnmount(() => {
   background: var(--card);
   border: 2px solid var(--line);
   box-shadow: 2px 2px 0 var(--shadow);
-  font: 800 1.05rem/1 'Arial Black', system-ui, sans-serif;
+  font: 800 1.15rem/1 'Arial Black', system-ui, sans-serif;
   cursor: pointer;
   color: var(--ink);
   transition: background 0.12s ease;
@@ -665,10 +671,11 @@ onBeforeUnmount(() => {
 }
 .legend {
   display: flex;
+  margin-top: auto;
   gap: 10px 14px;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 14px 0 12px;
+  padding: 16px 0 12px;
   font: 700 0.72rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
   color: var(--muted);
 }

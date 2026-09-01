@@ -65,6 +65,13 @@ html:not([data-theme$='-light']) .app-shell::before {
   filter: invert(1);
 }
 
+@media (min-width: 560px) {
+  .app-shell {
+    border-left: 2px solid color-mix(in srgb, var(--muted) 28%, transparent);
+    border-right: 2px solid color-mix(in srgb, var(--muted) 28%, transparent);
+  }
+}
+
 .app-main {
   position: relative;
   z-index: 1;
@@ -492,8 +499,8 @@ select:focus-visible,
 }
 
 .seg button.on {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .seg button:not(.on):active {
@@ -517,13 +524,12 @@ select:focus-visible,
 
 .sw i {
   position: absolute;
-  top: 50%;
+  top: 4px;
+  bottom: 4px;
   left: 4px;
   width: 20px;
-  height: 20px;
-  margin-top: -10px;
   background: var(--muted);
-  transition: left 0.12s ease, background 0.12s ease;
+  transition: left 0.16s cubic-bezier(0.2, 0.8, 0.3, 1), background 0.16s ease;
 }
 
 .sw:active {
