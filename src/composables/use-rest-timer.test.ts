@@ -78,4 +78,65 @@ describe('useRestTimer pause/resume', () => {
     expect(remaining.value).toBe(195)
     expect(total.value).toBe(195)
   })
+
+  it('counts down by wall clock when interval ticks are throttled', () => {
+    const onFinish = vi.fn()
+    const { remaining, start } = useRestTimer(onFinish)
+
+    start(180)
+    vi.setSystemTime(Date.now() + 60_000)
+    vi.advanceTimersByTime(250)
+
+    expect(remaining.value).toBe(120)
+    expect(onFinish).not.toHaveBeenCalled()
+  })
+
+  it('catches up on return to foreground after the deadline passed', () => {
+    const onFinish = vi.fn()
+    const { remaining, start } = useRestTimer(onFinish)
+
+    start(60)
+    vi.setSystemTime(Date.now() + 120_000)
+    document.dispatchEvent(new Event('visibilitychange'))
+
+    expect(remaining.value).toBe(0)
+    expect(onFinish).toHaveBeenCalledTimes(1)
+
+    vi.advanceTimersByTime(5000)
+    expect(onFinish).toHaveBeenCalledTimes(1)
+  })
+
+  it('ignores wake events while the document is hidden', () => {
+    const onFinish = vi.fn()
+    const { remaining, start } = useRestTimer(onFinish)
+    const visibility = vi
+      .spyOn(document, 'visibilityState', 'get')
+      .mockReturnValue('hidden')
+
+    start(60)
+    vi.setSystemTime(Date.now() + 120_000)
+    document.dispatchEvent(new Event('visibilitychange'))
+
+    expect(remaining.value).toBe(60)
+    expect(onFinish).not.toHaveBeenCalled()
+    visibility.mockRestore()
+  })
+
+  it('does not double-count paused time spent in the background', () => {
+    const onFinish = vi.fn()
+    const { remaining, start, pause, resume } = useRestTimer(onFinish)
+
+    start(180)
+    vi.advanceTimersByTime(30_000)
+    pause()
+
+    vi.setSystemTime(Date.now() + 600_000)
+    window.dispatchEvent(new Event('focus'))
+    expect(remaining.value).toBe(150)
+
+    resume()
+    vi.setSystemTime(Date.now() + 10_000)
+    vi.advanceTimersByTime(250)
+    expect(remaining.value).toBe(140)
+  })
 })
